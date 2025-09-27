@@ -247,6 +247,7 @@ body {
     transform: translateX(-50%);
     text-align: center;
     animation: float 2s ease-in-out infinite;
+    z-index: 1;
 }
 
 .mouse {
@@ -588,6 +589,15 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .hero {
+        min-height: 100vh;
+        padding-bottom: 120px; /* Extra space for scroll indicator */
+    }
+    
+    .hero-content {
+        padding-bottom: 2rem;
+    }
+    
     .hero-title {
         font-size: 3rem;
     }
@@ -600,11 +610,16 @@ body {
         flex-direction: column;
         width: 100%;
         max-width: 300px;
-        margin: 0 auto;
+        margin: 0 auto 3rem auto; /* Extra margin at bottom */
     }
     
     .btn {
         width: 100%;
+    }
+    
+    .scroll-indicator {
+        position: fixed; /* Change to fixed on mobile */
+        bottom: 1rem;
     }
     
     .about-content {
