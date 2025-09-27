@@ -52,6 +52,7 @@ body {
     background-image: radial-gradient(2px 2px at 20% 30%, white, transparent),
                       radial-gradient(2px 2px at 60% 70%, white, transparent),
                       radial-gradient(1px 1px at 50% 50%, white, transparent);
+    background-repeat: repeat;
     animation: drift 120s linear infinite;
 }
 
@@ -475,12 +476,14 @@ body {
     padding: 2rem;
     border-radius: 15px;
     text-align: center;
+    position: relative;
 }
 
-.stars {
+.review-stars {
     color: var(--cosmic-teal);
     font-size: 1.2rem;
     margin-bottom: 1rem;
+    display: block;
 }
 
 .review-card p {
