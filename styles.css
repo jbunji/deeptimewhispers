@@ -407,23 +407,35 @@ body {
 .platform-card {
     background: rgba(255, 255, 255, 0.05);
     border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 2rem;
     transition: all 0.3s ease;
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 120px;
+    height: 140px;
+    gap: 0.75rem;
+    text-decoration: none;
 }
 
 .platform-card:hover {
     transform: translateY(-5px);
     background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
-.platform-card img {
-    max-width: 150px;
-    height: auto;
-    filter: brightness(0.9);
+.platform-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.platform-name {
+    color: var(--text-light);
+    font-size: 0.9rem;
+    font-weight: 500;
+    opacity: 0.9;
 }
 
 .rss-link {
