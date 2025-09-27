@@ -484,6 +484,9 @@ body {
     font-size: 1.2rem;
     margin-bottom: 1rem;
     display: block;
+    position: static !important;
+    transform: none !important;
+    animation: none !important;
 }
 
 .review-card p {
