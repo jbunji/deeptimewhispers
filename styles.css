@@ -44,28 +44,31 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-repeat: repeat;
-    background-size: 1000px 1000px;
 }
 
 .stars {
-    background-image: radial-gradient(2px 2px at 20% 30%, white, transparent),
-                      radial-gradient(2px 2px at 60% 70%, white, transparent),
-                      radial-gradient(1px 1px at 50% 50%, white, transparent);
+    width: 1px;
+    height: 1px;
+    background: transparent;
+    box-shadow: 779px 1331px #fff, 324px 42px #fff, 303px 586px #fff, 1312px 276px #fff, 451px 625px #fff, 521px 1931px #fff, 1087px 1871px #fff, 36px 1546px #fff, 132px 934px #fff, 1698px 901px #fff, 1418px 664px #fff, 1448px 1157px #fff, 1084px 232px #fff, 347px 1776px #fff, 1722px 243px #fff, 1629px 835px #fff, 479px 969px #fff, 1231px 960px #fff, 586px 384px #fff, 164px 527px #fff, 8px 646px #fff, 1150px 1126px #fff, 665px 1357px #fff, 1556px 1982px #fff, 1260px 1961px #fff, 1675px 1741px #fff, 1843px 1514px #fff, 718px 1628px #fff, 242px 1343px #fff, 1497px 1880px #fff, 1364px 230px #fff, 1739px 1094px #fff, 1328px 1251px #fff, 1999px 1060px #fff, 1203px 1690px #fff, 400px 291px #fff, 386px 1548px #fff, 22px 1826px #fff, 745px 962px #fff, 1345px 1519px #fff, 1406px 1574px #fff, 1692px 923px #fff, 1018px 1301px #fff, 854px 977px #fff, 1093px 1988px #fff, 1827px 780px #fff, 457px 1237px #fff, 1745px 1971px #fff, 1329px 1275px #fff, 1913px 1926px #fff, 1285px 330px #fff, 173px 1167px #fff;
     background-repeat: repeat;
     animation: drift 120s linear infinite;
 }
 
 .stars2 {
-    background-image: radial-gradient(1px 1px at 10% 10%, white, transparent),
-                      radial-gradient(1px 1px at 80% 80%, white, transparent);
+    width: 2px;
+    height: 2px;
+    background: transparent;
+    box-shadow: 1779px 931px #fff, 1824px 642px #fff, 303px 986px #fff, 312px 1876px #fff, 851px 225px #fff, 21px 1531px #fff, 1387px 871px #fff, 736px 646px #fff, 1132px 1234px #fff, 698px 1901px #fff, 418px 1664px #fff, 1948px 157px #fff, 84px 1732px #fff, 1347px 1376px #fff, 722px 1843px #fff, 1129px 1835px #fff, 1479px 469px #fff, 831px 560px #fff, 1586px 184px #fff, 1164px 927px #fff, 808px 1946px #fff, 1150px 126px #fff, 1665px 357px #fff, 1856px 982px #fff, 1260px 1461px #fff, 1975px 1341px #fff, 1643px 514px #fff, 418px 628px #fff, 1242px 1243px #fff, 497px 880px #fff, 1364px 1230px #fff, 1239px 1594px #fff, 1328px 651px #fff;
     animation: drift 240s linear infinite;
     opacity: 0.5;
 }
 
 .stars3 {
-    background-image: radial-gradient(1px 1px at 30% 60%, white, transparent),
-                      radial-gradient(1px 1px at 70% 40%, white, transparent);
+    width: 1px;
+    height: 1px;
+    background: transparent;
+    box-shadow: 79px 1031px #fff, 824px 1342px #fff, 1303px 86px #fff, 1912px 1976px #fff, 451px 825px #fff, 121px 931px #fff, 987px 1671px #fff, 136px 246px #fff, 432px 634px #fff, 1798px 501px #fff, 1918px 1464px #fff, 248px 757px #fff, 584px 1832px #fff, 1847px 1176px #fff, 1322px 943px #fff, 629px 335px #fff, 979px 1469px #fff, 1931px 1560px #fff, 86px 1184px #fff, 1764px 1727px #fff;
     animation: drift 360s linear infinite;
     opacity: 0.3;
 }
