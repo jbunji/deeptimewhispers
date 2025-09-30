@@ -425,6 +425,22 @@ body {
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
+.platform-card.coming-soon {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.platform-card.coming-soon:hover {
+    transform: none;
+}
+
+.platform-name small {
+    display: block;
+    font-size: 0.7em;
+    color: var(--cosmic-teal);
+    margin-top: 0.25rem;
+}
+
 .platform-icon {
     display: flex;
     align-items: center;
