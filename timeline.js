@@ -31,6 +31,9 @@ function initializeTimeline() {
     // Clear any existing content
     svg.innerHTML = '';
     
+    // Reset event positions
+    eventPositions.length = 0;
+    
     // Create main timeline group
     const mainGroup = createSVGElement('g', {
         id: 'mainTimelineGroup',
@@ -173,15 +176,43 @@ function initializeTimeline() {
     svg.appendChild(mainGroup);
 }
 
+// Track event positions for collision detection
+const eventPositions = [];
+
 // Add event marker to timeline
 function addEventMarker(parent, event, totalTime, timelineWidth, startX, axisY) {
     const eventX = startX + ((totalTime - event.dateMYA) / totalTime) * timelineWidth;
+    
+    // Calculate Y position to avoid overlaps
+    let eventY = axisY - 200;
+    let textRotation = -45;
+    
+    // For recent events (< 100 MYA), stagger heights more aggressively
+    if (event.dateMYA < 100) {
+        // Check for nearby events
+        const nearbyEvents = eventPositions.filter(pos => 
+            Math.abs(pos.x - eventX) < 50 && Math.abs(pos.y - eventY) < 30
+        );
+        
+        if (nearbyEvents.length > 0) {
+            // Stagger the height
+            const staggerLevels = [200, 250, 150, 300, 100];
+            const levelIndex = eventPositions.length % staggerLevels.length;
+            eventY = axisY - staggerLevels[levelIndex];
+            
+            // Alternate text rotation for readability
+            textRotation = levelIndex % 2 === 0 ? -45 : -65;
+        }
+    }
+    
+    // Store position
+    eventPositions.push({ x: eventX, y: eventY });
     
     // Event line
     const line = createSVGElement('line', {
         class: 'event-line',
         x1: eventX,
-        y1: axisY - 200,
+        y1: eventY,
         x2: eventX,
         y2: axisY
     });
@@ -191,28 +222,90 @@ function addEventMarker(parent, event, totalTime, timelineWidth, startX, axisY) 
     const circle = createSVGElement('circle', {
         class: `event-marker ${event.podcastEpisode ? 'podcast-episode-marker' : ''}`,
         cx: eventX,
-        cy: axisY - 200,
+        cy: eventY,
         r: event.podcastEpisode ? 8 : 6,
         fill: getEventColor(event.type),
         'data-event': JSON.stringify(event)
     });
+    
+    // Add hover handlers for tooltip
+    circle.addEventListener('mouseenter', (e) => showTooltip(e, event));
+    circle.addEventListener('mouseleave', hideTooltip);
     
     // Add click handler
     circle.addEventListener('click', () => showEventDetails(event));
     
     parent.appendChild(circle);
     
-    // Event name (rotated)
-    const text = createSVGElement('text', {
-        x: eventX,
-        y: axisY - 210,
-        transform: `rotate(-45, ${eventX}, ${axisY - 210})`,
-        'text-anchor': 'end',
-        fill: '#a8a8b8',
-        'font-size': '12'
-    });
-    text.textContent = event.name;
-    parent.appendChild(text);
+    // Event name (rotated) - only show for events > 50 MYA or podcast episodes
+    if (event.dateMYA > 50 || event.podcastEpisode) {
+        const text = createSVGElement('text', {
+            x: eventX,
+            y: eventY - 10,
+            transform: `rotate(${textRotation}, ${eventX}, ${eventY - 10})`,
+            'text-anchor': 'end',
+            fill: '#a8a8b8',
+            'font-size': event.podcastEpisode ? '14' : '12',
+            'font-weight': event.podcastEpisode ? '600' : '400'
+        });
+        text.textContent = event.name;
+        parent.appendChild(text);
+    }
+}
+
+// Tooltip functions
+let currentTooltip = null;
+
+function showTooltip(e, event) {
+    // Remove existing tooltip
+    hideTooltip();
+    
+    // Create tooltip
+    const tooltip = document.createElement('div');
+    tooltip.className = 'event-tooltip';
+    
+    const timeAgo = event.dateMYA < 1 ? 
+        `${Math.round(event.dateMYA * 1000)} thousand years ago` : 
+        `${event.dateMYA} million years ago`;
+    
+    tooltip.innerHTML = `
+        <h4>${event.name}</h4>
+        <div class="event-date">${timeAgo}</div>
+        <p>${event.description}</p>
+        ${event.podcastEpisode ? '<p style="margin-top: 8px; color: #a78bfa;">🎧 Click to see episode</p>' : ''}
+    `;
+    
+    document.body.appendChild(tooltip);
+    currentTooltip = tooltip;
+    
+    // Position tooltip
+    const rect = e.target.getBoundingClientRect();
+    const tooltipRect = tooltip.getBoundingClientRect();
+    
+    let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
+    let top = rect.top - tooltipRect.height - 10;
+    
+    // Keep tooltip on screen
+    if (left < 10) left = 10;
+    if (left + tooltipRect.width > window.innerWidth - 10) {
+        left = window.innerWidth - tooltipRect.width - 10;
+    }
+    if (top < 10) {
+        top = rect.bottom + 10; // Show below if no room above
+    }
+    
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+    
+    // Trigger animation
+    setTimeout(() => tooltip.classList.add('visible'), 10);
+}
+
+function hideTooltip() {
+    if (currentTooltip) {
+        currentTooltip.remove();
+        currentTooltip = null;
+    }
 }
 
 // Get color based on event type
