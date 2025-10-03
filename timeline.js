@@ -231,6 +231,7 @@ function addEventMarker(parent, event, totalTime, timelineWidth, startX, axisY) 
     // Add hover handlers for tooltip
     circle.addEventListener('mouseenter', (e) => showTooltip(e, event));
     circle.addEventListener('mouseleave', hideTooltip);
+    circle.addEventListener('mousemove', (e) => updateTooltipPosition(e));
     
     // Add click handler
     circle.addEventListener('click', () => showEventDetails(event));
@@ -263,6 +264,7 @@ function showTooltip(e, event) {
     // Create tooltip
     const tooltip = document.createElement('div');
     tooltip.className = 'event-tooltip';
+    tooltip.style.position = 'fixed'; // Use fixed positioning
     
     const timeAgo = event.dateMYA < 1 ? 
         `${Math.round(event.dateMYA * 1000)} thousand years ago` : 
@@ -278,33 +280,46 @@ function showTooltip(e, event) {
     document.body.appendChild(tooltip);
     currentTooltip = tooltip;
     
-    // Position tooltip
-    const rect = e.target.getBoundingClientRect();
-    const tooltipRect = tooltip.getBoundingClientRect();
-    
-    let left = rect.left + rect.width / 2 - tooltipRect.width / 2;
-    let top = rect.top - tooltipRect.height - 10;
-    
-    // Keep tooltip on screen
-    if (left < 10) left = 10;
-    if (left + tooltipRect.width > window.innerWidth - 10) {
-        left = window.innerWidth - tooltipRect.width - 10;
-    }
-    if (top < 10) {
-        top = rect.bottom + 10; // Show below if no room above
-    }
-    
-    tooltip.style.left = `${left}px`;
-    tooltip.style.top = `${top}px`;
+    // Initial position
+    updateTooltipPosition(e);
     
     // Trigger animation
     setTimeout(() => tooltip.classList.add('visible'), 10);
 }
 
+function updateTooltipPosition(e) {
+    if (!currentTooltip) return;
+    
+    const tooltip = currentTooltip;
+    const tooltipRect = tooltip.getBoundingClientRect();
+    
+    // Use mouse coordinates for more accurate positioning
+    let left = e.clientX - tooltipRect.width / 2;
+    let top = e.clientY - tooltipRect.height - 20;
+    
+    // Keep tooltip on screen
+    const padding = 10;
+    if (left < padding) left = padding;
+    if (left + tooltipRect.width > window.innerWidth - padding) {
+        left = window.innerWidth - tooltipRect.width - padding;
+    }
+    if (top < padding) {
+        top = e.clientY + 20; // Show below cursor if no room above
+    }
+    
+    tooltip.style.left = `${left}px`;
+    tooltip.style.top = `${top}px`;
+}
+
 function hideTooltip() {
     if (currentTooltip) {
-        currentTooltip.remove();
-        currentTooltip = null;
+        currentTooltip.classList.remove('visible');
+        setTimeout(() => {
+            if (currentTooltip) {
+                currentTooltip.remove();
+                currentTooltip = null;
+            }
+        }, 300);
     }
 }
 
@@ -429,6 +444,8 @@ function createGlossary() {
 
 // Setup event listeners
 function setupEventListeners() {
+    const timelineContainer = document.getElementById('timelineContainer');
+    
     // Zoom controls
     document.getElementById('zoomIn').addEventListener('click', () => {
         if (currentZoom < 5) {
@@ -449,6 +466,48 @@ function setupEventListeners() {
         currentPan = 0;
         updateTimelineTransform();
     });
+    
+    // Mouse wheel zoom
+    timelineContainer.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const delta = e.deltaY > 0 ? 0.9 : 1.1;
+        const newZoom = currentZoom * delta;
+        
+        if (newZoom >= 0.5 && newZoom <= 5) {
+            currentZoom = newZoom;
+            updateTimelineTransform();
+        }
+    });
+    
+    // Pan functionality
+    let isDragging = false;
+    let startX = 0;
+    let startPan = 0;
+    
+    timelineContainer.addEventListener('mousedown', (e) => {
+        if (e.target.tagName === 'svg' || e.target.classList.contains('timeline-axis')) {
+            isDragging = true;
+            startX = e.clientX;
+            startPan = currentPan;
+            timelineContainer.style.cursor = 'grabbing';
+        }
+    });
+    
+    window.addEventListener('mousemove', (e) => {
+        if (isDragging) {
+            const dx = e.clientX - startX;
+            currentPan = startPan + dx;
+            updateTimelineTransform();
+        }
+    });
+    
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+        timelineContainer.style.cursor = 'grab';
+    });
+    
+    // Set initial cursor
+    timelineContainer.style.cursor = 'grab';
     
     // Glossary search
     document.getElementById('glossarySearch').addEventListener('input', (e) => {
