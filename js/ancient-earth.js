@@ -33,9 +33,9 @@ function initializeGlobe() {
     const globeContainer = document.getElementById('globeViz');
     
     globe = Globe()
-        .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
-        .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
-        .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+        .globeImageUrl('https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+        .bumpImageUrl('https://unpkg.com/three-globe/example/img/earth-topology.png')
+        .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
         .showAtmosphere(true)
         .atmosphereColor('lightskyblue')
         .atmosphereAltitude(0.15)
@@ -106,9 +106,20 @@ async function handleLocationSearch() {
     showStatus('Searching for location...', 'loading');
     
     try {
-        // For demo purposes, we'll use a free geocoding service
-        // In production, you might want to use Google Maps or Mapbox
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`);
+        // Note: Due to CORS restrictions, this will only work on a proper server
+        // For local testing, we'll use demo coordinates
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            // Demo mode for local testing
+            showDemoLocation(query);
+            return;
+        }
+        
+        // For production, use a proxy or server-side API
+        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, {
+            headers: {
+                'User-Agent': 'DeepTimeWhispers/1.0'
+            }
+        });
         const data = await response.json();
         
         if (data && data.length > 0) {
@@ -128,8 +139,31 @@ async function handleLocationSearch() {
         }
     } catch (error) {
         console.error('Search error:', error);
-        showStatus('Error searching for location. Please try again.', 'error');
+        // Fallback to demo mode
+        showDemoLocation(query);
     }
+}
+
+// Demo location for testing
+function showDemoLocation(query) {
+    // Simulate some major cities for demo
+    const demoLocations = {
+        'new york': { lat: 40.7128, lon: -74.0060, name: 'New York, NY, USA' },
+        'london': { lat: 51.5074, lon: -0.1278, name: 'London, UK' },
+        'tokyo': { lat: 35.6762, lon: 139.6503, name: 'Tokyo, Japan' },
+        'paris': { lat: 48.8566, lon: 2.3522, name: 'Paris, France' },
+        'sydney': { lat: -33.8688, lon: 151.2093, name: 'Sydney, Australia' }
+    };
+    
+    const queryLower = query.toLowerCase();
+    const demoLocation = demoLocations[queryLower] || {
+        lat: 40.7128,
+        lon: -74.0060,
+        name: `Demo location for: ${query}`
+    };
+    
+    setLocation(demoLocation);
+    showStatus('Demo mode: Showing example location', 'success');
 }
 
 // Use current location
@@ -323,6 +357,8 @@ function getLifeInfo(mya) {
 
 // Update globe appearance for different time periods
 function updateGlobeForTime(mya) {
+    if (!globe) return;
+    
     // This would ideally load different textures for different time periods
     // For now, we'll adjust the atmosphere to hint at different conditions
     
@@ -338,6 +374,20 @@ function updateGlobeForTime(mya) {
         // More recent times
         globe.atmosphereColor('lightskyblue');
         globe.atmosphereAltitude(0.15);
+    }
+    
+    // Update any location markers if they exist
+    if (currentLocation) {
+        // Simulate continental drift by adjusting marker position
+        const drift = calculateContinentalDrift(currentLocation, mya);
+        const adjustedLat = currentLocation.lat + (drift.distance / 111); // rough km to degrees
+        const adjustedLon = currentLocation.lon + (drift.distance / 111);
+        
+        globe.pointsData([{
+            lat: adjustedLat,
+            lng: adjustedLon,
+            label: `Your Location ${mya} MYA`
+        }]);
     }
 }
 
