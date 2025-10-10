@@ -102,6 +102,14 @@
     min-height: 20px;
 }
 
+.demo-note {
+    text-align: center;
+    color: #8b95b4;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    font-style: italic;
+}
+
 /* Main Layout */
 .ancient-earth-main {
     background: #0f1419;

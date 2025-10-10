@@ -106,20 +106,13 @@ async function handleLocationSearch() {
     showStatus('Searching for location...', 'loading');
     
     try {
-        // Note: Due to CORS restrictions, this will only work on a proper server
-        // For local testing, we'll use demo coordinates
-        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
-            // Demo mode for local testing
-            showDemoLocation(query);
-            return;
-        }
+        // Due to CORS restrictions, we'll use demo locations for now
+        // In a full production app, you would use a server-side proxy or a paid geocoding API
+        showDemoLocation(query);
+        return;
         
-        // For production, use a proxy or server-side API
-        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}`, {
-            headers: {
-                'User-Agent': 'DeepTimeWhispers/1.0'
-            }
-        });
+        // Future implementation with server proxy:
+        // const response = await fetch(`/api/geocode?q=${encodeURIComponent(query)}`);
         const data = await response.json();
         
         if (data && data.length > 0) {
@@ -149,21 +142,57 @@ function showDemoLocation(query) {
     // Simulate some major cities for demo
     const demoLocations = {
         'new york': { lat: 40.7128, lon: -74.0060, name: 'New York, NY, USA' },
+        'nyc': { lat: 40.7128, lon: -74.0060, name: 'New York, NY, USA' },
         'london': { lat: 51.5074, lon: -0.1278, name: 'London, UK' },
         'tokyo': { lat: 35.6762, lon: 139.6503, name: 'Tokyo, Japan' },
         'paris': { lat: 48.8566, lon: 2.3522, name: 'Paris, France' },
-        'sydney': { lat: -33.8688, lon: 151.2093, name: 'Sydney, Australia' }
+        'sydney': { lat: -33.8688, lon: 151.2093, name: 'Sydney, Australia' },
+        'los angeles': { lat: 34.0522, lon: -118.2437, name: 'Los Angeles, CA, USA' },
+        'la': { lat: 34.0522, lon: -118.2437, name: 'Los Angeles, CA, USA' },
+        'chicago': { lat: 41.8781, lon: -87.6298, name: 'Chicago, IL, USA' },
+        'houston': { lat: 29.7604, lon: -95.3698, name: 'Houston, TX, USA' },
+        'phoenix': { lat: 33.4484, lon: -112.0740, name: 'Phoenix, AZ, USA' },
+        'philadelphia': { lat: 39.9526, lon: -75.1652, name: 'Philadelphia, PA, USA' },
+        'san francisco': { lat: 37.7749, lon: -122.4194, name: 'San Francisco, CA, USA' },
+        'sf': { lat: 37.7749, lon: -122.4194, name: 'San Francisco, CA, USA' },
+        'seattle': { lat: 47.6062, lon: -122.3321, name: 'Seattle, WA, USA' },
+        'miami': { lat: 25.7617, lon: -80.1918, name: 'Miami, FL, USA' },
+        'denver': { lat: 39.7392, lon: -104.9903, name: 'Denver, CO, USA' },
+        'berlin': { lat: 52.5200, lon: 13.4050, name: 'Berlin, Germany' },
+        'moscow': { lat: 55.7558, lon: 37.6173, name: 'Moscow, Russia' },
+        'beijing': { lat: 39.9042, lon: 116.4074, name: 'Beijing, China' },
+        'mumbai': { lat: 19.0760, lon: 72.8777, name: 'Mumbai, India' },
+        'cairo': { lat: 30.0444, lon: 31.2357, name: 'Cairo, Egypt' },
+        'rio': { lat: -22.9068, lon: -43.1729, name: 'Rio de Janeiro, Brazil' },
+        'toronto': { lat: 43.6532, lon: -79.3832, name: 'Toronto, Canada' }
     };
     
-    const queryLower = query.toLowerCase();
-    const demoLocation = demoLocations[queryLower] || {
-        lat: 40.7128,
-        lon: -74.0060,
-        name: `Demo location for: ${query}`
-    };
+    const queryLower = query.toLowerCase().trim();
+    
+    // Check for exact match first
+    let demoLocation = demoLocations[queryLower];
+    
+    // If no exact match, check for partial matches
+    if (!demoLocation) {
+        for (const [key, location] of Object.entries(demoLocations)) {
+            if (key.includes(queryLower) || queryLower.includes(key)) {
+                demoLocation = location;
+                break;
+            }
+        }
+    }
+    
+    // Default to New York if no match found
+    if (!demoLocation) {
+        demoLocation = {
+            lat: 40.7128,
+            lon: -74.0060,
+            name: `Location "${query}" (showing New York as example)`
+        };
+    }
     
     setLocation(demoLocation);
-    showStatus('Demo mode: Showing example location', 'success');
+    showStatus('Found location (demo mode)', 'success');
 }
 
 // Use current location
