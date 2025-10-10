@@ -248,11 +248,17 @@
     line-height: 1.6;
 }
 
-.environment-info, .life-info {
+.continent-info, .environment-info, .life-info {
     font-family: 'Raleway', sans-serif;
     font-size: 0.9rem;
     color: #8b95b4;
     line-height: 1.6;
+}
+
+.continent-info {
+    color: #e8d4b0;
+    font-weight: 500;
+    margin-bottom: 10px;
 }
 
 /* Globe Container */
@@ -309,6 +315,25 @@
 @keyframes rotate {
     from { transform: rotate(0deg); }
     to { transform: rotate(360deg); }
+}
+
+.globe-note {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    right: 20px;
+    background: rgba(15, 20, 25, 0.9);
+    padding: 15px;
+    border-radius: 8px;
+    border: 1px solid rgba(232, 212, 176, 0.2);
+}
+
+.globe-note p {
+    font-family: 'Raleway', sans-serif;
+    font-size: 0.85rem;
+    color: #8b95b4;
+    margin: 0;
+    text-align: center;
 }
 
 /* Educational Section */

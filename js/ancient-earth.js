@@ -314,6 +314,9 @@ function updateLocationInfo() {
         Approximately ${drift.distance} km ${drift.direction}
     `;
     
+    // Update continental configuration
+    document.getElementById('continentInfo').innerHTML = getContinentalConfig(mya);
+    
     // Update environment info
     document.getElementById('environmentInfo').innerHTML = getEnvironmentInfo(currentLocation, mya);
     
@@ -382,6 +385,41 @@ function getLifeInfo(mya) {
     if (mya < 450) return "First land animals, primitive plants, sea life";
     if (mya < 550) return "Cambrian explosion! Trilobites, early shells";
     return "Simple life forms, mostly microscopic";
+}
+
+// Get continental configuration for time period
+function getContinentalConfig(mya) {
+    if (mya === 0) {
+        return "Seven continents in modern positions";
+    }
+    if (mya < 30) {
+        return "Continents approaching modern positions, India recently collided with Asia";
+    }
+    if (mya < 60) {
+        return "Atlantic Ocean widening, India racing northward";
+    }
+    if (mya < 100) {
+        return "South Atlantic opening, India separated from Africa";
+    }
+    if (mya < 150) {
+        return "Pangaea breaking apart, Atlantic Ocean beginning to form";
+    }
+    if (mya < 200) {
+        return "Supercontinent Pangaea fully assembled";
+    }
+    if (mya < 300) {
+        return "Continents converging to form Pangaea";
+    }
+    if (mya < 400) {
+        return "Gondwana in south, smaller continents in north";
+    }
+    if (mya < 500) {
+        return "Continents scattered, mostly in Southern Hemisphere";
+    }
+    if (mya < 600) {
+        return "Supercontinent Rodinia breaking apart";
+    }
+    return "Ancient supercontinents, very different from today";
 }
 
 // Update globe appearance for different time periods
