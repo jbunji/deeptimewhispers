@@ -1,0 +1,12 @@
+{
+  "name": "deep-time-whispers",
+  "version": "1.0.0",
+  "description": "Deep Time Whispers interactive timeline",
+  "scripts": {
+    "start": "npx http-server -p 8000 -c-1",
+    "dev": "npx http-server -p 8000 -c-1"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1"
+  }
+}

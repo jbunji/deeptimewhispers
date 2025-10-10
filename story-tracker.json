@@ -1,0 +1,43 @@
+{
+  "catastrophe_stories": {
+    "completed": [
+      "04-permian-mega-drought",
+      "06-chicxulub-impact-weather",
+      "08-the-first-sting",
+      "09-permian-death-gardens",
+      "10-megalania-toxic-bite",
+      "11-the-day-the-moon-was-born",
+      "11-the-ordovician-arms-race",
+      "12-the-hadean-earth",
+      "12-the-poison-seas-of-the-archean",
+      "13-death-valley-of-the-devonian",
+      "13-the-first-snow-on-earth",
+      "14-bioluminescent-seas",
+      "14-the-methane-swamps",
+      "15-sulfur-springs-of-yellowstones-past",
+      "15-the-oxygen-catastrophe",
+      "16-birth-of-the-aurora",
+      "17-the-purple-earth",
+      "18-the-mediterranean-death-basin",
+      "19-the-siberian-traps",
+      "20-the-toba-supervolcano",
+      "21-ancient-solar-eclipses",
+      "22-the-cambrian-color-explosion",
+      "23-snowball-earths-crevasses",
+      "24-the-zanclean-flood",
+      "25-the-green-sahara",
+      "26-the-hadean-earth",
+      "27-birth-of-the-aurora",
+      "28-the-purple-earth",
+      "29-the-first-sunrise-through-clear-air",
+      "30-when-stars-were-visible-in-daylight",
+      "31-the-cambrian-color-explosion"
+    ],
+    "story_requirements": {
+      "minimum_age": "10,000 years ago",
+      "focus": "Specific disaster phenomena, not extinction events",
+      "emphasis": "Weather patterns, waves, landslides, droughts, physical catastrophes",
+      "detail_level": "Visceral, sensory experience of the disaster itself"
+    }
+  }
+}
