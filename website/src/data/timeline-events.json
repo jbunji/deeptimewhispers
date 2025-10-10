@@ -1,0 +1,399 @@
+{
+  "eons": [
+    {
+      "name": "Hadean",
+      "startMYA": 4500,
+      "endMYA": 4000,
+      "color": "#8B0000",
+      "description": "Earth's violent birth. A hellish world of molten rock, asteroid bombardment, and the formation of the Moon.",
+      "keyEvents": [
+        {
+          "name": "Formation of Earth",
+          "dateMYA": 4500,
+          "description": "Our planet forms from the solar nebula",
+          "type": "origin"
+        },
+        {
+          "name": "The Birth of the Moon",
+          "dateMYA": 4425,
+          "description": "A Mars-sized object collides with Earth, creating our celestial companion",
+          "type": "catastrophe",
+          "podcastEpisode": "birth-of-the-moon"
+        },
+        {
+          "name": "Late Heavy Bombardment",
+          "dateMYA": 4100,
+          "description": "Intense asteroid impacts reshape Earth's surface",
+          "type": "catastrophe"
+        }
+      ]
+    },
+    {
+      "name": "Archean",
+      "startMYA": 4000,
+      "endMYA": 2500,
+      "color": "#FF1493",
+      "description": "Life emerges in a world without oxygen. Stromatolites appear, and the first continents begin to form.",
+      "keyEvents": [
+        {
+          "name": "First Life",
+          "dateMYA": 3800,
+          "description": "The earliest evidence of life appears in ancient rocks",
+          "type": "origin"
+        },
+        {
+          "name": "Photosynthesis Begins",
+          "dateMYA": 3500,
+          "description": "Cyanobacteria evolve the ability to harvest sunlight",
+          "type": "evolution"
+        },
+        {
+          "name": "First Continents",
+          "dateMYA": 3000,
+          "description": "Stable continental crust begins to form",
+          "type": "geological"
+        }
+      ]
+    },
+    {
+      "name": "Proterozoic",
+      "startMYA": 2500,
+      "endMYA": 541,
+      "color": "#FF69B4",
+      "description": "The longest eon. Oxygen transforms the atmosphere, complex cells evolve, and Earth freezes completely multiple times.",
+      "keyEvents": [
+        {
+          "name": "Great Oxidation Event",
+          "dateMYA": 2400,
+          "description": "Oxygen begins accumulating in the atmosphere, poisoning most life",
+          "type": "catastrophe"
+        },
+        {
+          "name": "First Eukaryotic Cells",
+          "dateMYA": 2000,
+          "description": "Complex cells with nuclei evolve",
+          "type": "evolution"
+        },
+        {
+          "name": "Cryogenian - Snowball Earth",
+          "dateMYA": 720,
+          "description": "Earth freezes from pole to equator",
+          "type": "catastrophe",
+          "podcastEpisode": "when-earth-froze-solid"
+        },
+        {
+          "name": "Ediacaran Fauna",
+          "dateMYA": 575,
+          "description": "First complex multicellular life appears",
+          "type": "evolution"
+        }
+      ]
+    },
+    {
+      "name": "Phanerozoic",
+      "startMYA": 541,
+      "endMYA": 0,
+      "color": "#90EE90",
+      "description": "The eon of visible life. From the Cambrian explosion to the rise of humans, this is when Earth's biosphere bloomed.",
+      "eras": [
+        {
+          "name": "Paleozoic",
+          "startMYA": 541,
+          "endMYA": 252,
+          "periods": [
+            {
+              "name": "Cambrian",
+              "startMYA": 541,
+              "endMYA": 485,
+              "keyEvents": [
+                {
+                  "name": "Cambrian Explosion",
+                  "dateMYA": 540,
+                  "description": "Most major animal phyla appear in the fossil record",
+                  "type": "evolution"
+                }
+              ]
+            },
+            {
+              "name": "Ordovician",
+              "startMYA": 485,
+              "endMYA": 444,
+              "keyEvents": [
+                {
+                  "name": "Great Ordovician Biodiversification",
+                  "dateMYA": 470,
+                  "description": "Marine life diversifies dramatically",
+                  "type": "evolution"
+                },
+                {
+                  "name": "Taconic Orogeny",
+                  "dateMYA": 480,
+                  "description": "Birth of the ancestral Appalachian Mountains",
+                  "type": "geological",
+                  "podcastEpisode": "day-of-the-pillars"
+                },
+                {
+                  "name": "End-Ordovician Extinction",
+                  "dateMYA": 445,
+                  "description": "Second largest mass extinction",
+                  "type": "extinction"
+                }
+              ]
+            },
+            {
+              "name": "Silurian",
+              "startMYA": 444,
+              "endMYA": 419,
+              "keyEvents": [
+                {
+                  "name": "First Land Plants",
+                  "dateMYA": 430,
+                  "description": "Simple plants colonize the land",
+                  "type": "evolution"
+                }
+              ]
+            },
+            {
+              "name": "Devonian",
+              "startMYA": 419,
+              "endMYA": 359,
+              "keyEvents": [
+                {
+                  "name": "Age of Fishes",
+                  "dateMYA": 400,
+                  "description": "Fish diversify and dominate the seas",
+                  "type": "evolution"
+                },
+                {
+                  "name": "First Forests",
+                  "dateMYA": 385,
+                  "description": "Trees evolve and create the first forests",
+                  "type": "evolution"
+                },
+                {
+                  "name": "Late Devonian Extinction",
+                  "dateMYA": 375,
+                  "description": "Multiple extinction pulses eliminate 75% of species",
+                  "type": "extinction"
+                }
+              ]
+            },
+            {
+              "name": "Carboniferous",
+              "startMYA": 359,
+              "endMYA": 299,
+              "keyEvents": [
+                {
+                  "name": "Coal Swamps",
+                  "dateMYA": 330,
+                  "description": "Vast forests that will become coal deposits",
+                  "type": "geological"
+                },
+                {
+                  "name": "First Reptiles",
+                  "dateMYA": 312,
+                  "description": "Amniotic egg allows life to move inland",
+                  "type": "evolution"
+                }
+              ]
+            },
+            {
+              "name": "Permian",
+              "startMYA": 299,
+              "endMYA": 252,
+              "keyEvents": [
+                {
+                  "name": "Formation of Pangaea",
+                  "dateMYA": 280,
+                  "description": "All continents merge into one supercontinent",
+                  "type": "geological"
+                },
+                {
+                  "name": "The Great Dying",
+                  "dateMYA": 252,
+                  "description": "Earth's largest mass extinction - 96% of marine species perish",
+                  "type": "extinction",
+                  "podcastEpisode": "the-day-the-earth-nearly-died"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Mesozoic",
+          "startMYA": 252,
+          "endMYA": 66,
+          "periods": [
+            {
+              "name": "Triassic",
+              "startMYA": 252,
+              "endMYA": 201,
+              "keyEvents": [
+                {
+                  "name": "First Dinosaurs",
+                  "dateMYA": 231,
+                  "description": "Small dinosaurs appear alongside other reptiles",
+                  "type": "evolution"
+                },
+                {
+                  "name": "First Mammals",
+                  "dateMYA": 225,
+                  "description": "Tiny, shrew-like mammals evolve",
+                  "type": "evolution"
+                },
+                {
+                  "name": "End-Triassic Extinction",
+                  "dateMYA": 201,
+                  "description": "Volcanic eruptions clear the way for dinosaur dominance",
+                  "type": "extinction"
+                }
+              ]
+            },
+            {
+              "name": "Jurassic",
+              "startMYA": 201,
+              "endMYA": 145,
+              "keyEvents": [
+                {
+                  "name": "Age of Giants",
+                  "dateMYA": 160,
+                  "description": "Sauropods reach enormous sizes",
+                  "type": "evolution"
+                },
+                {
+                  "name": "First Birds",
+                  "dateMYA": 150,
+                  "description": "Archaeopteryx bridges dinosaurs and birds",
+                  "type": "evolution"
+                }
+              ]
+            },
+            {
+              "name": "Cretaceous",
+              "startMYA": 145,
+              "endMYA": 66,
+              "keyEvents": [
+                {
+                  "name": "Flowering Plants",
+                  "dateMYA": 130,
+                  "description": "Angiosperms revolutionize terrestrial ecosystems",
+                  "type": "evolution"
+                },
+                {
+                  "name": "Cretaceous Hypercane",
+                  "dateMYA": 90,
+                  "description": "Earth's most powerful storms rage in greenhouse world",
+                  "type": "climate",
+                  "podcastEpisode": "cretaceous-hypercane"
+                },
+                {
+                  "name": "Chicxulub Impact",
+                  "dateMYA": 66,
+                  "description": "Asteroid ends the age of dinosaurs",
+                  "type": "extinction",
+                  "podcastEpisode": "the-day-the-dinosaurs-died"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Cenozoic",
+          "startMYA": 66,
+          "endMYA": 0,
+          "periods": [
+            {
+              "name": "Paleogene",
+              "startMYA": 66,
+              "endMYA": 23,
+              "keyEvents": [
+                {
+                  "name": "Mammal Radiation",
+                  "dateMYA": 55,
+                  "description": "Mammals diversify to fill dinosaur niches",
+                  "type": "evolution"
+                },
+                {
+                  "name": "PETM",
+                  "dateMYA": 56,
+                  "description": "Paleocene-Eocene Thermal Maximum - rapid global warming",
+                  "type": "climate"
+                }
+              ]
+            },
+            {
+              "name": "Neogene",
+              "startMYA": 23,
+              "endMYA": 2.6,
+              "keyEvents": [
+                {
+                  "name": "Grasslands Expand",
+                  "dateMYA": 20,
+                  "description": "Grasses create new ecosystems",
+                  "type": "evolution"
+                },
+                {
+                  "name": "Human Ancestors",
+                  "dateMYA": 7,
+                  "description": "First hominins appear in Africa",
+                  "type": "evolution"
+                },
+                {
+                  "name": "Ice Age Begins",
+                  "dateMYA": 2.6,
+                  "description": "Northern Hemisphere glaciation starts",
+                  "type": "climate"
+                }
+              ]
+            },
+            {
+              "name": "Quaternary",
+              "startMYA": 2.6,
+              "endMYA": 0,
+              "keyEvents": [
+                {
+                  "name": "Last Glacial Maximum",
+                  "dateMYA": 0.021,
+                  "description": "Ice sheets at their greatest extent",
+                  "type": "climate"
+                },
+                {
+                  "name": "Lake Agassiz Flood",
+                  "dateMYA": 0.013,
+                  "description": "Catastrophic draining reshapes North America",
+                  "type": "catastrophe",
+                  "podcastEpisode": "when-the-ice-wall-broke"
+                },
+                {
+                  "name": "Younger Dryas",
+                  "dateMYA": 0.012,
+                  "description": "Sudden return to ice age conditions",
+                  "type": "climate"
+                },
+                {
+                  "name": "Holocene Begins",
+                  "dateMYA": 0.012,
+                  "description": "Current interglacial period starts",
+                  "type": "climate"
+                },
+                {
+                  "name": "Human Civilization",
+                  "dateMYA": 0.01,
+                  "description": "Agriculture and cities develop",
+                  "type": "evolution"
+                },
+                {
+                  "name": "Taupo Eruption",
+                  "dateMYA": 0.0265,
+                  "description": "New Zealand's super-eruption",
+                  "type": "catastrophe",
+                  "podcastEpisode": "when-the-sky-turned-to-glass"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
