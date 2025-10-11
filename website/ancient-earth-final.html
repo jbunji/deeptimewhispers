@@ -617,7 +617,11 @@
         function loadAllTextures() {
             // Load all 90 textures
             for (let i = 0; i < 90; i++) {
-                const fileName = `textures/paleomap/timeline/${textureFileNames[i]}`;
+                // Fix path for different hosting environments
+                const basePath = window.location.hostname.includes('vercel.app') 
+                    ? '/website/textures/paleomap/timeline'
+                    : 'textures/paleomap/timeline';
+                const fileName = `${basePath}/${textureFileNames[i]}`;
                 
                 textureLoader.load(
                     fileName,
