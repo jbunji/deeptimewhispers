@@ -29,6 +29,8 @@ export default async function handler(req, res) {
         }
         
         // Return the reconstructed coordinates
+        // If the response is simplified, keep it as is
+        // The client will handle both formats
         res.status(200).json(data);
         
     } catch (error) {
