@@ -925,8 +925,8 @@
         const GPLATES_CONFIG = {
             // Try these endpoints in order
             endpoints: [
-                '/api/gplates/reconstruct',  // Your proxy server
-                'https://deeptimewhispers.com/api/gplates/reconstruct',  // Production proxy
+                '/api/gplates/reconstruct',  // Vercel serverless function
+                'https://deeptimewhispers.vercel.app/api/gplates/reconstruct',  // If using custom domain
                 null  // Fallback to calculation
             ],
             useAPI: true  // Set to false to always use calculations
