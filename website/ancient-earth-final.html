@@ -955,17 +955,25 @@
                         
                         if (response.ok) {
                             const data = await response.json();
-                            // Check if it's the expected GeoJSON format
-                            if (data.features && data.features.length > 0) {
+                            // Check if it's a GeoJSON MultiPoint (what GPlates actually returns)
+                            if (data.type === 'MultiPoint' && data.coordinates && data.coordinates.length > 0) {
+                                const coords = data.coordinates[0];
+                                const result = { lat: coords[1], lng: coords[0] };
+                                gplatesCache[cacheKey] = result;
+                                console.log(`GPlates API success for ${lat},${lng} at ${mya} MYA -> [${coords[1]}, ${coords[0]}]`);
+                                return result;
+                            }
+                            // Check if it's a FeatureCollection format
+                            else if (data.features && data.features.length > 0) {
                                 const coords = data.features[0].geometry.coordinates;
                                 const result = { lat: coords[1], lng: coords[0] };
                                 gplatesCache[cacheKey] = result;
                                 console.log(`GPlates API success for ${lat},${lng} at ${mya} MYA`);
                                 return result;
                             }
-                            // Check if it's the simple format from our proxy
+                            // Check if it's a simple format
                             else if (data.coordinates) {
-                                const coords = data.coordinates;
+                                const coords = Array.isArray(data.coordinates[0]) ? data.coordinates[0] : data.coordinates;
                                 const result = { lat: coords[1], lng: coords[0] };
                                 gplatesCache[cacheKey] = result;
                                 console.log(`GPlates API success for ${lat},${lng} at ${mya} MYA`);
