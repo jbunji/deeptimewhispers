@@ -7,6 +7,7 @@ let currentLocation = null;
 let autoRotate = false;
 let animationId = null;
 let currentMYA = 0;
+let isAnimating = false;
 
 // Time period data with available map resolutions
 const timePeriods = {
@@ -99,11 +100,20 @@ function initializeGlobe() {
     // Set initial camera position
     globe.camera().position.z = 350;
     
-    // Add lighting for better visualization
-    const directionalLight = globe.scene().children.find(obj => obj.type === 'DirectionalLight');
+    // Enhance lighting and materials
+    const scene = globe.scene();
+    const directionalLight = scene.children.find(obj => obj.type === 'DirectionalLight');
     if (directionalLight) {
-        directionalLight.intensity = 0.8;
+        directionalLight.intensity = 1.2;
+        directionalLight.position.set(1, 1, 1);
     }
+    
+    // Add ambient light for better visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    scene.add(ambientLight);
+    
+    // Enhance globe material properties  
+    globe.globeMaterial().shininess = 10;
     
     // Handle window resize
     window.addEventListener('resize', () => {
@@ -124,25 +134,64 @@ function initializeGlobe() {
 
 // Get Ancient Earth texture URL
 function getAncientEarthTexture(mya) {
-    // Ancient Earth provides textures at specific time intervals
-    const closestTime = getClosestMapTime(mya);
+    // Map time periods to available textures
+    const textureMap = {
+        0: 'textures/paleomap/timeline/Map1a PALEOMAP PaleoAtlas_000.jpg',
+        1: 'textures/paleomap/timeline/Map2a Last Glacial Maximum_001.jpg', 
+        4: 'textures/paleomap/timeline/Map3a Pliocene_004.jpg',
+        6: 'textures/paleomap/timeline/Map4a Messinian Event_006.jpg',
+        10: 'textures/paleomap/timeline/Map5a Late Miocene_010.jpg',
+        15: 'textures/paleomap/timeline/Map6a  Middle Miocene_015.jpg',
+        20: 'textures/paleomap/timeline/Map7a  Early Miocene_020.jpg',
+        25: 'textures/paleomap/timeline/Map8a Late Oligocene_025.jpg',
+        30: 'textures/paleomap/timeline/Map9a  Early Oligocene_030.jpg',
+        35: 'textures/paleomap/timeline/Map10a Late Eocene_035.jpg',
+        40: 'textures/paleomap/timeline/Map11a MIddle Eocene_040.jpg',
+        45: 'textures/paleomap/timeline/Map12a early Middle Eocene_045.jpg',
+        50: 'textures/paleomap/timeline/Map13a Early Eocene_050.jpg',
+        55: 'textures/paleomap/timeline/Map14a PETM_055.jpg',
+        60: 'textures/paleomap/timeline/Map15a Paleocene_060.jpg',
+        66: 'textures/paleomap/timeline/Map16a KT Boundary_066.jpg',
+        70: 'textures/paleomap/timeline/Map17a LtK Maastrichtian_070.jpg',
+        75: 'textures/paleomap/timeline/Map18a LtK Late Campanian_075.jpg',
+        80: 'textures/paleomap/timeline/Map19a LtK Early Campanian_080.jpg',
+        90: 'textures/paleomap/timeline/Map21a LtK Turonian_090.jpg',
+        95: 'textures/paleomap/timeline/Map22a LtK Cenomanian_095.jpg',
+        100: 'textures/paleomap/timeline/Map23a EK Late Albian_100.jpg',
+        105: 'textures/paleomap/timeline/Map24a EK Middle Albian_105.jpg',
+        110: 'textures/paleomap/timeline/Map25a EK Early Albian_110.jpg',
+        115: 'textures/paleomap/timeline/Map26a EK Late Aptian_115.jpg',
+        120: 'textures/paleomap/timeline/Map27a EK Early Albian_120.jpg',
+        125: 'textures/paleomap/timeline/Map28a EK Barremian_125.jpg',
+        130: 'textures/paleomap/timeline/Map29a EK Hauterivian_130.jpg',
+        135: 'textures/paleomap/timeline/Map30a EK Valangian_135.jpg',
+        140: 'textures/paleomap/timeline/Map31a EK Berriasian_140.jpg',
+        145: 'textures/paleomap/timeline/Map32a Jurassic-Cretaceous Boundary_145.jpg',
+        150: 'textures/paleomap/timeline/Map33a LtJ Tithonian_150.jpg',
+        200: 'textures/paleomap/timeline/Map43a Triassic-Jurassic Boundary_200.jpg',
+        250: 'textures/paleomap/timeline/Map49a Permo-Triassic Boundary_250.jpg',
+        300: 'textures/paleomap/timeline/Map57a LtCarb Gzhelian_300.jpg',
+        400: 'textures/paleomap/timeline/Map70a ED Emsian_400.jpg',
+        450: 'textures/paleomap/timeline/Map78a LtO Sandbian-Katian_450.jpg',
+        540: 'textures/paleomap/timeline/Map88a Precambrian-Cambrian Boundary_540.jpg',
+        600: 'textures/paleomap/timeline/Map90a Middle Ediacaran_600.jpg',
+        750: 'textures/paleomap/timeline/Map93a MIddle Cryogenian_750.jpg'
+    };
     
-    // Use Ancient Earth's texture service
-    // Format: https://dinosaurpictures.org/ancient-earth#[MYA]
-    // They provide static images we can use
+    // Find the closest available texture
+    const times = Object.keys(textureMap).map(Number).sort((a, b) => a - b);
+    let closestTime = times[0];
+    let minDiff = Math.abs(mya - closestTime);
     
-    // For now, we'll use fallback textures and implement the full service next
-    if (mya === 0) {
-        return 'https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg';
+    for (const time of times) {
+        const diff = Math.abs(mya - time);
+        if (diff < minDiff) {
+            minDiff = diff;
+            closestTime = time;
+        }
     }
     
-    // These would be the actual Ancient Earth textures
-    // We'd need to either:
-    // 1. Host them ourselves (with permission)
-    // 2. Use their API directly
-    // 3. Build our own from open data
-    
-    return `https://unpkg.com/three-globe/example/img/earth-blue-marble.jpg`;
+    return textureMap[closestTime];
 }
 
 // Setup event listeners
@@ -262,13 +311,11 @@ function setLocation(location) {
 }
 
 // Update location marker for current time
-function updateLocationForTime(mya) {
+async function updateLocationForTime(mya) {
     if (!currentLocation) return;
     
-    // In a real implementation, we'd use paleogeographic reconstruction
-    // to find where this location was in the past
-    // For now, we'll simulate drift
-    const drift = calculateContinentalDrift(currentLocation, mya);
+    // Use paleogeographic reconstruction to find where this location was in the past
+    const drift = await calculateContinentalDrift(currentLocation, mya);
     
     globe.pointsData([{
         lat: drift.ancientLat,
@@ -285,18 +332,46 @@ function updateLocationForTime(mya) {
     }, 1000);
 }
 
-// Calculate continental drift (simplified)
-function calculateContinentalDrift(location, mya) {
-    // This is where we'd integrate with GPlates or similar service
-    // For demonstration, we'll simulate drift
+// Calculate continental drift using GPlates API
+async function calculateContinentalDrift(location, mya) {
+    try {
+        // Check if we're on the deployed site or running locally
+        const isProduction = window.location.hostname === 'deeptimewhispers.com';
+        
+        let url;
+        if (isProduction) {
+            // Use the proxy in production
+            const endpoint = '/api/gplates/reconstruct';
+            url = `${endpoint}?points=${location.lon},${location.lat}&time=${mya}&model=MULLER2019`;
+        } else {
+            // For local development, just use the fallback calculation
+            // Direct API calls would face CORS issues
+            throw new Error('Using fallback for local development');
+        }
+        
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data.type === 'MultiPoint' && data.coordinates && data.coordinates.length > 0) {
+            const coords = data.coordinates[0];
+            return {
+                ancientLat: coords[1],
+                ancientLon: coords[0],
+                paleolatitude: Math.round(coords[1])
+            };
+        }
+    } catch (error) {
+        console.log('Using simplified drift calculation');
+    }
     
+    // Fallback to simplified calculation if API fails
     let ancientLat = location.lat;
     let ancientLon = location.lon;
     let paleolatitude = location.lat;
     
     // Simulate northward drift for Northern Hemisphere
     if (location.lat > 0) {
-        ancientLat = location.lat - (mya * 0.05); // Very simplified
+        ancientLat = location.lat - (mya * 0.05);
         paleolatitude = ancientLat;
     }
     
@@ -313,15 +388,9 @@ function calculateContinentalDrift(location, mya) {
 // Update time display
 function updateTimeDisplay(mya) {
     currentMYA = mya;
-    const timeValue = document.getElementById('timeValue');
-    const myaValue = document.getElementById('myaValue');
     
-    // Find closest time period
-    const closestTime = getClosestMapTime(mya);
-    const period = timePeriods[closestTime];
-    
-    timeValue.textContent = period ? period.name : 'Custom Time';
-    myaValue.textContent = `${mya} MYA`;
+    // Update period info instead of non-existent elements
+    updatePeriodInfo(mya);
     
     // Update location if we have one
     if (currentLocation) {
@@ -669,6 +738,7 @@ function updatePeriodInfo(mya) {
     // Update environment and life info
     updateEnvironmentInfo(mya);
     updateLifeInfo(mya);
+    updateChrononautQuote(mya);
 }
 
 // Update environment info based on time period
@@ -716,15 +786,47 @@ function updateLifeInfo(mya) {
 }
 
 // Update location info display
-function updateLocationInfo() {
+async function updateLocationInfo() {
     if (!currentLocation) return;
     
     const paleoCoords = document.getElementById('paleoCoords');
     if (paleoCoords) {
-        const drift = calculateContinentalDrift(currentLocation, currentMYA);
+        const drift = await calculateContinentalDrift(currentLocation, currentMYA);
         paleoCoords.textContent = `Ancient position: ${drift.ancientLat.toFixed(2)}°, ${drift.ancientLon.toFixed(2)}°`;
     }
 }
 
-// Add isAnimating to global variables if not already present
-let isAnimating = false;
+// Update Chrononaut quote based on time period
+function updateChrononautQuote(mya) {
+    const quoteEl = document.getElementById('chrononautQuote');
+    if (!quoteEl) return;
+    
+    let quote = '';
+    if (mya === 0) {
+        quote = "You stand at the edge of now, looking back into the abyss of was...";
+    } else if (mya < 1) {
+        quote = "The ice remembers what the stones forget. Listen to its whispers...";
+    } else if (mya < 10) {
+        quote = "Your ancestors walked here, though the land wore a different face...";
+    } else if (mya < 66) {
+        quote = "The mammals huddle in the shadows of giants, waiting for their moment...";
+    } else if (mya < 100) {
+        quote = "Flowers bloom for the first time, painting the world in colors never seen...";
+    } else if (mya < 200) {
+        quote = "The thunder lizards rule a world we would barely recognize as Earth...";
+    } else if (mya < 250) {
+        quote = "Pangaea stretches from pole to pole, one land under an alien sky...";
+    } else if (mya < 300) {
+        quote = "In the coal swamps, tomorrow's fuel grows beneath a copper sun...";
+    } else if (mya < 400) {
+        quote = "The first forests rise, and with them, the architecture of terrestrial life...";
+    } else if (mya < 540) {
+        quote = "Life experiments in the shallows, testing forms that defy imagination...";
+    } else if (mya < 650) {
+        quote = "The ice advances, turning Earth into a pearl of white and blue...";
+    } else {
+        quote = "Before complex life, before the first predator, the world dreams in stromatolites...";
+    }
+    
+    quoteEl.textContent = `"${quote}"`;
+}
