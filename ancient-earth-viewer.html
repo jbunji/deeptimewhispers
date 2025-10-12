@@ -612,7 +612,7 @@
             const glow = new THREE.Mesh(glowGeometry, glowMaterial);
             locationPin.add(glow);
             
-            // Add a vertical light beam effect
+            // Add a vertical light beam effect pointing away from Earth
             const beamGeometry = new THREE.CylinderGeometry(0.002, 0.015, 0.15, 8);
             const beamMaterial = new THREE.MeshBasicMaterial({ 
                 color: 0xffffff,
@@ -620,7 +620,9 @@
                 opacity: 0.5
             });
             const beam = new THREE.Mesh(beamGeometry, beamMaterial);
-            beam.position.y = 0.075;
+            // Position beam to point outward from the surface
+            beam.position.y = 0.075;  // Move along local Y axis (which will be outward after orientation)
+            // No rotation needed - cylinder already points along Y axis
             locationPin.add(beam);
             
             // Store references for animation
@@ -1178,21 +1180,16 @@
             locationPin.position.set(x, y, z);
             
             // Orient pin to point outward from Earth center
-            // The pin's Y-axis should align with the surface normal (pointing outward)
-            const up = new THREE.Vector3(x, y, z).normalize();
-            const lookAtPoint = new THREE.Vector3(0, 0, 0); // Look at Earth's center
+            // We want the pin's local Y-axis to align with the surface normal
+            const surfaceNormal = new THREE.Vector3(x, y, z).normalize();
             
-            // Create a quaternion for proper orientation
-            const quaternion = new THREE.Quaternion();
-            const rotationMatrix = new THREE.Matrix4();
+            // Use lookAt to orient the pin
+            // lookAt makes the -Z axis point toward the target, so we look "away" from center
+            const awayFromCenter = new THREE.Vector3(x * 2, y * 2, z * 2);
+            locationPin.lookAt(awayFromCenter);
             
-            // Calculate the rotation matrix to align Y-axis with the surface normal
-            rotationMatrix.lookAt(locationPin.position, lookAtPoint, new THREE.Vector3(0, 1, 0));
-            quaternion.setFromRotationMatrix(rotationMatrix);
-            
-            // Apply rotation and then rotate 180 degrees around X to point outward
-            locationPin.quaternion.copy(quaternion);
-            locationPin.rotateX(Math.PI);
+            // Rotate 90 degrees around X to make Y point outward instead of -Z
+            locationPin.rotateX(Math.PI / 2);
             
             // Ensure pin is visible
             locationPin.visible = true;
