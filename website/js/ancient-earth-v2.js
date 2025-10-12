@@ -75,7 +75,7 @@ function initializeGlobe() {
         .backgroundImageUrl('https://unpkg.com/three-globe/example/img/night-sky.png')
         .showAtmosphere(true)
         .atmosphereColor('lightskyblue')
-        .atmosphereAltitude(0.15)
+        .atmosphereAltitude(0.1)
         .pointsData([])
         .pointAltitude(0.01)
         .pointColor(() => '#ff0000')
@@ -100,20 +100,20 @@ function initializeGlobe() {
     // Set initial camera position
     globe.camera().position.z = 350;
     
-    // Enhance lighting and materials
+    // Adjust lighting for better visibility without overexposure
     const scene = globe.scene();
     const directionalLight = scene.children.find(obj => obj.type === 'DirectionalLight');
     if (directionalLight) {
-        directionalLight.intensity = 1.2;
+        directionalLight.intensity = 0.6;
         directionalLight.position.set(1, 1, 1);
     }
     
-    // Add ambient light for better visibility
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
+    // Add subtle ambient light
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.2);
     scene.add(ambientLight);
     
-    // Enhance globe material properties  
-    globe.globeMaterial().shininess = 10;
+    // Adjust globe material properties  
+    globe.globeMaterial().shininess = 5;
     
     // Handle window resize
     window.addEventListener('resize', () => {
@@ -410,16 +410,16 @@ function updateGlobeForTime(mya) {
     // Update atmosphere based on time period
     if (mya > 600) {
         // Snowball Earth
-        globe.atmosphereColor('white');
-        globe.atmosphereAltitude(0.25);
+        globe.atmosphereColor('lightblue');
+        globe.atmosphereAltitude(0.15);
     } else if (mya > 250) {
         // Different atmosphere
-        globe.atmosphereColor('orange');
-        globe.atmosphereAltitude(0.2);
+        globe.atmosphereColor('sandybrown');
+        globe.atmosphereAltitude(0.12);
     } else {
         // More recent times
         globe.atmosphereColor('lightskyblue');
-        globe.atmosphereAltitude(0.15);
+        globe.atmosphereAltitude(0.1);
     }
 }
 
