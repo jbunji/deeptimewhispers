@@ -303,8 +303,14 @@
         /* Mobile responsive styles */
         @media (max-width: 768px) {
             h1 {
-                font-size: 20px;
+                font-size: 16px;
                 margin-bottom: 10px;
+                margin-right: 10px;
+            }
+            
+            .nav-links {
+                font-size: 14px !important;
+                gap: 15px !important;
             }
             
             .top-bar {
@@ -332,11 +338,16 @@
             }
             
             .info-panel {
-                bottom: 10px;
+                position: fixed;
+                bottom: auto;
+                top: 120px;
                 left: 10px;
-                padding: 15px;
-                max-width: 280px;
-                font-size: 14px;
+                right: 10px;
+                padding: 12px;
+                max-width: none;
+                font-size: 12px;
+                max-height: 25vh;
+                overflow-y: auto;
             }
             
             .info-panel h2 {
@@ -345,11 +356,31 @@
             
             .location-panel {
                 position: fixed;
-                bottom: auto;
-                top: 10px;
+                bottom: 180px;
+                right: auto;
+                left: 10px;
                 right: 10px;
-                width: 250px;
-                padding: 15px;
+                width: auto;
+                padding: 12px;
+                background: rgba(0, 0, 0, 0.95);
+            }
+            
+            .location-panel h3 {
+                font-size: 16px;
+                margin-bottom: 10px;
+            }
+            
+            .preset-locations {
+                gap: 3px;
+            }
+            
+            .preset-btn {
+                font-size: 11px;
+                padding: 4px 8px;
+            }
+            
+            .search-box {
+                display: none; /* Hide search on mobile */
             }
             
             .controls-hint {
@@ -374,12 +405,22 @@
         }
         
         @media (max-width: 480px) {
-            .location-panel {
-                display: none; /* Hide location panel on very small screens */
+            h1 {
+                font-size: 14px;
+            }
+            
+            .nav-links {
+                font-size: 12px !important;
             }
             
             .info-panel {
-                max-width: calc(100vw - 20px);
+                font-size: 11px;
+                padding: 10px;
+                top: 100px;
+            }
+            
+            .info-panel h2 {
+                font-size: 16px;
             }
         }
     </style>
@@ -387,7 +428,13 @@
 <body>
     <div id="container">
         <div class="top-bar">
-            <h1>Ancient Earth - Continental Drift Through Deep Time</h1>
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h1>Ancient Earth - Continental Drift Through Deep Time</h1>
+                <div class="nav-links" style="display: flex; gap: 20px;">
+                    <a href="/" style="color: #64B5F6; text-decoration: none;">Home</a>
+                    <a href="/credits.html" style="color: #64B5F6; text-decoration: none;">Credits</a>
+                </div>
+            </div>
             <div class="animation-controls">
                 <button class="control-btn" onclick="togglePlay()">
                     <span id="playText">▶ Play Animation</span>
