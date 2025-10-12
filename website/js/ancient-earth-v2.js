@@ -112,6 +112,14 @@ function initializeGlobe() {
         globe.width(width);
         globe.height(height);
     });
+    
+    // Hide loading overlay
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    if (loadingOverlay) {
+        setTimeout(() => {
+            loadingOverlay.style.display = 'none';
+        }, 1000);
+    }
 }
 
 // Get Ancient Earth texture URL
@@ -139,30 +147,38 @@ function getAncientEarthTexture(mya) {
 
 // Setup event listeners
 function setupEventListeners() {
-    // Search functionality
-    document.getElementById('searchBtn').addEventListener('click', handleLocationSearch);
-    document.getElementById('locationSearch').addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleLocationSearch();
-    });
+    // Search functionality (if elements exist)
+    const searchBtn = document.getElementById('searchBtn');
+    if (searchBtn) {
+        searchBtn.addEventListener('click', handleLocationSearch);
+    }
+    
+    const locationSearch = document.getElementById('locationSearch');
+    if (locationSearch) {
+        locationSearch.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleLocationSearch();
+        });
+    }
     
     // Use current location button
-    document.getElementById('useMyLocation').addEventListener('click', useCurrentLocation);
+    const myLocationBtn = document.getElementById('useMyLocation');
+    if (myLocationBtn) {
+        myLocationBtn.addEventListener('click', useCurrentLocation);
+    }
     
     // Time slider
     const timeSlider = document.getElementById('timeSlider');
-    timeSlider.addEventListener('input', (e) => {
-        const mya = parseInt(e.target.value);
-        updateTimeDisplay(mya);
-        updateGlobeForTime(mya);
-    });
+    if (timeSlider) {
+        timeSlider.addEventListener('input', (e) => {
+            jumpToMYA(parseInt(e.target.value));
+        });
+    }
     
-    // Quick jump buttons
+    // Quick jump buttons (if they exist)
     document.querySelectorAll('.period-btn').forEach(btn => {
         btn.addEventListener('click', (e) => {
             const mya = parseInt(e.target.dataset.mya);
-            document.getElementById('timeSlider').value = mya;
-            updateTimeDisplay(mya);
-            updateGlobeForTime(mya);
+            jumpToMYA(mya);
             
             // Update active state
             document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
@@ -170,9 +186,16 @@ function setupEventListeners() {
         });
     });
     
-    // Globe controls
-    document.getElementById('resetView').addEventListener('click', resetGlobeView);
-    document.getElementById('toggleRotation').addEventListener('click', toggleAutoRotation);
+    // Globe controls (if they exist)
+    const resetViewBtn = document.getElementById('resetView');
+    if (resetViewBtn) {
+        resetViewBtn.addEventListener('click', resetGlobeView);
+    }
+    
+    const toggleRotationBtn = document.getElementById('toggleRotation');
+    if (toggleRotationBtn) {
+        toggleRotationBtn.addEventListener('click', toggleAutoRotation);
+    }
 }
 
 // Handle location search (using demo mode)
@@ -553,3 +576,155 @@ function loadSharedLocation() {
 window.addEventListener('DOMContentLoaded', () => {
     setTimeout(loadSharedLocation, 1000);
 });
+
+// Track a specific location
+function trackLocation(name, lat, lng) {
+    setLocation({
+        lat: lat,
+        lon: lng,
+        name: name
+    });
+    
+    // Update the location display
+    const locationName = document.getElementById('locationName');
+    const locationCoords = document.getElementById('locationCoords');
+    
+    if (locationName) locationName.textContent = name;
+    if (locationCoords) locationCoords.textContent = `${lat.toFixed(2)}°, ${lng.toFixed(2)}°`;
+    
+    // Update time display with current location info
+    updateTimeDisplay(currentMYA);
+}
+
+// Toggle time animation
+function toggleAnimation() {
+    const playBtn = document.getElementById('playBtn');
+    const playText = document.getElementById('playText');
+    
+    if (!isAnimating) {
+        isAnimating = true;
+        if (playText) playText.textContent = '⏸ Pause Journey';
+        if (playBtn) playBtn.classList.add('active');
+        animateThroughTime();
+    } else {
+        isAnimating = false;
+        if (playText) playText.textContent = '▶ Journey Through Time';
+        if (playBtn) playBtn.classList.remove('active');
+    }
+}
+
+// Animate through time
+function animateThroughTime() {
+    if (!isAnimating) return;
+    
+    const slider = document.getElementById('timeSlider');
+    let value = parseInt(slider.value);
+    
+    // Increment time
+    value += 5;
+    if (value > 750) {
+        value = 0;
+    }
+    
+    slider.value = value;
+    jumpToMYA(value);
+    
+    // Continue animation
+    setTimeout(animateThroughTime, 100);
+}
+
+// Reset to present day
+function resetToPresent() {
+    const slider = document.getElementById('timeSlider');
+    if (slider) {
+        slider.value = 0;
+        jumpToMYA(0);
+    }
+    isAnimating = false;
+    const playText = document.getElementById('playText');
+    if (playText) playText.textContent = '▶ Journey Through Time';
+}
+
+// Jump to specific MYA
+function jumpToMYA(mya) {
+    currentMYA = parseInt(mya);
+    updateTimeDisplay(currentMYA);
+    updateGlobeForTime(currentMYA);
+    updatePeriodInfo(currentMYA);
+}
+
+// Update period information panel
+function updatePeriodInfo(mya) {
+    const closestTime = getClosestMapTime(mya);
+    const period = timePeriods[closestTime];
+    
+    const periodName = document.getElementById('periodName');
+    const periodTime = document.getElementById('periodTime');
+    const periodDescription = document.getElementById('periodDescription');
+    
+    if (periodName) periodName.textContent = period ? period.name : 'Unknown Period';
+    if (periodTime) periodTime.textContent = `${mya} Million Years Ago`;
+    if (periodDescription) periodDescription.textContent = period ? period.description : 'No data available for this time period.';
+    
+    // Update environment and life info
+    updateEnvironmentInfo(mya);
+    updateLifeInfo(mya);
+}
+
+// Update environment info based on time period
+function updateEnvironmentInfo(mya) {
+    const environmentText = document.getElementById('environmentText');
+    if (!environmentText) return;
+    
+    let info = '';
+    if (mya > 600) {
+        info = 'Global ice sheets, frozen oceans, extreme cold';
+    } else if (mya > 400) {
+        info = 'Low oxygen atmosphere, warm shallow seas';
+    } else if (mya > 250) {
+        info = 'Pangaea supercontinent, seasonal monsoons';
+    } else if (mya > 66) {
+        info = 'Warm greenhouse climate, high sea levels';
+    } else {
+        info = 'Modern climate patterns';
+    }
+    
+    environmentText.textContent = info;
+}
+
+// Update life info based on time period
+function updateLifeInfo(mya) {
+    const lifeText = document.getElementById('lifeText');
+    if (!lifeText) return;
+    
+    let info = '';
+    if (mya > 600) {
+        info = 'Simple bacteria and archaea only';
+    } else if (mya > 540) {
+        info = 'First multicellular life, Ediacaran fauna';
+    } else if (mya > 250) {
+        info = 'Early reptiles, amphibians, primitive plants';
+    } else if (mya > 66) {
+        info = 'Dinosaurs, marine reptiles, early mammals';
+    } else if (mya > 0.01) {
+        info = 'Modern mammals, birds, flowering plants';
+    } else {
+        info = 'Human civilization and modern ecosystems';
+    }
+    
+    lifeText.textContent = info;
+}
+
+// Update location info display
+function updateLocationInfo() {
+    if (!currentLocation) return;
+    
+    const paleoCoords = document.getElementById('paleoCoords');
+    if (paleoCoords) {
+        const drift = calculateContinentalDrift(currentLocation, currentMYA);
+        paleoCoords.textContent = `Ancient position: ${drift.ancientLat.toFixed(2)}°, ${drift.ancientLon.toFixed(2)}°`;
+    }
+}
+
+// Add isAnimating to global variables if not already present
+let isAnimating = false;
