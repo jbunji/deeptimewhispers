@@ -179,7 +179,7 @@
             background: rgba(0, 0, 0, 0.8);
             padding: 20px;
             border-radius: 8px;
-            max-width: 250px;
+            width: 280px;
             z-index: 100;
             backdrop-filter: blur(10px);
         }
@@ -324,17 +324,31 @@
         <!-- Location panel -->
         <div class="location-panel">
             <h3>Track a Location</h3>
-            <div class="location-search">
-                <input type="text" id="locationInput" placeholder="Search location...">
-                <button onclick="searchLocation()">Go</button>
+            
+            <!-- Coordinate input -->
+            <div style="margin-bottom: 15px;">
+                <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                    <input type="text" id="latInput" placeholder="Latitude" style="flex: 1; padding: 8px; border: 1px solid #444; background: #222; color: white; border-radius: 4px;">
+                    <input type="text" id="lngInput" placeholder="Longitude" style="flex: 1; padding: 8px; border: 1px solid #444; background: #222; color: white; border-radius: 4px;">
+                </div>
+                <button onclick="trackCustomLocation()" style="width: 100%; padding: 8px; background: #4CAF50; border: none; color: white; border-radius: 4px; cursor: pointer;">Track Coordinates</button>
             </div>
+            
+            <div style="text-align: center; margin: 10px 0; color: #666;">— or —</div>
+            
             <div class="location-presets">
                 <button class="preset-btn" onclick="setLocation(40.7128, -74.0060, 'New York')">New York</button>
                 <button class="preset-btn" onclick="setLocation(51.5074, -0.1278, 'London')">London</button>
                 <button class="preset-btn" onclick="setLocation(35.6762, 139.6503, 'Tokyo')">Tokyo</button>
                 <button class="preset-btn" onclick="setLocation(-33.8688, 151.2093, 'Sydney')">Sydney</button>
+                <button class="preset-btn" onclick="setLocation(36.1069, -112.1129, 'Grand Canyon')">Grand Canyon</button>
+                <button class="preset-btn" onclick="setLocation(64.9631, -19.0208, 'Iceland')">Iceland</button>
             </div>
+            
             <div class="current-location" id="currentLocation"></div>
+            
+            <!-- Share button -->
+            <button id="shareBtn" onclick="shareLocation()" style="display: none; width: 100%; margin-top: 10px; padding: 8px; background: #2196F3; border: none; color: white; border-radius: 4px; cursor: pointer;">Share This Journey</button>
         </div>
         
         <!-- Timeline -->
@@ -384,7 +398,28 @@
         document.addEventListener('DOMContentLoaded', function() {
             initGlobe();
             setupEventListeners();
+            loadSharedLocation();
         });
+        
+        // Load location from URL if shared
+        function loadSharedLocation() {
+            const params = new URLSearchParams(window.location.search);
+            
+            if (params.has('lat') && params.has('lng')) {
+                const lat = parseFloat(params.get('lat'));
+                const lng = parseFloat(params.get('lng'));
+                const name = params.get('name') || 'Shared Location';
+                const mya = parseInt(params.get('mya') || '0');
+                
+                // Set the time first
+                jumpToTime(mya);
+                
+                // Then set the location
+                setTimeout(() => {
+                    setLocation(lat, lng, name);
+                }, 500);
+            }
+        }
         
         function initGlobe() {
             const container = document.getElementById('globeViz');
@@ -395,14 +430,27 @@
                 .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
                 .showAtmosphere(true)
                 .atmosphereColor('lightskyblue')
-                .atmosphereAltitude(0.15)
+                .atmosphereAltitude(0.1) // Reduced atmosphere glow
                 (container);
             
-            // Adjust lighting
-            const directionalLight = globe.scene().children.find(obj => obj.type === 'DirectionalLight');
+            // Adjust lighting to reduce brightness
+            const scene = globe.scene();
+            const directionalLight = scene.children.find(obj => obj.type === 'DirectionalLight');
             if (directionalLight) {
-                directionalLight.intensity = 0.6;
+                directionalLight.intensity = 0.3; // Further reduced for more even lighting
+                directionalLight.position.set(10, 3, 5); // Move light to the side to reduce direct reflection
             }
+            
+            // Add subtle ambient light
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.15); // Slightly increased for more even illumination
+            scene.add(ambientLight);
+            
+            // Adjust globe material to be less shiny
+            const globeMaterial = globe.globeMaterial();
+            globeMaterial.shininess = 1; // Minimal shininess
+            globeMaterial.specular = new THREE.Color(0x050505); // Very dark specular highlights
+            globeMaterial.emissive = new THREE.Color(0x000000); // No emissive light
+            globeMaterial.color.multiplyScalar(0.85); // Slightly darken the overall texture
             
             // Set initial view
             globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 });
@@ -518,10 +566,52 @@
             // Update display
             document.getElementById('currentLocation').innerHTML = 
                 `<strong>${name}</strong><br>
-                 ${lat.toFixed(2)}°, ${lng.toFixed(2)}°`;
+                 ${lat.toFixed(2)}°, ${lng.toFixed(2)}°<br>
+                 <span id="ancientPos" style="color: #4CAF50; font-size: 11px;"></span>`;
+            
+            // Show share button
+            document.getElementById('shareBtn').style.display = 'block';
             
             // Focus on location
             globe.pointOfView({ lat, lng, altitude: 1.5 }, 1000);
+            
+            // Update for current time
+            updateLocationForTime(currentMYA);
+        }
+        
+        function trackCustomLocation() {
+            const lat = parseFloat(document.getElementById('latInput').value);
+            const lng = parseFloat(document.getElementById('lngInput').value);
+            
+            if (isNaN(lat) || isNaN(lng) || lat < -90 || lat > 90 || lng < -180 || lng > 180) {
+                alert('Please enter valid coordinates\nLatitude: -90 to 90\nLongitude: -180 to 180');
+                return;
+            }
+            
+            setLocation(lat, lng, 'Custom Location');
+        }
+        
+        function shareLocation() {
+            if (!currentLocation) return;
+            
+            const params = new URLSearchParams({
+                lat: currentLocation.lat.toFixed(4),
+                lng: currentLocation.lng.toFixed(4),
+                name: currentLocation.name,
+                mya: currentMYA
+            });
+            
+            const shareUrl = `${window.location.origin}${window.location.pathname}?${params.toString()}`;
+            
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    alert('Share link copied to clipboard!');
+                }).catch(() => {
+                    prompt('Copy this link:', shareUrl);
+                });
+            } else {
+                prompt('Copy this link:', shareUrl);
+            }
         }
         
         function searchLocation() {
@@ -545,20 +635,52 @@
         async function updateLocationForTime(mya) {
             if (!currentLocation) return;
             
-            // For production, use the GPlates API
-            // For now, simple drift simulation
-            const drift = {
-                lat: currentLocation.lat - (mya * 0.05),
-                lng: currentLocation.lng - (mya * 0.1)
-            };
-            
-            globe.pointsData([{
-                lat: drift.lat,
-                lng: drift.lng,
-                color: 'red',
-                size: 0.5,
-                label: currentLocation.name + ' (ancient)'
-            }]);
+            try {
+                // Use the Vercel-deployed GPlates API
+                const url = `https://deeptimewhispers.vercel.app/api/gplates/reconstruct?points=${currentLocation.lng},${currentLocation.lat}&time=${mya}&model=MULLER2019`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                let ancientLat, ancientLng;
+                
+                if (data.type === 'MultiPoint' && data.coordinates && data.coordinates.length > 0) {
+                    ancientLng = data.coordinates[0][0];
+                    ancientLat = data.coordinates[0][1];
+                } else {
+                    // Fallback
+                    ancientLat = currentLocation.lat - (mya * 0.05);
+                    ancientLng = currentLocation.lng - (mya * 0.1);
+                }
+                
+                globe.pointsData([{
+                    lat: ancientLat,
+                    lng: ancientLng,
+                    color: 'red',
+                    size: 0.5,
+                    label: currentLocation.name + ' (' + mya + ' MYA)'
+                }]);
+                
+                // Update ancient position display
+                const ancientPosEl = document.getElementById('ancientPos');
+                if (ancientPosEl && mya > 0) {
+                    ancientPosEl.textContent = `Ancient: ${ancientLat.toFixed(2)}°, ${ancientLng.toFixed(2)}°`;
+                }
+                
+            } catch (error) {
+                // Fallback for any errors
+                const drift = {
+                    lat: currentLocation.lat - (mya * 0.05),
+                    lng: currentLocation.lng - (mya * 0.1)
+                };
+                
+                globe.pointsData([{
+                    lat: drift.lat,
+                    lng: drift.lng,
+                    color: 'red',
+                    size: 0.5,
+                    label: currentLocation.name + ' (ancient)'
+                }]);
+            }
         }
     </script>
 </body>
