@@ -589,7 +589,7 @@
             const dot = new THREE.Mesh(dotGeometry, dotMaterial);
             locationPin.add(dot);
             
-            // Outer ring
+            // Outer ring - oriented to lie flat on the surface
             const ringGeometry = new THREE.TorusGeometry(0.04, 0.006, 8, 32);
             const ringMaterial = new THREE.MeshBasicMaterial({ 
                 color: 0xff4444,
@@ -598,6 +598,8 @@
                 opacity: 0.9
             });
             const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            // Rotate ring to be horizontal (perpendicular to Y axis)
+            ring.rotation.x = Math.PI / 2;
             locationPin.add(ring);
             
             // Pulsing outer glow
@@ -1176,8 +1178,21 @@
             locationPin.position.set(x, y, z);
             
             // Orient pin to point outward from Earth center
-            const pinDirection = new THREE.Vector3(x, y, z).normalize();
-            locationPin.lookAt(pinDirection.x * 2, pinDirection.y * 2, pinDirection.z * 2);
+            // The pin's Y-axis should align with the surface normal (pointing outward)
+            const up = new THREE.Vector3(x, y, z).normalize();
+            const lookAtPoint = new THREE.Vector3(0, 0, 0); // Look at Earth's center
+            
+            // Create a quaternion for proper orientation
+            const quaternion = new THREE.Quaternion();
+            const rotationMatrix = new THREE.Matrix4();
+            
+            // Calculate the rotation matrix to align Y-axis with the surface normal
+            rotationMatrix.lookAt(locationPin.position, lookAtPoint, new THREE.Vector3(0, 1, 0));
+            quaternion.setFromRotationMatrix(rotationMatrix);
+            
+            // Apply rotation and then rotate 180 degrees around X to point outward
+            locationPin.quaternion.copy(quaternion);
+            locationPin.rotateX(Math.PI);
             
             // Ensure pin is visible
             locationPin.visible = true;
@@ -1231,8 +1246,8 @@
             if (locationPin && locationPin.visible && locationPin.userData.ring) {
                 const time = currentTime * 0.001;
                 
-                // Rotate the ring
-                locationPin.userData.ring.rotation.z = time * 2;
+                // Rotate the ring around its center (Y axis in local space)
+                locationPin.userData.ring.rotation.y = time * 2;
                 
                 // Pulse the glow
                 const pulseScale = 1 + Math.sin(time * 3) * 0.2;
