@@ -579,38 +579,50 @@
             // Create a group for the pin
             locationPin = new THREE.Group();
             
-            // Pin material - bright red for visibility
-            const pinMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0xff0000,
-                emissive: 0xff0000
+            // Create a modern circular beacon design
+            // Inner bright dot
+            const dotGeometry = new THREE.SphereGeometry(0.015, 16, 16);
+            const dotMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xffffff,
+                emissive: 0xffffff
             });
+            const dot = new THREE.Mesh(dotGeometry, dotMaterial);
+            locationPin.add(dot);
             
-            // Base sphere (sits on surface)
-            const sphereGeometry = new THREE.SphereGeometry(0.025, 16, 16);
-            const sphere = new THREE.Mesh(sphereGeometry, pinMaterial);
-            locationPin.add(sphere);
-            
-            // Pin shaft
-            const shaftGeometry = new THREE.CylinderGeometry(0.008, 0.008, 0.1, 8);
-            const shaft = new THREE.Mesh(shaftGeometry, pinMaterial);
-            shaft.position.y = 0.05;
-            locationPin.add(shaft);
-            
-            // Pin head
-            const headGeometry = new THREE.SphereGeometry(0.02, 16, 16);
-            const head = new THREE.Mesh(headGeometry, pinMaterial);
-            head.position.y = 0.1;
-            locationPin.add(head);
-            
-            // Add glow effect for visibility
-            const glowGeometry = new THREE.SphereGeometry(0.05, 16, 16);
-            const glowMaterial = new THREE.MeshBasicMaterial({ 
-                color: 0xffaa00,
+            // Outer ring
+            const ringGeometry = new THREE.TorusGeometry(0.04, 0.006, 8, 32);
+            const ringMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xff4444,
+                emissive: 0xff0000,
                 transparent: true,
-                opacity: 0.4
+                opacity: 0.9
+            });
+            const ring = new THREE.Mesh(ringGeometry, ringMaterial);
+            locationPin.add(ring);
+            
+            // Pulsing outer glow
+            const glowGeometry = new THREE.SphereGeometry(0.06, 16, 16);
+            const glowMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xff6666,
+                transparent: true,
+                opacity: 0.3
             });
             const glow = new THREE.Mesh(glowGeometry, glowMaterial);
             locationPin.add(glow);
+            
+            // Add a vertical light beam effect
+            const beamGeometry = new THREE.CylinderGeometry(0.002, 0.015, 0.15, 8);
+            const beamMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.5
+            });
+            const beam = new THREE.Mesh(beamGeometry, beamMaterial);
+            beam.position.y = 0.075;
+            locationPin.add(beam);
+            
+            // Store references for animation
+            locationPin.userData = { ring, glow, beam };
             
             locationPin.visible = false;
             // Will be added to Earth when location is tracked
@@ -1170,8 +1182,13 @@
             // Ensure pin is visible
             locationPin.visible = true;
             
-            // Store current location in userData for reference
-            locationPin.userData = { lat: paleoLat, lng: paleoLng, name: name };
+            // Store current location in userData for reference (preserving animation references)
+            locationPin.userData = { 
+                ...locationPin.userData,  // Keep animation references
+                lat: paleoLat, 
+                lng: paleoLng, 
+                name: name 
+            };
             
             // Debug logging (reduced frequency)
             if (frame % 30 === 0) {
@@ -1210,6 +1227,20 @@
             }
             
             // Location pin now rotates with Earth automatically since it's attached as a child
+            // Animate the pin elements
+            if (locationPin && locationPin.visible && locationPin.userData.ring) {
+                const time = currentTime * 0.001;
+                
+                // Rotate the ring
+                locationPin.userData.ring.rotation.z = time * 2;
+                
+                // Pulse the glow
+                const pulseScale = 1 + Math.sin(time * 3) * 0.2;
+                locationPin.userData.glow.scale.set(pulseScale, pulseScale, pulseScale);
+                
+                // Fade the beam in and out
+                locationPin.userData.beam.material.opacity = 0.3 + Math.sin(time * 2) * 0.2;
+            }
             
             renderer.render(scene, camera);
         }
