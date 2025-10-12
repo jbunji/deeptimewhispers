@@ -323,7 +323,7 @@
         
         <div class="timeline-container">
             <input type="range" class="timeline-slider" id="timelineSlider" 
-                   min="0" max="89" value="0" oninput="jumpToFrame(this.value)">
+                   min="0" max="750" value="0" step="1" oninput="jumpToMYA(this.value)">
             <div class="timeline-labels">
                 <span>Present</span>
                 <span>100 MYA</span>
@@ -683,7 +683,11 @@
             document.getElementById('periodName').textContent = timeData.name;
             document.getElementById('periodTime').textContent = `${timeData.mya} Million Years Ago`;
             document.getElementById('frameInfo').textContent = `${frameIndex + 1}/90`;
-            document.getElementById('timelineSlider').value = frameIndex;
+            document.getElementById('timelineSlider').value = timeData.mya;
+            
+            // Update period description
+            const description = getPeriodDescription(timeData.mya);
+            document.getElementById('periodDesc').textContent = description;
             
             // Update location
             if (currentLocation) {
@@ -803,6 +807,26 @@
             return { mya, name };
         }
         
+        function getPeriodDescription(mya) {
+            // Period descriptions based on time
+            if (mya === 0) return "The modern world with seven continents. Ice caps at both poles define our current interglacial period.";
+            if (mya <= 5) return "Recent geological time. The continents are essentially in their modern positions.";
+            if (mya <= 20) return "The Miocene epoch. Grasslands expanded as climate cooled and dried. The Himalayas continued rising.";
+            if (mya <= 40) return "The Eocene epoch. A warm greenhouse world with no polar ice. Early mammals diversified.";
+            if (mya <= 66) return "The Paleocene epoch. Recovery from the asteroid impact that killed the dinosaurs.";
+            if (mya <= 100) return "The Late Cretaceous. Peak of the dinosaur era with high sea levels creating inland seas.";
+            if (mya <= 145) return "The Jurassic period. The age of giant dinosaurs as Pangaea began breaking apart.";
+            if (mya <= 200) return "The Triassic period. Recovery from the Great Dying. First dinosaurs appeared.";
+            if (mya <= 250) return "The Permian period. Pangaea supercontinent formed. Ended with Earth's largest extinction.";
+            if (mya <= 300) return "The Carboniferous period. Vast coal swamps and giant insects in high-oxygen atmosphere.";
+            if (mya <= 360) return "The Devonian period. Age of Fishes. First forests and tetrapods evolved.";
+            if (mya <= 420) return "The Silurian period. Life moved onto land. First vascular plants appeared.";
+            if (mya <= 485) return "The Ordovician period. Marine life exploded in diversity. First coral reefs formed.";
+            if (mya <= 540) return "The Cambrian period. The Cambrian Explosion - most animal body plans evolved.";
+            if (mya <= 650) return "The Ediacaran period. First complex multicellular life after billions of years of microbes.";
+            return "The Cryogenian period. Snowball Earth - the planet was frozen from poles to equator.";
+        }
+        
         function setupControls() {
             controls.rotationX = 0;
             controls.rotationY = 0;
@@ -877,6 +901,24 @@
         
         function jumpToFrame(frame) {
             updateFrame(parseInt(frame));
+        }
+        
+        function jumpToMYA(mya) {
+            // Find the closest frame for the given MYA
+            mya = parseFloat(mya);
+            let closestFrame = 0;
+            let closestDiff = Math.abs(getTimeForFrame(0).mya - mya);
+            
+            for (let i = 1; i < 90; i++) {
+                const frameMYA = getTimeForFrame(i).mya;
+                const diff = Math.abs(frameMYA - mya);
+                if (diff < closestDiff) {
+                    closestDiff = diff;
+                    closestFrame = i;
+                }
+            }
+            
+            updateFrame(closestFrame);
         }
         
         async function trackLocation(name, lat, lng) {
@@ -978,7 +1020,7 @@
                                 const coords = data.coordinates[0];
                                 const result = { lat: coords[1], lng: coords[0] };
                                 gplatesCache[cacheKey] = result;
-                                console.log(`GPlates API success for ${lat},${lng} at ${mya} MYA -> [${coords[1]}, ${coords[0]}]`);
+                                // console.log(`GPlates API success for ${lat},${lng} at ${mya} MYA -> [${coords[1]}, ${coords[0]}]`);
                                 return result;
                             }
                             // Check if it's a FeatureCollection format
@@ -986,7 +1028,7 @@
                                 const coords = data.features[0].geometry.coordinates;
                                 const result = { lat: coords[1], lng: coords[0] };
                                 gplatesCache[cacheKey] = result;
-                                console.log(`GPlates API success for ${lat},${lng} at ${mya} MYA`);
+                                // console.log(`GPlates API success for ${lat},${lng} at ${mya} MYA`);
                                 return result;
                             }
                             // Check if it's a simple format
@@ -994,7 +1036,7 @@
                                 const coords = Array.isArray(data.coordinates[0]) ? data.coordinates[0] : data.coordinates;
                                 const result = { lat: coords[1], lng: coords[0] };
                                 gplatesCache[cacheKey] = result;
-                                console.log(`GPlates API success for ${lat},${lng} at ${mya} MYA`);
+                                // console.log(`GPlates API success for ${lat},${lng} at ${mya} MYA`);
                                 return result;
                             }
                         }
