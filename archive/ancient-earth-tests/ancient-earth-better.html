@@ -1,0 +1,529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - Beautiful Continental Drift</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/ancient-earth.css">
+    
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Raleway', sans-serif;
+            width: 300px;
+            z-index: 100;
+        }
+        
+        .time-display {
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #87CEEB;
+        }
+        
+        .time-desc {
+            font-size: 14px;
+            margin-bottom: 20px;
+            opacity: 0.8;
+        }
+        
+        .slider {
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .period-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .period-btn {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            padding: 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Raleway', sans-serif;
+        }
+        
+        .period-btn:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+        
+        .period-btn.active {
+            background: #4A90E2;
+            border-color: #4A90E2;
+        }
+        
+        .play-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px;
+            width: 100%;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 10px;
+            color: white;
+            font-family: 'Raleway', sans-serif;
+            max-width: 300px;
+            z-index: 100;
+        }
+        
+        #loadingText {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 24px;
+            font-family: 'Raleway', sans-serif;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div id="loadingText">Loading Earth...</div>
+        
+        <div class="controls">
+            <div class="time-display" id="timeDisplay">Present Day</div>
+            <div class="time-desc" id="timeDesc">Modern continental configuration</div>
+            
+            <input type="range" class="slider" id="timeSlider" 
+                   min="0" max="750" value="0" step="5">
+            <div style="display: flex; justify-content: space-between; font-size: 12px; opacity: 0.6;">
+                <span>Present</span>
+                <span>750 MYA</span>
+            </div>
+            
+            <div class="period-grid">
+                <button class="period-btn active" data-time="0">Present</button>
+                <button class="period-btn" data-time="20">20 MYA</button>
+                <button class="period-btn" data-time="66">K-T Event</button>
+                <button class="period-btn" data-time="100">100 MYA</button>
+                <button class="period-btn" data-time="150">Jurassic</button>
+                <button class="period-btn" data-time="200">Pangaea</button>
+                <button class="period-btn" data-time="300">Carboniferous</button>
+                <button class="period-btn" data-time="400">Devonian</button>
+                <button class="period-btn" data-time="500">Ordovician</button>
+                <button class="period-btn" data-time="600">Ediacaran</button>
+            </div>
+            
+            <button class="play-btn" id="playBtn">▶️ Play Through Time</button>
+        </div>
+        
+        <div class="info-panel">
+            <h4 style="margin: 0 0 10px 0;">Controls</h4>
+            <p style="margin: 5px 0; font-size: 14px;">🖱️ Drag to rotate</p>
+            <p style="margin: 5px 0; font-size: 14px;">📏 Scroll to zoom</p>
+        </div>
+    </div>
+
+    <!-- Three.js for proper 3D rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <script>
+        // Scene setup
+        let scene, camera, renderer, earth, clouds;
+        let continents = [];
+        let isAnimating = false;
+        let animationId;
+        let currentTime = 0;
+        
+        // Time period configurations with more realistic data
+        const timeData = {
+            0: {
+                name: "Present Day",
+                desc: "Seven continents, modern configuration",
+                texture: 'present',
+                continents: [
+                    { name: 'North America', lat: 45, lng: -100, size: 24 },
+                    { name: 'South America', lat: -15, lng: -60, size: 18 },
+                    { name: 'Africa', lat: 0, lng: 20, size: 30 },
+                    { name: 'Europe', lat: 50, lng: 10, size: 10 },
+                    { name: 'Asia', lat: 35, lng: 90, size: 44 },
+                    { name: 'Australia', lat: -25, lng: 135, size: 9 },
+                    { name: 'Antarctica', lat: -80, lng: 0, size: 14 }
+                ]
+            },
+            20: {
+                name: "Miocene Epoch",
+                desc: "Continents near modern positions",
+                continents: [
+                    { name: 'North America', lat: 42, lng: -95, size: 24 },
+                    { name: 'South America', lat: -12, lng: -58, size: 18 },
+                    { name: 'Africa', lat: 2, lng: 18, size: 30 },
+                    { name: 'Eurasia', lat: 45, lng: 60, size: 54 },
+                    { name: 'Australia', lat: -20, lng: 130, size: 9 },
+                    { name: 'Antarctica', lat: -78, lng: 0, size: 14 }
+                ]
+            },
+            66: {
+                name: "End Cretaceous",
+                desc: "Just before dinosaur extinction",
+                continents: [
+                    { name: 'North America', lat: 35, lng: -85, size: 22 },
+                    { name: 'South America', lat: -25, lng: -45, size: 16 },
+                    { name: 'Africa', lat: -5, lng: 15, size: 28 },
+                    { name: 'India', lat: -30, lng: 70, size: 5 },
+                    { name: 'Eurasia', lat: 50, lng: 80, size: 40 },
+                    { name: 'Australia', lat: -60, lng: 120, size: 8 },
+                    { name: 'Antarctica', lat: -70, lng: 0, size: 14 }
+                ]
+            },
+            100: {
+                name: "Mid-Cretaceous",
+                desc: "High sea levels, warm climate",
+                continents: [
+                    { name: 'Laurasia', lat: 45, lng: 0, size: 60 },
+                    { name: 'West Gondwana', lat: -20, lng: -30, size: 45 },
+                    { name: 'East Gondwana', lat: -40, lng: 90, size: 30 },
+                    { name: 'India', lat: -40, lng: 60, size: 5 }
+                ]
+            },
+            150: {
+                name: "Late Jurassic",
+                desc: "Pangaea breaking apart",
+                continents: [
+                    { name: 'Laurasia', lat: 35, lng: 20, size: 65 },
+                    { name: 'Gondwana', lat: -30, lng: 30, size: 85 }
+                ]
+            },
+            200: {
+                name: "Pangaea",
+                desc: "Supercontinent at its peak",
+                continents: [
+                    { name: 'Pangaea', lat: 0, lng: 20, size: 150 }
+                ]
+            },
+            300: {
+                name: "Carboniferous",
+                desc: "Coal swamps, assembling Pangaea",
+                continents: [
+                    { name: 'Euramerica', lat: 20, lng: -10, size: 50 },
+                    { name: 'Gondwana', lat: -40, lng: 30, size: 90 },
+                    { name: 'Siberia', lat: 60, lng: 90, size: 20 }
+                ]
+            },
+            400: {
+                name: "Devonian",
+                desc: "First forests appear",
+                continents: [
+                    { name: 'Laurentia', lat: 0, lng: -60, size: 30 },
+                    { name: 'Gondwana', lat: -60, lng: 0, size: 100 },
+                    { name: 'Baltica', lat: 20, lng: 30, size: 15 },
+                    { name: 'Siberia', lat: 30, lng: 90, size: 18 }
+                ]
+            },
+            500: {
+                name: "Ordovician",
+                desc: "Most land in southern hemisphere",
+                continents: [
+                    { name: 'Gondwana', lat: -45, lng: 0, size: 120 },
+                    { name: 'Laurentia', lat: -15, lng: -90, size: 25 },
+                    { name: 'Baltica', lat: -30, lng: 30, size: 12 },
+                    { name: 'Siberia', lat: 0, lng: 90, size: 15 }
+                ]
+            },
+            600: {
+                name: "Ediacaran",
+                desc: "First complex life forms",
+                continents: [
+                    { name: 'Pannotia', lat: -30, lng: 0, size: 130 },
+                    { name: 'Proto-Laurasia', lat: 30, lng: 180, size: 40 }
+                ]
+            },
+            750: {
+                name: "Cryogenian",
+                desc: "Snowball Earth - planet frozen",
+                continents: [
+                    { name: 'Rodinia', lat: -10, lng: 0, size: 140 }
+                ]
+            }
+        };
+        
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(
+                45,
+                window.innerWidth / window.innerHeight,
+                0.1,
+                1000
+            );
+            camera.position.z = 3;
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 3, 5);
+            scene.add(directionalLight);
+            
+            // Create Earth
+            createEarth();
+            
+            // Create clouds
+            createClouds();
+            
+            // Controls
+            setupControls();
+            
+            // Initial continents
+            updateVisualization(0);
+            
+            // Hide loading
+            document.getElementById('loadingText').style.display = 'none';
+            
+            // Start animation loop
+            animate();
+        }
+        
+        function createEarth() {
+            const geometry = new THREE.SphereGeometry(1, 64, 64);
+            
+            // Create a blue ocean sphere
+            const oceanMaterial = new THREE.MeshPhongMaterial({
+                color: 0x002855,  // Deep ocean blue
+                shininess: 10,
+                specular: 0x111111
+            });
+            
+            earth = new THREE.Mesh(geometry, oceanMaterial);
+            scene.add(earth);
+            
+            // Add texture loader for future enhancement
+            const textureLoader = new THREE.TextureLoader();
+        }
+        
+        function createClouds() {
+            const geometry = new THREE.SphereGeometry(1.01, 64, 64);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0xffffff,
+                transparent: true,
+                opacity: 0.1,
+                side: THREE.DoubleSide
+            });
+            
+            clouds = new THREE.Mesh(geometry, material);
+            scene.add(clouds);
+        }
+        
+        function createContinent(data) {
+            // Convert lat/lng to 3D position
+            const phi = (90 - data.lat) * Math.PI / 180;
+            const theta = (data.lng + 180) * Math.PI / 180;
+            
+            const x = -Math.sin(phi) * Math.cos(theta);
+            const y = Math.cos(phi);
+            const z = Math.sin(phi) * Math.sin(theta);
+            
+            // Create continent as a slightly raised disc
+            const scale = data.size / 100;
+            const geometry = new THREE.ConeGeometry(scale, 0.05, 16);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x8B7355,  // Tan/brown for land
+                emissive: 0x4B3621,
+                emissiveIntensity: 0.2
+            });
+            
+            const continent = new THREE.Mesh(geometry, material);
+            continent.position.set(x * 1.005, y * 1.005, z * 1.005);
+            continent.lookAt(0, 0, 0);
+            continent.rotateX(Math.PI / 2);
+            continent.userData = data;
+            
+            return continent;
+        }
+        
+        function updateVisualization(time) {
+            // Find nearest time data
+            const times = Object.keys(timeData).map(Number).sort((a,b) => a-b);
+            let nearestTime = 0;
+            
+            for (let t of times) {
+                if (time >= t) nearestTime = t;
+            }
+            
+            const data = timeData[nearestTime];
+            
+            // Update UI
+            document.getElementById('timeDisplay').textContent = data.name;
+            document.getElementById('timeDesc').textContent = data.desc;
+            
+            // Clear old continents
+            continents.forEach(c => scene.remove(c));
+            continents = [];
+            
+            // Add new continents
+            data.continents.forEach(contData => {
+                const continent = createContinent(contData);
+                scene.add(continent);
+                continents.push(continent);
+            });
+            
+            // Update ocean color based on time
+            if (time > 600) {
+                earth.material.color.setHex(0xE8F5F9); // Frozen
+                clouds.material.opacity = 0.3;
+            } else if (time > 400) {
+                earth.material.color.setHex(0x003366); // Different ocean
+                clouds.material.opacity = 0.15;
+            } else if (time > 200) {
+                earth.material.color.setHex(0x004080); // Warmer
+                clouds.material.opacity = 0.1;
+            } else {
+                earth.material.color.setHex(0x002855); // Modern
+                clouds.material.opacity = 0.1;
+            }
+        }
+        
+        function setupControls() {
+            let mouseX = 0, mouseY = 0;
+            let targetRotationX = 0, targetRotationY = 0;
+            let mouseDown = false;
+            
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                mouseDown = true;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            renderer.domElement.addEventListener('mousemove', (e) => {
+                if (!mouseDown) return;
+                
+                targetRotationY += (e.clientX - mouseX) * 0.005;
+                targetRotationX += (e.clientY - mouseY) * 0.005;
+                
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            renderer.domElement.addEventListener('mouseup', () => {
+                mouseDown = false;
+            });
+            
+            renderer.domElement.addEventListener('wheel', (e) => {
+                camera.position.z += e.deltaY * 0.002;
+                camera.position.z = Math.max(1.5, Math.min(5, camera.position.z));
+            });
+            
+            // Update rotations in animate loop
+            window.updateRotation = function() {
+                earth.rotation.y += (targetRotationY - earth.rotation.y) * 0.1;
+                earth.rotation.x += (targetRotationX - earth.rotation.x) * 0.1;
+                clouds.rotation.y += 0.0005;
+            };
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            window.updateRotation();
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Time controls
+        document.getElementById('timeSlider').addEventListener('input', (e) => {
+            currentTime = parseInt(e.target.value);
+            updateVisualization(currentTime);
+        });
+        
+        // Period buttons
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const time = parseInt(e.target.dataset.time);
+                currentTime = time;
+                document.getElementById('timeSlider').value = time;
+                updateVisualization(time);
+                
+                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+        
+        // Play animation
+        document.getElementById('playBtn').addEventListener('click', () => {
+            if (isAnimating) {
+                isAnimating = false;
+                document.getElementById('playBtn').textContent = '▶️ Play Through Time';
+                cancelAnimationFrame(animationId);
+            } else {
+                isAnimating = true;
+                document.getElementById('playBtn').textContent = '⏸ Stop Animation';
+                
+                function animateTime() {
+                    if (!isAnimating) return;
+                    
+                    currentTime += 2;
+                    if (currentTime > 750) currentTime = 0;
+                    
+                    document.getElementById('timeSlider').value = currentTime;
+                    updateVisualization(currentTime);
+                    
+                    animationId = setTimeout(animateTime, 100);
+                }
+                
+                animateTime();
+            }
+        });
+        
+        // Handle resize
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        });
+        
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - With Real Paleogeographic Maps</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/ancient-earth.css">
+    
+    <style>
+        #globeViz {
+            background: radial-gradient(ellipse at bottom, #1b2735 0%, #090a0f 100%);
+            position: relative;
+        }
+        
+        .info-overlay {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Raleway', sans-serif;
+            max-width: 350px;
+            z-index: 100;
+        }
+        
+        .info-overlay h3 {
+            margin: 0 0 10px 0;
+            color: #87CEEB;
+        }
+        
+        .info-overlay p {
+            margin: 5px 0;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .texture-credit {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+            font-family: 'Raleway', sans-serif;
+        }
+        
+        .loading-indicator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-family: 'Raleway', sans-serif;
+            text-align: center;
+            z-index: 1000;
+        }
+        
+        .loading-indicator.hidden {
+            display: none;
+        }
+        
+        /* Enhanced controls */
+        .enhanced-controls {
+            background: rgba(0,0,0,0.9);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 20px;
+        }
+        
+        .texture-options {
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        .texture-btn {
+            background: #2196F3;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            margin: 5px;
+            cursor: pointer;
+            font-family: 'Raleway', sans-serif;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        
+        .texture-btn:hover {
+            background: #1976D2;
+            transform: translateY(-2px);
+        }
+        
+        .texture-btn.active {
+            background: #4CAF50;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <span class="logo-text">Deep Time Whispers</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="ancient-earth-hero">
+        <div class="container">
+            <h1 class="page-title">Earth Through Deep Time</h1>
+            <p class="page-subtitle">750 million years of continental drift with paleogeographic reconstructions</p>
+        </div>
+    </section>
+
+    <section class="ancient-earth-main">
+        <div class="ancient-earth-layout">
+            <div class="controls-panel enhanced-controls">
+                <h3>Time Control</h3>
+                
+                <div class="time-slider-container">
+                    <input type="range" id="timeSlider" class="time-slider" 
+                           min="0" max="750" value="0" step="5">
+                    <div class="time-display">
+                        <span id="timeValue" style="font-size: 20px; font-weight: 600;">Present Day</span>
+                        <span id="myaValue" class="mya-value" style="font-size: 18px;">0 MYA</span>
+                    </div>
+                </div>
+
+                <div class="quick-jumps">
+                    <h4>Geological Periods</h4>
+                    <button class="period-btn active" onclick="jumpToTime(0, 'Present Day')">Present</button>
+                    <button class="period-btn" onclick="jumpToTime(20, 'Miocene')">Miocene (20)</button>
+                    <button class="period-btn" onclick="jumpToTime(35, 'Oligocene')">Oligocene (35)</button>
+                    <button class="period-btn" onclick="jumpToTime(50, 'Eocene')">Eocene (50)</button>
+                    <button class="period-btn" onclick="jumpToTime(66, 'K-Pg Boundary')">K-Pg (66)</button>
+                    <button class="period-btn" onclick="jumpToTime(90, 'Cretaceous')">Cretaceous (90)</button>
+                    <button class="period-btn" onclick="jumpToTime(150, 'Jurassic')">Jurassic (150)</button>
+                    <button class="period-btn" onclick="jumpToTime(200, 'Triassic')">Triassic (200)</button>
+                    <button class="period-btn" onclick="jumpToTime(250, 'Permian')">Permian (250)</button>
+                    <button class="period-btn" onclick="jumpToTime(300, 'Carboniferous')">Carboniferous (300)</button>
+                    <button class="period-btn" onclick="jumpToTime(370, 'Devonian')">Devonian (370)</button>
+                    <button class="period-btn" onclick="jumpToTime(430, 'Silurian')">Silurian (430)</button>
+                    <button class="period-btn" onclick="jumpToTime(500, 'Ordovician')">Ordovician (500)</button>
+                    <button class="period-btn" onclick="jumpToTime(540, 'Cambrian')">Cambrian (540)</button>
+                    <button class="period-btn" onclick="jumpToTime(750, 'Cryogenian')">Snowball (750)</button>
+                </div>
+
+                <div class="texture-options">
+                    <h4>Visualization Style</h4>
+                    <button class="texture-btn active" onclick="setTextureMode('relief')">Topographic Relief</button>
+                    <button class="texture-btn" onclick="setTextureMode('political')">Continental Outlines</button>
+                    <button class="texture-btn" onclick="setTextureMode('climate')">Ancient Climate</button>
+                </div>
+            </div>
+
+            <div class="globe-container">
+                <div id="globeViz">
+                    <div class="stars" id="starfield"></div>
+                    <div class="loading-indicator" id="loadingIndicator">
+                        <div style="font-size: 24px; margin-bottom: 10px;">⏳</div>
+                        <div>Loading paleogeographic data...</div>
+                    </div>
+                    <div class="info-overlay">
+                        <h3 id="periodName">Present Day</h3>
+                        <p id="periodDesc">Modern Earth with seven continents and current sea levels.</p>
+                        <p style="margin-top: 10px; color: #87CEEB;">Key Features:</p>
+                        <ul id="featuresList" style="margin: 5px 0; padding-left: 20px; font-size: 13px;">
+                            <li>Ice caps at both poles</li>
+                            <li>Atlantic Ocean fully open</li>
+                            <li>India merged with Asia</li>
+                        </ul>
+                    </div>
+                    <div class="texture-credit">
+                        Map reconstructions based on C.R. Scotese PALEOMAP Project
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="//unpkg.com/globe.gl"></script>
+    <script>
+        let globe;
+        let currentTime = 0;
+        let currentTextureMode = 'relief';
+        
+        // Detailed time period data
+        const timeData = {
+            0: {
+                name: "Present Day",
+                description: "Modern Earth with seven continents and current sea levels.",
+                features: ["Ice caps at both poles", "Atlantic Ocean fully open", "India merged with Asia"],
+                climate: "Ice age with polar ice caps",
+                life: "Age of mammals and humans"
+            },
+            20: {
+                name: "Miocene Epoch",
+                description: "Continents near modern positions. Climate cooling begins.",
+                features: ["Mediterranean Sea dries up", "Antarctic ice sheet forms", "Grasslands expand globally"],
+                climate: "Cooler and drier than earlier epochs",
+                life: "Horses, apes, and grassland animals diversify"
+            },
+            35: {
+                name: "Oligocene Epoch",
+                description: "First Antarctic glaciation. India colliding with Asia.",
+                features: ["Antarctica freezes over", "Alps and Himalayas rising", "Drake Passage opens"],
+                climate: "Major cooling event",
+                life: "Modern mammal families appear"
+            },
+            50: {
+                name: "Eocene Epoch",
+                description: "Very warm climate. No polar ice. Lush forests at poles.",
+                features: ["Arctic palm trees", "India approaching Asia", "Australia separating from Antarctica"],
+                climate: "Greenhouse world - warmest in Cenozoic",
+                life: "Early horses, whales, and primates"
+            },
+            66: {
+                name: "End of Cretaceous",
+                description: "Moments before the asteroid impact. Dinosaurs still rule.",
+                features: ["Western Interior Seaway splits North America", "India racing north", "Atlantic Ocean expanding"],
+                climate: "Very warm with high sea levels",
+                life: "Last dinosaurs, early birds and mammals"
+            },
+            90: {
+                name: "Mid-Cretaceous",
+                description: "Peak of the Mesozoic. Flowering plants revolutionize ecosystems.",
+                features: ["Extremely high sea levels", "Africa and South America splitting", "First flowers bloom"],
+                climate: "Hot greenhouse conditions",
+                life: "Giant dinosaurs, marine reptiles, first flowers"
+            },
+            150: {
+                name: "Late Jurassic",
+                description: "Pangaea breaking apart. Atlantic Ocean beginning to open.",
+                features: ["Pangaea rifting", "Proto-Atlantic forming", "Tethys Sea dominant"],
+                climate: "Warm and humid globally",
+                life: "Dinosaurs reach enormous sizes"
+            },
+            200: {
+                name: "Late Triassic",
+                description: "Pangaea supercontinent at its peak. Deserts dominate interior.",
+                features: ["Massive Pangaea", "Tethys Ocean", "Extreme continental climate"],
+                climate: "Hot and dry interior, monsoons on coasts",
+                life: "First dinosaurs and mammals appear"
+            },
+            250: {
+                name: "End Permian",
+                description: "Just before the Great Dying - Earth's worst mass extinction.",
+                features: ["Pangaea assembled", "Panthalassa super-ocean", "Siberian Traps erupting"],
+                climate: "Extreme greenhouse, ocean acidification",
+                life: "95% of species about to go extinct"
+            },
+            300: {
+                name: "Carboniferous",
+                description: "Coal swamps cover the tropics. Highest oxygen levels ever.",
+                features: ["Coal forests", "Ice age begins", "Pangaea forming"],
+                climate: "Tropical swamps and southern ice sheets",
+                life: "Giant insects, first reptiles"
+            },
+            370: {
+                name: "Late Devonian",
+                description: "First forests appear. Vertebrates invade land.",
+                features: ["First trees", "Continents clustering", "Shallow seas widespread"],
+                climate: "Warm, but cooling toward ice age",
+                life: "First amphibians walk on land"
+            },
+            430: {
+                name: "Silurian Period",
+                description: "Life recovers from extinction. First land plants.",
+                features: ["Small continents", "Coral reefs expand", "Land turns green"],
+                climate: "Warm and stable",
+                life: "First land plants and arthropods"
+            },
+            500: {
+                name: "Ordovician Period",
+                description: "Marine life explodes in diversity. Most land in south.",
+                features: ["Gondwana over South Pole", "Shallow tropical seas", "No land life yet"],
+                climate: "Warm early, ice age at end",
+                life: "Marine invertebrates diversify"
+            },
+            540: {
+                name: "Cambrian Explosion",
+                description: "Animal life explodes in complexity. First shells and eyes.",
+                features: ["Gondwana dominates", "No land life", "Shallow seas everywhere"],
+                climate: "Generally warm",
+                life: "Most animal phyla appear"
+            },
+            750: {
+                name: "Cryogenian - Snowball Earth",
+                description: "Earth frozen from poles to equator. Life hangs on.",
+                features: ["Global glaciation", "Oceans freeze", "Rodinia breaking up"],
+                climate: "Completely frozen planet",
+                life: "Only microbes survive in ice cracks"
+            }
+        };
+        
+        // Simulated paleogeographic texture URLs
+        // In production, these would point to actual paleogeographic map images
+        function getPaleoTextureUrl(timeMYA, mode) {
+            // For demonstration, using different Earth textures
+            // In reality, you would have a collection of paleogeographic maps
+            const baseTextures = {
+                relief: '//unpkg.com/three-globe/example/img/earth-topology.png',
+                political: '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg',
+                climate: '//unpkg.com/three-globe/example/img/earth-water.png'
+            };
+            
+            // Return appropriate texture based on time and mode
+            // In production, this would return actual paleogeographic textures like:
+            // return `https://your-cdn.com/paleomap/${timeMYA}mya_${mode}.jpg`;
+            
+            return baseTextures[mode] || baseTextures.relief;
+        }
+        
+        // Create starfield background
+        function createStarfield() {
+            const starfield = document.getElementById('starfield');
+            for (let i = 0; i < 200; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.width = Math.random() * 3 + 'px';
+                star.style.height = star.style.width;
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                starfield.appendChild(star);
+            }
+        }
+        
+        // Initialize globe
+        function initGlobe() {
+            const container = document.getElementById('globeViz');
+            
+            // Show loading
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            
+            globe = Globe()(container)
+                .backgroundColor('rgba(0,0,0,0)')
+                .globeImageUrl(getPaleoTextureUrl(0, currentTextureMode))
+                .showAtmosphere(true)
+                .atmosphereColor('#87CEEB')
+                .atmosphereAltitude(0.15)
+                .enablePointerInteraction(true);
+                
+            // Add bump map for relief
+            globe.bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png');
+                
+            // Center view
+            globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
+            
+            // Hide loading
+            setTimeout(() => {
+                document.getElementById('loadingIndicator').classList.add('hidden');
+            }, 1000);
+            
+            // Add clouds layer (optional)
+            addCloudLayer();
+        }
+        
+        // Add realistic cloud layer
+        function addCloudLayer() {
+            // In production, add a semi-transparent cloud texture
+            // that rotates slowly for added realism
+        }
+        
+        // Update globe for specific time
+        function updateGlobeTime(timeMYA) {
+            if (!globe) return;
+            
+            // Show loading
+            document.getElementById('loadingIndicator').classList.remove('hidden');
+            
+            // Get time data
+            const data = timeData[timeMYA] || timeData[0];
+            
+            // Update info overlay
+            document.getElementById('periodName').textContent = data.name;
+            document.getElementById('periodDesc').textContent = data.description;
+            
+            // Update features list
+            const featuresList = document.getElementById('featuresList');
+            featuresList.innerHTML = data.features.map(f => `<li>${f}</li>`).join('');
+            
+            // Update texture
+            globe.globeImageUrl(getPaleoTextureUrl(timeMYA, currentTextureMode));
+            
+            // Update atmosphere based on time period
+            if (timeMYA > 600) {
+                // Snowball Earth
+                globe.atmosphereColor('#FFFFFF');
+                globe.atmosphereAltitude(0.25);
+            } else if (timeMYA > 250) {
+                // Different atmosphere composition
+                globe.atmosphereColor('#FFA500');
+                globe.atmosphereAltitude(0.15);
+            } else {
+                // Modern-ish atmosphere
+                globe.atmosphereColor('#87CEEB');
+                globe.atmosphereAltitude(0.15);
+            }
+            
+            // Hide loading after texture loads
+            setTimeout(() => {
+                document.getElementById('loadingIndicator').classList.add('hidden');
+            }, 500);
+        }
+        
+        // Set texture visualization mode
+        function setTextureMode(mode) {
+            currentTextureMode = mode;
+            
+            // Update button states
+            document.querySelectorAll('.texture-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Reload texture with new mode
+            updateGlobeTime(currentTime);
+        }
+        
+        // Jump to specific time
+        function jumpToTime(time, periodName) {
+            currentTime = time;
+            document.getElementById('timeSlider').value = time;
+            document.getElementById('timeValue').textContent = periodName;
+            document.getElementById('myaValue').textContent = time + ' MYA';
+            
+            updateGlobeTime(time);
+            
+            // Update button states
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // Time slider handler
+        document.getElementById('timeSlider').addEventListener('input', (e) => {
+            currentTime = parseInt(e.target.value);
+            
+            // Find nearest time period
+            const times = Object.keys(timeData).map(Number).sort((a, b) => a - b);
+            let nearestTime = times[0];
+            
+            for (const time of times) {
+                if (currentTime >= time) {
+                    nearestTime = time;
+                } else {
+                    break;
+                }
+            }
+            
+            const data = timeData[nearestTime];
+            document.getElementById('timeValue').textContent = data.name;
+            document.getElementById('myaValue').textContent = currentTime + ' MYA';
+            
+            updateGlobeTime(nearestTime);
+        });
+        
+        // Initialize on load
+        window.addEventListener('load', () => {
+            createStarfield();
+            initGlobe();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - Continental Drift</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Raleway', sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+        }
+        
+        #globeViz {
+            width: 100vw;
+            height: 100vh;
+            cursor: grab;
+        }
+        
+        #globeViz:active {
+            cursor: grabbing;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 25px;
+            border-radius: 10px;
+            width: 350px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        h2 {
+            margin: 0 0 10px 0;
+            color: #87CEEB;
+        }
+        
+        .time-display {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .time-desc {
+            font-size: 16px;
+            opacity: 0.8;
+            margin-bottom: 20px;
+        }
+        
+        input[type="range"] {
+            width: 100%;
+            margin: 20px 0;
+        }
+        
+        .btn {
+            background: #4A90E2;
+            border: none;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        
+        .btn:hover {
+            background: #357ABD;
+            transform: translateY(-2px);
+        }
+        
+        .btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin: 20px 0;
+        }
+        
+        .play-btn {
+            width: 100%;
+            background: #4CAF50;
+            font-size: 18px;
+            padding: 15px;
+        }
+        
+        .play-btn:hover {
+            background: #45a049;
+        }
+        
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="globeViz"></div>
+    
+    <div class="controls">
+        <h2>Journey Through Deep Time</h2>
+        <div class="time-display" id="timeDisplay">Present Day</div>
+        <div class="time-desc" id="timeDesc">Modern continents</div>
+        
+        <input type="range" id="timeSlider" min="0" max="750" value="0" step="10">
+        
+        <div class="btn-grid">
+            <button class="btn" onclick="setTime(0)">Present</button>
+            <button class="btn" onclick="setTime(65)">Dinosaur End</button>
+            <button class="btn" onclick="setTime(150)">Jurassic</button>
+            <button class="btn" onclick="setTime(200)">Pangaea</button>
+            <button class="btn" onclick="setTime(300)">Coal Age</button>
+            <button class="btn" onclick="setTime(400)">First Trees</button>
+            <button class="btn" onclick="setTime(540)">Cambrian</button>
+            <button class="btn" onclick="setTime(750)">Snowball</button>
+        </div>
+        
+        <button class="btn play-btn" onclick="toggleAnimation()">
+            <span id="playText">▶️ Play Animation</span>
+        </button>
+    </div>
+    
+    <div class="instructions">
+        🖱️ Click and drag to rotate<br>
+        🔍 Scroll to zoom in/out
+    </div>
+
+    <script src="//unpkg.com/d3-array@3"></script>
+    <script src="//unpkg.com/d3-geo@3"></script>
+    <script src="//unpkg.com/globe.gl@2"></script>
+    
+    <script>
+        // Create the globe
+        const globe = Globe()
+            .globeImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+            .bumpImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png')
+            .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+            .showAtmosphere(true)
+            .atmosphereColor('lightskyblue')
+            .atmosphereAltitude(0.15);
+
+        // Initialize the globe in the container
+        globe(document.getElementById('globeViz'))
+            .pointsData([])
+            .pointAltitude(0.1)
+            .pointColor(() => '#ffffff')
+            .pointRadius(0.5);
+
+        // Set initial view
+        globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
+
+        let isAnimating = false;
+        let animationInterval;
+        let currentTime = 0;
+
+        // Time periods with continent positions
+        const timePeriods = {
+            0: {
+                name: "Present Day",
+                description: "Seven continents in modern positions",
+                points: [
+                    {lat: 39, lng: -98, label: "North America", size: 1.2},
+                    {lat: -15, lng: -60, label: "South America", size: 1.0},
+                    {lat: 0, lng: 25, label: "Africa", size: 1.1},
+                    {lat: 48, lng: 10, label: "Europe", size: 0.6},
+                    {lat: 35, lng: 100, label: "Asia", size: 1.5},
+                    {lat: -25, lng: 135, label: "Australia", size: 0.7},
+                    {lat: -82, lng: 0, label: "Antarctica", size: 0.9}
+                ]
+            },
+            65: {
+                name: "End of Dinosaurs",
+                description: "66 million years ago - continents drifting apart",
+                points: [
+                    {lat: 35, lng: -90, label: "North America", size: 1.1},
+                    {lat: -20, lng: -50, label: "South America", size: 1.0},
+                    {lat: -5, lng: 20, label: "Africa", size: 1.1},
+                    {lat: 45, lng: 60, label: "Eurasia", size: 1.8},
+                    {lat: -35, lng: 70, label: "India", size: 0.5},
+                    {lat: -50, lng: 120, label: "Australia", size: 0.7},
+                    {lat: -75, lng: 0, label: "Antarctica", size: 0.9}
+                ]
+            },
+            150: {
+                name: "Jurassic Period",
+                description: "Age of dinosaurs - Pangaea breaking up",
+                points: [
+                    {lat: 30, lng: 0, label: "Laurasia", size: 2.0},
+                    {lat: -30, lng: 20, label: "Gondwana", size: 2.5}
+                ]
+            },
+            200: {
+                name: "Pangaea Supercontinent",
+                description: "All land merged into one giant continent",
+                points: [
+                    {lat: 0, lng: 20, label: "Pangaea", size: 3.5}
+                ]
+            },
+            300: {
+                name: "Carboniferous",
+                description: "Coal forests - continents merging",
+                points: [
+                    {lat: 15, lng: -10, label: "Euramerica", size: 1.5},
+                    {lat: -40, lng: 30, label: "Gondwana", size: 2.0},
+                    {lat: 50, lng: 90, label: "Siberia", size: 0.8}
+                ]
+            },
+            400: {
+                name: "Devonian",
+                description: "First trees and forests",
+                points: [
+                    {lat: -10, lng: -60, label: "Laurentia", size: 1.0},
+                    {lat: -60, lng: 0, label: "Gondwana", size: 2.2},
+                    {lat: 20, lng: 40, label: "Baltica", size: 0.6},
+                    {lat: 30, lng: 100, label: "Siberia", size: 0.7}
+                ]
+            },
+            540: {
+                name: "Cambrian Explosion",
+                description: "Life explodes in the oceans",
+                points: [
+                    {lat: -45, lng: 0, label: "Gondwana", size: 2.5},
+                    {lat: -15, lng: -90, label: "Laurentia", size: 0.8},
+                    {lat: -30, lng: 60, label: "Baltica", size: 0.5},
+                    {lat: 10, lng: 120, label: "Siberia", size: 0.6}
+                ]
+            },
+            750: {
+                name: "Snowball Earth",
+                description: "Planet completely frozen",
+                points: [
+                    {lat: -20, lng: 0, label: "Rodinia", size: 3.0}
+                ]
+            }
+        };
+
+        // Create continent markers
+        function createContinentMarkers(points) {
+            // Create larger, colored markers for continents
+            const markers = points.map(p => ({
+                lat: p.lat,
+                lng: p.lng,
+                size: p.size,
+                color: '#8B4513',
+                label: p.label
+            }));
+
+            globe
+                .pointsData(markers)
+                .pointAltitude(0.01)
+                .pointColor(d => d.color)
+                .pointRadius(d => d.size)
+                .pointLabel(d => d.label);
+
+            // Also add labels
+            globe
+                .labelsData(points)
+                .labelLat(d => d.lat)
+                .labelLng(d => d.lng)
+                .labelText(d => d.label)
+                .labelSize(1.5)
+                .labelDotRadius(0.4)
+                .labelColor(() => 'rgba(255, 255, 255, 0.75)')
+                .labelResolution(2);
+        }
+
+        // Update visualization for a specific time
+        function updateTime(mya) {
+            // Find the closest time period
+            const times = Object.keys(timePeriods).map(Number).sort((a, b) => a - b);
+            let closestTime = times[0];
+            
+            for (let time of times) {
+                if (mya >= time) {
+                    closestTime = time;
+                }
+            }
+
+            const period = timePeriods[closestTime];
+            document.getElementById('timeDisplay').textContent = period.name;
+            document.getElementById('timeDesc').textContent = period.description;
+
+            // Update continent positions
+            createContinentMarkers(period.points);
+
+            // Change atmosphere based on time
+            if (mya >= 700) {
+                globe.atmosphereColor('white'); // Snowball Earth
+                globe.globeImageUrl('//unpkg.com/three-globe/example/img/earth-water.png');
+            } else if (mya >= 400) {
+                globe.atmosphereColor('orange'); // Different atmosphere
+                globe.globeImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png');
+            } else {
+                globe.atmosphereColor('lightskyblue'); // Modern
+                globe.globeImageUrl('//unpkg.com/three-globe/example/img/earth-topology.png');
+            }
+        }
+
+        // Time slider
+        document.getElementById('timeSlider').addEventListener('input', (e) => {
+            currentTime = parseInt(e.target.value);
+            updateTime(currentTime);
+        });
+
+        // Set specific time
+        function setTime(mya) {
+            currentTime = mya;
+            document.getElementById('timeSlider').value = mya;
+            updateTime(mya);
+        }
+
+        // Animation
+        function toggleAnimation() {
+            const btn = document.getElementById('playText');
+            
+            if (isAnimating) {
+                isAnimating = false;
+                clearInterval(animationInterval);
+                btn.textContent = '▶️ Play Animation';
+            } else {
+                isAnimating = true;
+                btn.textContent = '⏸ Stop Animation';
+                
+                animationInterval = setInterval(() => {
+                    currentTime += 5;
+                    if (currentTime > 750) currentTime = 0;
+                    
+                    document.getElementById('timeSlider').value = currentTime;
+                    updateTime(currentTime);
+                }, 100);
+            }
+        }
+
+        // Initialize
+        updateTime(0);
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            globe.width(window.innerWidth);
+            globe.height(window.innerHeight);
+        });
+    </script>
+</body>
+</html>

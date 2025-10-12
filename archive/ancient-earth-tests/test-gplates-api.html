@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test GPlates API Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f0f0f0;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+        .result {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+        .success {
+            color: green;
+            font-weight: bold;
+        }
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+        .loading {
+            color: orange;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 GPlates API Test Suite</h1>
+    <p>Testing connection to GPlates Web Service for continental reconstruction</p>
+
+    <div class="test-section">
+        <h2>Step 1: Basic API Connection Test</h2>
+        <p>Let's reconstruct New York's position 150 million years ago</p>
+        <button onclick="testBasicAPI()">Test API Connection</button>
+        <div id="basicResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Step 2: Multiple Points Test</h2>
+        <p>Reconstruct multiple cities at once</p>
+        <button onclick="testMultiplePoints()">Test Multiple Points</button>
+        <div id="multipleResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Step 3: Continent Outline Test</h2>
+        <p>Get coastline data for drawing continents</p>
+        <button onclick="testCoastlines()">Test Coastlines</button>
+        <div id="coastlineResult" class="result"></div>
+    </div>
+
+    <script>
+        // GPlates Web Service base URL
+        const GPLATES_BASE_URL = 'https://gws.gplates.org';
+        
+        // Test 1: Basic API Connection
+        async function testBasicAPI() {
+            const resultDiv = document.getElementById('basicResult');
+            resultDiv.innerHTML = '<span class="loading">Testing connection...</span>';
+            
+            try {
+                // New York coordinates
+                const lat = 40.7128;
+                const lon = -74.0060;
+                const time = 150; // 150 million years ago
+                
+                // API endpoint for reconstructing points
+                const url = `${GPLATES_BASE_URL}/reconstruct/reconstruct_points/` +
+                           `?points=${lon},${lat}` +
+                           `&time=${time}` +
+                           `&model=MULLER2019`;
+                
+                console.log('Calling:', url);
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok && data.features && data.features.length > 0) {
+                    const reconstructed = data.features[0].geometry.coordinates;
+                    const paleoLat = reconstructed[1];
+                    const paleoLon = reconstructed[0];
+                    
+                    resultDiv.innerHTML = `
+<span class="success">✅ SUCCESS! API is working!</span>
+
+Modern New York: ${lat.toFixed(2)}°N, ${lon.toFixed(2)}°W
+Position 150 MYA: ${paleoLat.toFixed(2)}°N, ${paleoLon.toFixed(2)}°W
+
+Full response:
+${JSON.stringify(data, null, 2)}`;
+                } else {
+                    throw new Error('No data returned');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+                console.error('API Error:', error);
+            }
+        }
+        
+        // Test 2: Multiple Points
+        async function testMultiplePoints() {
+            const resultDiv = document.getElementById('multipleResult');
+            resultDiv.innerHTML = '<span class="loading">Testing multiple points...</span>';
+            
+            try {
+                // Multiple cities
+                const cities = [
+                    { name: 'New York', lat: 40.7128, lon: -74.0060 },
+                    { name: 'London', lat: 51.5074, lon: -0.1278 },
+                    { name: 'Tokyo', lat: 35.6762, lon: 139.6503 }
+                ];
+                
+                // Create points string
+                const points = cities.map(c => `${c.lon},${c.lat}`).join(' ');
+                const time = 200; // 200 million years ago (Pangaea time)
+                
+                const url = `${GPLATES_BASE_URL}/reconstruct/reconstruct_points/` +
+                           `?points=${points}` +
+                           `&time=${time}` +
+                           `&model=MULLER2019`;
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (response.ok && data.features) {
+                    let resultText = '<span class="success">✅ Multiple points reconstructed!</span>\n\n';
+                    
+                    data.features.forEach((feature, i) => {
+                        const coords = feature.geometry.coordinates;
+                        const city = cities[i];
+                        resultText += `${city.name}:\n`;
+                        resultText += `  Modern: ${city.lat.toFixed(2)}°, ${city.lon.toFixed(2)}°\n`;
+                        resultText += `  200 MYA: ${coords[1].toFixed(2)}°, ${coords[0].toFixed(2)}°\n\n`;
+                    });
+                    
+                    resultDiv.innerHTML = resultText;
+                } else {
+                    throw new Error('Failed to reconstruct points');
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `<span class="error">❌ Error: ${error.message}</span>`;
+            }
+        }
+        
+        // Test 3: Coastlines
+        async function testCoastlines() {
+            const resultDiv = document.getElementById('coastlineResult');
+            resultDiv.innerHTML = '<span class="loading">Fetching coastline data...</span>';
+            
+            try {
+                const time = 0; // Present day
+                
+                // Note: GPlates coastline endpoint might need authentication
+                // Let's test what's available
+                const url = `${GPLATES_BASE_URL}/reconstruct/coastlines/` +
+                           `?time=${time}` +
+                           `&model=MULLER2019`;
+                
+                console.log('Testing coastlines endpoint:', url);
+                
+                // Try to fetch
+                const response = await fetch(url);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    resultDiv.innerHTML = `
+<span class="success">✅ Coastline endpoint accessible!</span>
+
+Response preview:
+${JSON.stringify(data).substring(0, 500)}...
+
+Feature count: ${data.features ? data.features.length : 0}`;
+                } else if (response.status === 404) {
+                    // Expected - we'll use static coastlines instead
+                    resultDiv.innerHTML = `
+<span class="success">✅ Expected result - we'll use static continent shapes</span>
+
+Plan B: We'll use simplified continent polygons from Natural Earth or similar source.
+This is actually better for performance!`;
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+<span class="error">❌ Coastlines not directly available</span>
+
+That's OK! We'll use static continent shapes and reconstruct their positions.
+Error: ${error.message}`;
+            }
+        }
+        
+        // Add page load message
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('GPlates API Test Page Loaded');
+            console.log('Click the buttons to test each API endpoint');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth Timeline - Journey Through Deep Time</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .title-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            text-align: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 32px;
+            font-weight: 300;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .timeline-container {
+            margin-top: 20px;
+            position: relative;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 5px;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .timeline-track {
+            position: relative;
+            height: 100%;
+            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .timeline-marker {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 12px;
+            height: 12px;
+            background: #64B5F6;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 10;
+        }
+        
+        .timeline-marker:hover {
+            width: 16px;
+            height: 16px;
+            background: #2196F3;
+            box-shadow: 0 0 20px rgba(33, 150, 243, 0.8);
+        }
+        
+        .timeline-marker.active {
+            width: 20px;
+            height: 20px;
+            background: #2196F3;
+            box-shadow: 0 0 30px rgba(33, 150, 243, 1);
+        }
+        
+        .timeline-label {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 12px;
+            white-space: nowrap;
+            opacity: 0.8;
+            pointer-events: none;
+        }
+        
+        .timeline-marker.active .timeline-label {
+            opacity: 1;
+            font-weight: bold;
+            color: #64B5F6;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 30px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 450px;
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            transition: all 0.5s ease;
+        }
+        
+        .info-panel h2 {
+            font-size: 28px;
+            margin-bottom: 10px;
+            color: #64B5F6;
+        }
+        
+        .info-panel .time-period {
+            font-size: 20px;
+            color: #FFD700;
+            margin-bottom: 15px;
+        }
+        
+        .info-panel p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        .controls-hint {
+            position: absolute;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            opacity: 0.8;
+            z-index: 100;
+        }
+        
+        .controls-hint h3 {
+            margin-bottom: 10px;
+            color: #64B5F6;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            z-index: 1000;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        canvas {
+            display: block;
+            touch-action: none; /* Prevent touch interference */
+        }
+        
+        .play-controls {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 100;
+        }
+        
+        .play-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            color: white;
+            padding: 15px 30px;
+            font-size: 18px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            backdrop-filter: blur(10px);
+        }
+        
+        .play-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #64B5F6;
+            transform: scale(1.05);
+        }
+        
+        .play-btn.playing {
+            background: #2196F3;
+            border-color: #64B5F6;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="title-bar">
+            <h1>Earth Through Deep Time</h1>
+            <div class="timeline-container">
+                <div class="timeline-track" id="timeline"></div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h2 id="infoTitle">Present Day</h2>
+            <div class="time-period" id="timePeriod">0 Million Years Ago</div>
+            <p id="infoDesc">
+                Seven continents in their familiar positions. The Atlantic Ocean separates 
+                the Americas from Europe and Africa. India has collided with Asia, forming 
+                the Himalayas.
+            </p>
+        </div>
+        
+        <div class="controls-hint">
+            <h3>Controls</h3>
+            🖱️ Click and drag to rotate<br>
+            📏 Scroll to zoom<br>
+            ⏸️ Right-click to toggle auto-rotation<br>
+            🎯 Click timeline markers to jump in time
+        </div>
+        
+        <div class="play-controls">
+            <button class="play-btn" onclick="toggleAnimation()">
+                <span id="playText">▶ Play Timeline</span>
+            </button>
+        </div>
+        
+        <div id="loading">
+            <div class="spinner"></div>
+            <div>Loading Earth through time...</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene elements
+        let scene, camera, renderer;
+        let earth, clouds, stars;
+        let controls;
+        let autoRotate = true;
+        
+        // Animation state
+        let isPlaying = false;
+        let animationProgress = 0;
+        let animationSpeed = 0.001;
+        
+        // Current state
+        let currentTimeIndex = 0;
+        
+        // Time periods with actual PALEOMAP textures
+        const timePeriods = [
+            {
+                mya: 0,
+                name: 'Present Day',
+                texture: 'textures/paleomap/present.png',
+                description: 'Seven continents in their familiar positions. The Atlantic Ocean separates the Americas from Europe and Africa. India has collided with Asia, forming the Himalayas.',
+                clouds: true
+            },
+            {
+                mya: 66,
+                name: 'End of Dinosaurs',
+                texture: 'textures/paleomap/kt_boundary_66mya.jpg',
+                description: 'The moment of the K-T extinction event. The continents are approaching their modern positions, but the Atlantic is narrower and India is still an island continent racing toward Asia.',
+                clouds: true
+            },
+            {
+                mya: 150,
+                name: 'Late Jurassic',
+                texture: 'textures/paleomap/jurassic_150mya.jpg',
+                description: 'The age of giant dinosaurs. Pangaea has broken apart into Laurasia and Gondwana. The Atlantic Ocean is just beginning to open between Africa and North America.',
+                clouds: true
+            },
+            {
+                mya: 200,
+                name: 'Pangaea Supercontinent',
+                texture: 'textures/paleomap/pangaea_200mya.jpg',
+                description: 'All continents merged into one giant landmass surrounded by the Panthalassa Ocean. The Tethys Sea cuts into the eastern side. The first dinosaurs are evolving.',
+                clouds: false
+            },
+            {
+                mya: 300,
+                name: 'Late Carboniferous',
+                texture: 'textures/paleomap/carboniferous_300mya.jpg',
+                description: 'The great coal forests cover the tropical regions. Pangaea is assembling as continents collide. Giant insects rule the land and the first reptiles appear.',
+                clouds: false
+            },
+            {
+                mya: 540,
+                name: 'Cambrian Explosion',
+                texture: 'textures/paleomap/cambrian_540mya.jpg',
+                description: 'Life explodes in the oceans with the first complex animals. The continents are scattered across the globe. Gondwana dominates the southern hemisphere.',
+                clouds: false
+            }
+        ];
+        
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000000);
+            
+            // Camera
+            const aspect = window.innerWidth / window.innerHeight;
+            camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+            camera.position.set(0, 0, 3.5);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ 
+                antialias: true,
+                powerPreference: "high-performance"
+            });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+            scene.add(ambientLight);
+            
+            const sunlight = new THREE.DirectionalLight(0xffffff, 1.2);
+            sunlight.position.set(5, 3, 5);
+            sunlight.castShadow = true;
+            sunlight.shadow.camera.near = 0.1;
+            sunlight.shadow.camera.far = 50;
+            sunlight.shadow.mapSize.width = 2048;
+            sunlight.shadow.mapSize.height = 2048;
+            scene.add(sunlight);
+            
+            // Create universe
+            createStarfield();
+            
+            // Create Earth
+            createEarth();
+            
+            // Create timeline
+            createTimeline();
+            
+            // Mouse controls
+            setupControls();
+            
+            // Handle resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start animation
+            animate();
+        }
+        
+        function createStarfield() {
+            const starsGeometry = new THREE.BufferGeometry();
+            const starCount = 10000;
+            const positions = new Float32Array(starCount * 3);
+            const colors = new Float32Array(starCount * 3);
+            
+            for (let i = 0; i < starCount * 3; i += 3) {
+                const radius = 100 + Math.random() * 900;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions[i] = radius * Math.sin(phi) * Math.cos(theta);
+                positions[i + 1] = radius * Math.sin(phi) * Math.sin(theta);
+                positions[i + 2] = radius * Math.cos(phi);
+                
+                // Star colors
+                const color = new THREE.Color();
+                const colorChoice = Math.random();
+                if (colorChoice < 0.5) {
+                    color.setHSL(0, 0, 0.8 + Math.random() * 0.2);
+                } else if (colorChoice < 0.8) {
+                    color.setHSL(200/360, 0.5, 0.8);
+                } else {
+                    color.setHSL(60/360, 0.5, 0.8);
+                }
+                
+                colors[i] = color.r;
+                colors[i + 1] = color.g;
+                colors[i + 2] = color.b;
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+            starsGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+            
+            const starsMaterial = new THREE.PointsMaterial({
+                size: 2,
+                vertexColors: true,
+                transparent: true,
+                opacity: 0.8,
+                sizeAttenuation: true
+            });
+            
+            stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+        }
+        
+        function createEarth() {
+            const geometry = new THREE.SphereGeometry(1, 128, 64);
+            const loader = new THREE.TextureLoader();
+            
+            // Load initial texture
+            loader.load(
+                timePeriods[0].texture,
+                (texture) => {
+                    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                    
+                    const material = new THREE.MeshPhongMaterial({
+                        map: texture,
+                        bumpScale: 0.01,
+                        specular: new THREE.Color(0x333333),
+                        shininess: 15
+                    });
+                    
+                    earth = new THREE.Mesh(geometry, material);
+                    earth.receiveShadow = true;
+                    earth.castShadow = true;
+                    earth.rotation.y = 0; // Initialize rotation
+                    scene.add(earth);
+                    
+                    // Add clouds for present day
+                    createClouds();
+                    
+                    // Hide loading
+                    document.getElementById('loading').style.display = 'none';
+                }
+            );
+        }
+        
+        function createClouds() {
+            const loader = new THREE.TextureLoader();
+            const cloudsGeometry = new THREE.SphereGeometry(1.01, 64, 64);
+            
+            const cloudsMaterial = new THREE.MeshPhongMaterial({
+                map: null,
+                transparent: true,
+                opacity: 0.3,
+                color: 0xffffff,
+                emissive: 0xffffff,
+                emissiveIntensity: 0.1,
+                side: THREE.DoubleSide,
+                depthWrite: false
+            });
+            
+            clouds = new THREE.Mesh(cloudsGeometry, cloudsMaterial);
+            scene.add(clouds);
+        }
+        
+        function createTimeline() {
+            const timeline = document.getElementById('timeline');
+            
+            timePeriods.forEach((period, index) => {
+                const marker = document.createElement('div');
+                marker.className = 'timeline-marker';
+                if (index === 0) marker.classList.add('active');
+                
+                // Position based on time
+                const maxAge = timePeriods[timePeriods.length - 1].mya;
+                const position = (1 - period.mya / maxAge) * 100;
+                marker.style.left = `${position}%`;
+                
+                // Add label
+                const label = document.createElement('div');
+                label.className = 'timeline-label';
+                label.textContent = `${period.mya} MYA`;
+                marker.appendChild(label);
+                
+                // Click handler
+                marker.addEventListener('click', () => {
+                    jumpToTime(index);
+                });
+                
+                timeline.appendChild(marker);
+            });
+        }
+        
+        function jumpToTime(index) {
+            currentTimeIndex = index;
+            updateEarthForTime(index);
+            
+            // Update timeline markers
+            document.querySelectorAll('.timeline-marker').forEach((marker, i) => {
+                marker.classList.toggle('active', i === index);
+            });
+            
+            // Update info panel
+            const period = timePeriods[index];
+            document.getElementById('infoTitle').textContent = period.name;
+            document.getElementById('timePeriod').textContent = `${period.mya} Million Years Ago`;
+            document.getElementById('infoDesc').textContent = period.description;
+        }
+        
+        function updateEarthForTime(index) {
+            if (!earth) return;
+            
+            const period = timePeriods[index];
+            const loader = new THREE.TextureLoader();
+            
+            loader.load(
+                period.texture,
+                (texture) => {
+                    texture.anisotropy = renderer.capabilities.getMaxAnisotropy();
+                    earth.material.map = texture;
+                    earth.material.needsUpdate = true;
+                    
+                    // Handle clouds
+                    if (clouds) {
+                        clouds.visible = period.clouds;
+                    }
+                }
+            );
+        }
+        
+        function setupControls() {
+            let mouseX = 0, mouseY = 0;
+            let targetRotationX = 0, targetRotationY = 0;
+            let mouseDown = false;
+            
+            // Make sure canvas can receive mouse events
+            renderer.domElement.style.cursor = 'grab';
+            
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                if (e.button === 0) {
+                    mouseDown = true;
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    autoRotate = false; // Stop auto rotation when user starts dragging
+                    renderer.domElement.style.cursor = 'grabbing';
+                } else if (e.button === 2) {
+                    autoRotate = !autoRotate;
+                }
+            });
+            
+            window.addEventListener('mousemove', (e) => {
+                if (!mouseDown) return;
+                
+                e.preventDefault();
+                const deltaX = e.clientX - mouseX;
+                const deltaY = e.clientY - mouseY;
+                
+                // Update rotation incrementally
+                targetRotationY += deltaX * 0.01;
+                targetRotationX += deltaY * 0.01;
+                
+                // Clamp vertical rotation
+                targetRotationX = Math.max(-Math.PI/3, Math.min(Math.PI/3, targetRotationX));
+                
+                // Update mouse position for next frame
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            window.addEventListener('mouseup', () => {
+                mouseDown = false;
+                renderer.domElement.style.cursor = 'grab';
+            });
+            
+            renderer.domElement.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                camera.position.z += e.deltaY * 0.002;
+                camera.position.z = Math.max(2, Math.min(6, camera.position.z));
+            });
+            
+            renderer.domElement.addEventListener('contextmenu', (e) => {
+                e.preventDefault();
+            });
+            
+            window.updateEarthRotation = function() {
+                if (earth) {
+                    if (autoRotate) {
+                        targetRotationY += 0.0005; // Slower auto rotation
+                    }
+                    
+                    earth.rotation.y += (targetRotationY - earth.rotation.y) * 0.2; // More responsive
+                    earth.rotation.x += (targetRotationX - earth.rotation.x) * 0.2; // More responsive
+                }
+                
+                if (clouds && clouds.visible) {
+                    clouds.rotation.y += 0.0002;
+                }
+                
+                if (stars) {
+                    stars.rotation.y -= 0.0001;
+                }
+            };
+        }
+        
+        function toggleAnimation() {
+            isPlaying = !isPlaying;
+            document.getElementById('playText').textContent = isPlaying ? '⏸ Pause Timeline' : '▶ Play Timeline';
+            document.querySelector('.play-btn').classList.toggle('playing', isPlaying);
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update rotations
+            window.updateEarthRotation();
+            
+            // Handle timeline animation
+            if (isPlaying) {
+                animationProgress += animationSpeed;
+                if (animationProgress >= 1) {
+                    animationProgress = 0;
+                    currentTimeIndex = (currentTimeIndex + 1) % timePeriods.length;
+                    jumpToTime(currentTimeIndex);
+                }
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

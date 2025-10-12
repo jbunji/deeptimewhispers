@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - Continental Drift</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/ancient-earth.css">
+    
+    <style>
+        /* Add some custom styles for better visibility */
+        #globeViz {
+            background: #000033;
+        }
+        .info-box {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Raleway', sans-serif;
+            max-width: 300px;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <span class="logo-text">Deep Time Whispers</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="ancient-earth-hero">
+        <div class="container">
+            <h1 class="page-title">Continental Drift Visualization</h1>
+            <p class="page-subtitle">Watch continents move through Earth's history</p>
+        </div>
+    </section>
+
+    <section class="ancient-earth-main">
+        <div class="ancient-earth-layout">
+            <div class="controls-panel">
+                <h3>Time Period</h3>
+                <div class="time-slider-container">
+                    <input type="range" id="timeSlider" class="time-slider" min="0" max="600" value="0" step="50">
+                    <div class="time-display">
+                        <span id="timeValue">Present Day</span>
+                        <span id="myaValue" class="mya-value">0 MYA</span>
+                    </div>
+                </div>
+
+                <div class="quick-jumps">
+                    <h4>Quick Jumps</h4>
+                    <button class="period-btn active" onclick="jumpToTime(0)">Present</button>
+                    <button class="period-btn" onclick="jumpToTime(200)">Pangaea (200 MYA)</button>
+                    <button class="period-btn" onclick="jumpToTime(400)">Early Land Life</button>
+                    <button class="period-btn" onclick="jumpToTime(600)">Precambrian</button>
+                </div>
+            </div>
+
+            <div class="globe-container">
+                <div id="globeViz"></div>
+                <div class="info-box">
+                    <h4 id="periodName">Present Day</h4>
+                    <p id="periodDesc">Modern continental configuration with seven continents</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="//unpkg.com/globe.gl"></script>
+    <script>
+        let globe;
+        let currentTime = 0;
+        
+        // Continental positions for different time periods
+        const continentData = {
+            0: {
+                name: "Present Day",
+                desc: "Modern continental configuration with seven continents",
+                polygons: [
+                    // North America (simplified)
+                    {
+                        name: "North America",
+                        coords: [
+                            [-130, 70], [-130, 30], [-80, 30], [-80, 50], [-100, 70], [-130, 70]
+                        ],
+                        color: "#228B22"  // Forest green
+                    },
+                    // South America
+                    {
+                        name: "South America", 
+                        coords: [
+                            [-80, 10], [-80, -50], [-40, -50], [-35, -5], [-50, 10], [-80, 10]
+                        ],
+                        color: "#32CD32"
+                    },
+                    // Africa
+                    {
+                        name: "Africa",
+                        coords: [
+                            [-20, 35], [-15, -35], [50, -35], [50, 30], [30, 35], [-20, 35]
+                        ],
+                        color: "#3CB371"
+                    },
+                    // Europe
+                    {
+                        name: "Europe",
+                        coords: [
+                            [-10, 70], [-10, 40], [40, 40], [40, 70], [-10, 70]
+                        ],
+                        color: "#2E8B57"
+                    },
+                    // Asia
+                    {
+                        name: "Asia",
+                        coords: [
+                            [40, 70], [40, 10], [140, 10], [140, 70], [40, 70]
+                        ],
+                        color: "#006400"
+                    },
+                    // Australia
+                    {
+                        name: "Australia",
+                        coords: [
+                            [110, -10], [110, -45], [155, -45], [155, -10], [110, -10]
+                        ],
+                        color: "#8FBC8F"
+                    }
+                ]
+            },
+            200: {
+                name: "Pangaea",
+                desc: "All continents merged into one supercontinent",
+                polygons: [
+                    {
+                        name: "Pangaea",
+                        coords: [
+                            [-30, 70], [-50, -50], [70, -50], [80, 60], [40, 70], [-30, 70]
+                        ],
+                        color: "#8B4513"
+                    }
+                ]
+            },
+            400: {
+                name: "Early Land Life",
+                desc: "Continents clustered, first plants colonizing land",
+                polygons: [
+                    {
+                        name: "Gondwana",
+                        coords: [
+                            [-30, 30], [-60, -60], [90, -60], [60, 30], [-30, 30]
+                        ],
+                        color: "#A0522D"
+                    },
+                    {
+                        name: "Laurentia", 
+                        coords: [
+                            [-120, 20], [-120, -20], [-60, -20], [-60, 20], [-120, 20]
+                        ],
+                        color: "#A52A2A"
+                    }
+                ]
+            },
+            600: {
+                name: "Precambrian",
+                desc: "Ancient supercontinents, no complex life on land",
+                polygons: [
+                    {
+                        name: "Rodinia",
+                        coords: [
+                            [-90, 40], [-90, -40], [90, -40], [90, 40], [-90, 40]
+                        ],
+                        color: "#808080"
+                    }
+                ]
+            }
+        };
+        
+        // Initialize globe
+        function initGlobe() {
+            const container = document.getElementById('globeViz');
+            
+            globe = Globe()(container)
+                .backgroundColor('#000000')
+                .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+                .showAtmosphere(true)
+                .atmosphereColor('#87CEEB')  // Light sky blue
+                .atmosphereAltitude(0.15)
+                .polygonsData(continentData[0].polygons)
+                .polygonCapColor(d => d.color)
+                .polygonSideColor(() => 'rgba(0, 0, 0, 0.5)')
+                .polygonStrokeColor(() => '#ffffff')
+                .polygonAltitude(0.08)  // Raise continents higher to be more visible
+                .polygonLabel(d => d.name);
+                
+            // Center the view
+            globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 });
+        }
+        
+        // Update continents based on time
+        function updateContinents(time) {
+            // Find nearest time period
+            const times = Object.keys(continentData).map(Number).sort((a,b) => a-b);
+            let nearestTime = times[0];
+            
+            for (let t of times) {
+                if (time >= t) nearestTime = t;
+            }
+            
+            const data = continentData[nearestTime];
+            
+            // Update display
+            document.getElementById('timeValue').textContent = data.name;
+            document.getElementById('myaValue').textContent = time + ' MYA';
+            document.getElementById('periodName').textContent = data.name;
+            document.getElementById('periodDesc').textContent = data.desc;
+            
+            // Update globe
+            globe.polygonsData(data.polygons);
+            
+            // Update atmosphere color based on time
+            if (time > 500) {
+                globe.atmosphereColor('#FFC8C8'); // Pink - Different early atmosphere
+            } else if (time > 200) {
+                globe.atmosphereColor('#FFA500'); // Orange - Warmer periods
+            } else {
+                globe.atmosphereColor('#87CEEB'); // Light sky blue - Modern
+            }
+        }
+        
+        // Time slider handler
+        document.getElementById('timeSlider').addEventListener('input', (e) => {
+            currentTime = parseInt(e.target.value);
+            updateContinents(currentTime);
+        });
+        
+        // Quick jump function
+        function jumpToTime(time) {
+            currentTime = time;
+            document.getElementById('timeSlider').value = time;
+            updateContinents(time);
+            
+            // Update button states
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // Initialize when page loads
+        window.addEventListener('load', () => {
+            initGlobe();
+        });
+    </script>
+</body>
+</html>

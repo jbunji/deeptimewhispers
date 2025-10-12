@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth | Deep Time Whispers</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+        }
+        
+        /* Header with DeepTimeWhispers branding */
+        .header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0) 100%);
+            padding: 20px 30px;
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+            color: white;
+        }
+        
+        .logo h1 {
+            font-size: 24px;
+            font-weight: 300;
+            background: linear-gradient(45deg, #64B5F6, #81C784);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 1;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Main title */
+        .main-title {
+            position: absolute;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 100;
+        }
+        
+        .main-title h2 {
+            font-size: 36px;
+            font-weight: 300;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+        
+        .main-title p {
+            font-size: 16px;
+            opacity: 0.8;
+        }
+        
+        /* Animation controls */
+        .animation-controls {
+            position: absolute;
+            top: 160px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .control-btn {
+            background: rgba(100, 181, 246, 0.2);
+            border: 2px solid rgba(100, 181, 246, 0.5);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .control-btn:hover {
+            background: rgba(100, 181, 246, 0.4);
+            transform: scale(1.05);
+        }
+        
+        .control-btn.active {
+            background: rgba(129, 199, 132, 0.4);
+            border-color: rgba(129, 199, 132, 0.8);
+        }
+        
+        /* Timeline slider */
+        .timeline-container {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 900px;
+            z-index: 100;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 30px;
+            border-radius: 20px;
+            backdrop-filter: blur(20px);
+        }
+        
+        .timeline-current {
+            font-size: 24px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        
+        .period-name {
+            color: #64B5F6;
+        }
+        
+        .period-time {
+            color: #FFD700;
+            font-size: 20px;
+        }
+        
+        .timeline-slider {
+            width: 100%;
+            height: 10px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            outline: none;
+            margin: 20px 0;
+        }
+        
+        .timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #64B5F6;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid white;
+            box-shadow: 0 0 20px rgba(100, 181, 246, 0.8);
+        }
+        
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            opacity: 0.7;
+            margin-top: 10px;
+        }
+        
+        .timeline-events {
+            display: flex;
+            position: relative;
+            height: 20px;
+            margin-top: 10px;
+        }
+        
+        .event-marker {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: #FF6B6B;
+            opacity: 0.8;
+            cursor: pointer;
+        }
+        
+        .event-marker:hover::after {
+            content: attr(data-event);
+            position: absolute;
+            bottom: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 5px 10px;
+            border-radius: 5px;
+            white-space: nowrap;
+            font-size: 12px;
+        }
+        
+        /* Speed control */
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.5);
+            padding: 10px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .speed-slider {
+            width: 100px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            outline: none;
+        }
+        
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        /* Info panel */
+        .info-panel {
+            position: absolute;
+            top: 220px;
+            left: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            max-width: 400px;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transform: translateX(0);
+            transition: transform 0.3s;
+        }
+        
+        .info-panel.collapsed {
+            transform: translateX(-370px);
+        }
+        
+        .info-toggle {
+            position: absolute;
+            right: -40px;
+            top: 20px;
+            width: 40px;
+            height: 60px;
+            background: rgba(0, 0, 0, 0.8);
+            border-radius: 0 10px 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: none;
+        }
+        
+        .info-panel h3 {
+            color: #81C784;
+            margin-bottom: 15px;
+            font-size: 20px;
+        }
+        
+        .period-description {
+            line-height: 1.6;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .period-facts {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 14px;
+        }
+        
+        .fact-item {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        
+        .fact-icon {
+            color: #64B5F6;
+            font-size: 16px;
+            flex-shrink: 0;
+        }
+        
+        /* Location tracking */
+        .location-panel {
+            position: absolute;
+            top: 220px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 25px;
+            border-radius: 15px;
+            width: 350px;
+            z-index: 100;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .location-panel h3 {
+            margin-bottom: 20px;
+            color: #64B5F6;
+            font-size: 20px;
+        }
+        
+        .search-box {
+            display: flex;
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid rgba(100, 181, 246, 0.3);
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 12px 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: none;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            background: rgba(255, 255, 255, 0.1);
+        }
+        
+        .search-btn {
+            padding: 12px 20px;
+            background: rgba(100, 181, 246, 0.8);
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background 0.3s;
+        }
+        
+        .search-btn:hover {
+            background: #64B5F6;
+        }
+        
+        .preset-locations {
+            margin-bottom: 20px;
+        }
+        
+        .preset-section {
+            margin-bottom: 15px;
+        }
+        
+        .preset-title {
+            font-size: 12px;
+            color: #81C784;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .preset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+        
+        .preset-btn {
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        
+        .preset-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #64B5F6;
+            transform: translateY(-1px);
+        }
+        
+        .location-info {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 13px;
+        }
+        
+        .coord-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .coord-label {
+            color: #81C784;
+        }
+        
+        .coord-value {
+            font-family: monospace;
+        }
+        
+        /* Controls hint */
+        .controls-hint {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            z-index: 100;
+            opacity: 0.8;
+            backdrop-filter: blur(10px);
+        }
+        
+        /* Loading screen */
+        #loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        
+        .loading-content {
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(100, 181, 246, 0.3);
+            border-top: 3px solid #64B5F6;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 30px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 24px;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #64B5F6, #81C784);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .loading-progress {
+            font-size: 18px;
+            color: #64B5F6;
+            margin-bottom: 5px;
+        }
+        
+        .loading-detail {
+            font-size: 14px;
+            opacity: 0.6;
+        }
+        
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .main-title h2 {
+                font-size: 24px;
+            }
+            
+            .info-panel, .location-panel {
+                display: none;
+            }
+            
+            .timeline-container {
+                width: 95%;
+                padding: 20px;
+                bottom: 80px;
+            }
+            
+            .controls-hint {
+                display: none;
+            }
+            
+            .header {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+        
+        /* Earth canvas */
+        canvas {
+            display: block;
+            cursor: grab;
+        }
+        
+        canvas:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <!-- Header -->
+        <header class="header">
+            <a href="/" class="logo">
+                <h1>Deep Time Whispers</h1>
+            </a>
+            <nav class="nav-links">
+                <a href="/">Home</a>
+                <a href="/timeline">Timeline</a>
+                <a href="/ancient-earth" style="opacity: 1;">Ancient Earth</a>
+                <a href="/about">About</a>
+            </nav>
+        </header>
+        
+        <!-- Main Title -->
+        <div class="main-title">
+            <h2>Ancient Earth</h2>
+            <p>Travel through 750 million years of continental drift</p>
+        </div>
+        
+        <!-- Animation Controls -->
+        <div class="animation-controls">
+            <button class="control-btn" onclick="togglePlay()">
+                <span id="playText">▶ Play Animation</span>
+            </button>
+            <button class="control-btn" onclick="reverseDirection()">
+                <span id="directionText">↓ Forward in Time</span>
+            </button>
+            <div class="speed-control">
+                <label>Speed:</label>
+                <input type="range" class="speed-slider" id="speedSlider" 
+                       min="1" max="10" value="5" onchange="updateSpeed()">
+                <span id="speedText">5x</span>
+            </div>
+        </div>
+        
+        <!-- Timeline -->
+        <div class="timeline-container">
+            <div class="timeline-current">
+                <span class="period-name" id="periodName">Present Day</span>
+                <span class="period-time" id="periodTime">0 Million Years Ago</span>
+            </div>
+            
+            <input type="range" class="timeline-slider" id="timelineSlider" 
+                   min="0" max="89" value="0" oninput="jumpToFrame(this.value)">
+            
+            <div class="timeline-labels">
+                <span>Present</span>
+                <span>100 MYA</span>
+                <span>200 MYA</span>
+                <span>300 MYA</span>
+                <span>400 MYA</span>
+                <span>500 MYA</span>
+                <span>600 MYA</span>
+                <span>750 MYA</span>
+            </div>
+            
+            <div class="timeline-events" id="timelineEvents">
+                <!-- Major events will be added here -->
+            </div>
+        </div>
+        
+        <!-- Info Panel -->
+        <div class="info-panel" id="infoPanel">
+            <div class="info-toggle" onclick="toggleInfoPanel()">
+                <span id="infoToggleIcon">◀</span>
+            </div>
+            <h3>Geological Period</h3>
+            <div class="period-description" id="periodDescription">
+                Welcome to Ancient Earth! Use the timeline to travel through deep time and witness the dance of continents across our planet's surface.
+            </div>
+            <div class="period-facts" id="periodFacts">
+                <div class="fact-item">
+                    <span class="fact-icon">🌡️</span>
+                    <span>Climate: <span id="climateInfo">Temperate</span></span>
+                </div>
+                <div class="fact-item">
+                    <span class="fact-icon">🦕</span>
+                    <span>Life: <span id="lifeInfo">Diverse ecosystems</span></span>
+                </div>
+                <div class="fact-item">
+                    <span class="fact-icon">🌍</span>
+                    <span>Configuration: <span id="configInfo">Modern continents</span></span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Location Panel -->
+        <div class="location-panel">
+            <h3>Track Location Through Time</h3>
+            
+            <div class="search-box">
+                <input type="text" class="search-input" id="locationInput" 
+                       placeholder="Search city or enter lat,lng">
+                <button class="search-btn" onclick="searchLocation()">Track</button>
+            </div>
+            
+            <div class="preset-locations">
+                <div class="preset-section">
+                    <div class="preset-title">Major Cities</div>
+                    <div class="preset-grid">
+                        <button class="preset-btn" onclick="trackLocation('New York', 40.7128, -74.0060)">New York</button>
+                        <button class="preset-btn" onclick="trackLocation('London', 51.5074, -0.1278)">London</button>
+                        <button class="preset-btn" onclick="trackLocation('Tokyo', 35.6762, 139.6503)">Tokyo</button>
+                        <button class="preset-btn" onclick="trackLocation('Sydney', -33.8688, 151.2093)">Sydney</button>
+                        <button class="preset-btn" onclick="trackLocation('Cairo', 30.0444, 31.2357)">Cairo</button>
+                        <button class="preset-btn" onclick="trackLocation('Mumbai', 19.0760, 72.8777)">Mumbai</button>
+                    </div>
+                </div>
+                
+                <div class="preset-section">
+                    <div class="preset-title">Geological Sites</div>
+                    <div class="preset-grid">
+                        <button class="preset-btn" onclick="trackLocation('Grand Canyon', 36.1069, -112.1129)">Grand Canyon</button>
+                        <button class="preset-btn" onclick="trackLocation('Yellowstone', 44.4280, -110.5885)">Yellowstone</button>
+                        <button class="preset-btn" onclick="trackLocation('Hawaii', 19.8968, -155.5828)">Hawaii</button>
+                        <button class="preset-btn" onclick="trackLocation('Iceland', 64.9631, -19.0208)">Iceland</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="location-info" id="locationInfo" style="display: none;">
+                <div class="coord-item">
+                    <span class="coord-label">Location:</span>
+                    <span class="coord-value" id="currentLocationName">-</span>
+                </div>
+                <div class="coord-item">
+                    <span class="coord-label">Modern Position:</span>
+                    <span class="coord-value" id="modernCoords">-</span>
+                </div>
+                <div class="coord-item">
+                    <span class="coord-label">Ancient Position:</span>
+                    <span class="coord-value" id="ancientCoords">-</span>
+                </div>
+                <div class="coord-item" style="border: none;">
+                    <span class="coord-label">Distance Moved:</span>
+                    <span class="coord-value" id="distanceMoved">-</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Controls Hint -->
+        <div class="controls-hint">
+            <strong>Controls:</strong><br>
+            🖱️ Drag to rotate<br>
+            📏 Scroll to zoom<br>
+            ⬆️⬇️ Arrow keys to tilt
+        </div>
+        
+        <!-- Loading Screen -->
+        <div id="loading">
+            <div class="loading-content">
+                <div class="spinner"></div>
+                <div class="loading-text">Preparing Your Journey Through Time</div>
+                <div class="loading-progress" id="loadProgress">0%</div>
+                <div class="loading-detail" id="loadDetail">Loading ancient Earth textures...</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="/website/js/ancient-earth.js"></script>
+</body>
+</html>
