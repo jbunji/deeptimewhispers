@@ -334,24 +334,24 @@ async function updateLocationForTime(mya) {
 
 // Calculate continental drift using GPlates API
 async function calculateContinentalDrift(location, mya) {
+    // If no time has passed, return current location
+    if (mya === 0) {
+        return {
+            ancientLat: location.lat,
+            ancientLon: location.lon,
+            paleolatitude: Math.round(location.lat)
+        };
+    }
+    
     try {
-        // Check if we're on the deployed site or running locally
-        const isProduction = window.location.hostname === 'deeptimewhispers.com';
-        
-        let url;
-        if (isProduction) {
-            // Use the proxy in production
-            const endpoint = '/api/gplates/reconstruct';
-            url = `${endpoint}?points=${location.lon},${location.lat}&time=${mya}&model=MULLER2019`;
-        } else {
-            // For local development, just use the fallback calculation
-            // Direct API calls would face CORS issues
-            throw new Error('Using fallback for local development');
-        }
+        // Always use the Vercel API endpoint (it's deployed and available)
+        const vercelUrl = 'https://deeptimewhispers.vercel.app/api/gplates/reconstruct';
+        const url = `${vercelUrl}?points=${location.lon},${location.lat}&time=${mya}&model=MULLER2019`;
         
         const response = await fetch(url);
         const data = await response.json();
         
+        // Handle the response format from GPlates
         if (data.type === 'MultiPoint' && data.coordinates && data.coordinates.length > 0) {
             const coords = data.coordinates[0];
             return {
@@ -359,29 +359,51 @@ async function calculateContinentalDrift(location, mya) {
                 ancientLon: coords[0],
                 paleolatitude: Math.round(coords[1])
             };
+        } else if (data.features && data.features.length > 0) {
+            // Alternative response format
+            const coords = data.features[0].geometry.coordinates;
+            return {
+                ancientLat: coords[1],
+                ancientLon: coords[0],
+                paleolatitude: Math.round(coords[1])
+            };
         }
     } catch (error) {
-        console.log('Using simplified drift calculation');
+        console.error('GPlates API error:', error);
     }
     
-    // Fallback to simplified calculation if API fails
+    // More realistic fallback calculation based on plate tectonics
     let ancientLat = location.lat;
     let ancientLon = location.lon;
-    let paleolatitude = location.lat;
     
-    // Simulate northward drift for Northern Hemisphere
-    if (location.lat > 0) {
-        ancientLat = location.lat - (mya * 0.05);
-        paleolatitude = ancientLat;
+    // North American plate motion (simplified)
+    if (location.lon > -130 && location.lon < -60 && location.lat > 25) {
+        // North America has moved northwest
+        ancientLat = location.lat - (mya * 0.1);  // ~10 degrees per 100MY
+        ancientLon = location.lon + (mya * 0.15); // ~15 degrees per 100MY
     }
-    
-    // Simulate westward drift
-    ancientLon = location.lon - (mya * 0.1);
+    // European plate
+    else if (location.lon > -10 && location.lon < 40 && location.lat > 35) {
+        // Europe has moved north and rotated
+        ancientLat = location.lat - (mya * 0.2);
+        ancientLon = location.lon - (mya * 0.05);
+    }
+    // Australian plate
+    else if (location.lon > 110 && location.lon < 160 && location.lat < -10) {
+        // Australia has moved north rapidly
+        ancientLat = location.lat - (mya * 0.3);
+        ancientLon = location.lon - (mya * 0.1);
+    }
+    // General drift for other locations
+    else {
+        ancientLat = location.lat - (mya * 0.05);
+        ancientLon = location.lon - (mya * 0.1);
+    }
     
     return {
         ancientLat,
         ancientLon,
-        paleolatitude: Math.round(paleolatitude)
+        paleolatitude: Math.round(ancientLat)
     };
 }
 
