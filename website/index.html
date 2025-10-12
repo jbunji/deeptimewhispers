@@ -3,14 +3,363 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deep Time Whispers</title>
-    <!-- Redirect to the actual index page -->
-    <meta http-equiv="refresh" content="0; url=src/pages/index.html">
-    <script type="text/javascript">
-        window.location.href = "src/pages/index.html"
-    </script>
+    <title>Deep Time Whispers - Journey Through Earth's Deep Past</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a0a;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+        
+        /* Header */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .logo {
+            font-size: 24px;
+            font-weight: 300;
+            background: linear-gradient(45deg, #64B5F6, #81C784);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 40px;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: #ffffff;
+            text-decoration: none;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+        
+        .nav-links a:hover {
+            opacity: 1;
+        }
+        
+        /* Hero Section */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            position: relative;
+            background: radial-gradient(circle at center, rgba(100, 181, 246, 0.1) 0%, transparent 50%);
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            padding: 0 20px;
+        }
+        
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 300;
+            margin-bottom: 20px;
+            line-height: 1.2;
+        }
+        
+        .hero .tagline {
+            font-size: 1.5rem;
+            color: #64B5F6;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            opacity: 0.9;
+            margin-bottom: 40px;
+        }
+        
+        .cta-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .btn {
+            padding: 15px 40px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            text-decoration: none;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #64B5F6, #81C784);
+            color: #000;
+            font-weight: 500;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(100, 181, 246, 0.3);
+        }
+        
+        .btn-secondary {
+            border: 2px solid #64B5F6;
+            color: #64B5F6;
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(100, 181, 246, 0.1);
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 100px 50px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-size: 3rem;
+            text-align: center;
+            margin-bottom: 60px;
+            font-weight: 300;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 40px;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s;
+        }
+        
+        .feature-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            transform: translateY(-5px);
+            border-color: #64B5F6;
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+        
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: #81C784;
+        }
+        
+        .feature-card p {
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+        
+        /* Ancient Earth Preview */
+        .ancient-earth-preview {
+            padding: 100px 50px;
+            background: linear-gradient(180deg, transparent, rgba(100, 181, 246, 0.05), transparent);
+        }
+        
+        .preview-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 60px;
+            align-items: center;
+        }
+        
+        .preview-text h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+        }
+        
+        .preview-text p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .preview-features {
+            list-style: none;
+            margin-bottom: 40px;
+        }
+        
+        .preview-features li {
+            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .preview-features li:before {
+            content: "✓";
+            color: #81C784;
+            font-size: 1.5rem;
+        }
+        
+        .preview-image {
+            position: relative;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+        }
+        
+        .preview-image img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        /* Footer */
+        footer {
+            padding: 50px;
+            text-align: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        footer p {
+            opacity: 0.6;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero .tagline {
+                font-size: 1.2rem;
+            }
+            
+            .cta-buttons {
+                flex-direction: column;
+                width: 100%;
+            }
+            
+            .btn {
+                width: 100%;
+            }
+            
+            .preview-content {
+                grid-template-columns: 1fr;
+            }
+            
+            nav {
+                padding: 15px 20px;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
-    <p>Redirecting to Deep Time Whispers...</p>
+    <!-- Header -->
+    <header>
+        <nav>
+            <div class="logo">Deep Time Whispers</div>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/website/ancient-earth-final.html">Ancient Earth</a></li>
+                <li><a href="/timeline">Timeline</a></li>
+                <li><a href="/about">About</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Deep Time Whispers</h1>
+            <p class="tagline">"I am The Chrononauts, and I have drifted through the ages like smoke through still air..."</p>
+            <p>Journey through Earth's deepest past. Experience the birth of the Moon, walk with the last mammoth, witness the day the sky fell. Let catastrophes become calm. Let ancient memories guide you to peaceful sleep.</p>
+            <div class="cta-buttons">
+                <a href="/website/ancient-earth-final.html" class="btn btn-primary">Explore Ancient Earth</a>
+                <a href="#features" class="btn btn-secondary">Learn More</a>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <h2 class="section-title">Experience Deep Time</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🌍</div>
+                <h3>Ancient Earth</h3>
+                <p>Watch 750 million years of continental drift. Track any location through deep time and see where it was when dinosaurs roamed or during the formation of supercontinents.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🎧</div>
+                <h3>Immersive Audio</h3>
+                <p>Drift off to sleep with guided meditations through Earth's history. From the violence of cosmic impacts to the peaceful grazing of ancient megafauna.</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">📚</div>
+                <h3>Deep Stories</h3>
+                <p>Each journey is grounded in real science. Learn about mass extinctions, evolution, and the incredible story of our planet while finding peace in the vastness of time.</p>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Ancient Earth Preview -->
+    <section class="ancient-earth-preview">
+        <div class="preview-content">
+            <div class="preview-text">
+                <h2>Travel Through Time</h2>
+                <p>Our Ancient Earth visualization lets you explore our planet's incredible transformation over hundreds of millions of years.</p>
+                <ul class="preview-features">
+                    <li>Watch continents drift and collide</li>
+                    <li>Track any location through deep time</li>
+                    <li>Learn about major geological events</li>
+                    <li>Powered by real paleomagnetic data</li>
+                </ul>
+                <a href="/website/ancient-earth-final.html" class="btn btn-primary">Launch Ancient Earth</a>
+            </div>
+            <div class="preview-image">
+                <img src="/assets/ancient-earth-preview.jpg" alt="Ancient Earth Preview" style="background: #1a1a1a; height: 400px;">
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2024 Deep Time Whispers. Journey through Earth's deepest past.</p>
+    </footer>
 </body>
 </html>

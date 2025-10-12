@@ -6,8 +6,39 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader('Access-Control-Allow-Methods', 'GET');
     
-    const { points, time, model = 'MULLER2019' } = req.query;
+    const { points, time, model = 'MULLER2019', feature } = req.query;
     
+    // Handle different feature types
+    if (feature === 'coastlines') {
+        try {
+            const url = `https://gws.gplates.org/reconstruct/coastlines/?time=${time}&model=${model}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return res.status(response.status).json(data);
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    } else if (feature === 'plate_boundaries') {
+        try {
+            const url = `https://gws.gplates.org/topology/plate_boundaries/?time=${time}&model=${model}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return res.status(response.status).json(data);
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    } else if (feature === 'motion_path' && points) {
+        try {
+            const url = `https://gws.gplates.org/reconstruct/motion_path/?locations=${points}&time_start=0&time_stop=${time}&model=${model}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return res.status(response.status).json(data);
+        } catch (error) {
+            return res.status(500).json({ error: error.message });
+        }
+    }
+    
+    // Default to point reconstruction
     if (!points || !time) {
         return res.status(400).json({ 
             error: 'Missing required parameters: points and time' 
