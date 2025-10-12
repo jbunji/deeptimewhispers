@@ -1205,8 +1205,8 @@
             
             // Convert degrees to radians using paleo coordinates
             const latRad = (paleoLat * Math.PI) / 180;
-            // PALEOMAP textures appear to have a 90-degree offset
-            const lngRad = ((paleoLng + 90) * Math.PI) / 180;
+            // Three.js uses a different coordinate system - adjust longitude
+            const lngRad = ((paleoLng) * Math.PI) / 180;
             
             // Spherical to Cartesian conversion (Y-up coordinate system)
             const x = radius * Math.cos(latRad) * Math.sin(lngRad);
