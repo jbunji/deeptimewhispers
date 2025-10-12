@@ -1180,16 +1180,18 @@
             locationPin.position.set(x, y, z);
             
             // Orient pin to point outward from Earth center
-            // We want the pin's local Y-axis to align with the surface normal
-            const surfaceNormal = new THREE.Vector3(x, y, z).normalize();
+            // The pin's position vector IS the outward direction
+            const outwardDirection = new THREE.Vector3(x, y, z).normalize();
             
-            // Use lookAt to orient the pin
-            // lookAt makes the -Z axis point toward the target, so we look "away" from center
-            const awayFromCenter = new THREE.Vector3(x * 2, y * 2, z * 2);
-            locationPin.lookAt(awayFromCenter);
+            // Default "up" vector for the pin (before rotation)
+            const pinUp = new THREE.Vector3(0, 1, 0);
             
-            // Rotate 90 degrees around X to make Y point outward instead of -Z
-            locationPin.rotateX(Math.PI / 2);
+            // Calculate quaternion to rotate from default up to outward direction
+            const quaternion = new THREE.Quaternion();
+            quaternion.setFromUnitVectors(pinUp, outwardDirection);
+            
+            // Apply the rotation
+            locationPin.quaternion.copy(quaternion);
             
             // Ensure pin is visible
             locationPin.visible = true;
