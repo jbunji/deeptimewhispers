@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - Continental Drift</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/ancient-earth.css">
+    
+    <style>
+        #globeViz {
+            background: radial-gradient(ellipse at center, #1b2735 0%, #090a0f 100%);
+        }
+        .info-box {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Raleway', sans-serif;
+            max-width: 350px;
+        }
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background Animation -->
+    <div class="cosmic-bg">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+        <div class="nebula"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html" class="logo-text">Deep Time Whispers</a>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="timeline.html" class="nav-link">Timeline</a>
+                    <a href="ancient-earth-viewer.html" class="nav-link active">Ancient Earth</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="ancient-earth-hero">
+        <div class="container">
+            <h1 class="page-title">Continental Drift Through Time</h1>
+            <p class="page-subtitle">Watch Earth's changing face over 750 million years</p>
+        </div>
+    </section>
+
+    <section class="ancient-earth-main">
+        <div class="ancient-earth-layout">
+            <div class="controls-panel">
+                <h3>Time Control</h3>
+                <div class="time-slider-container">
+                    <input type="range" id="timeSlider" class="time-slider" min="0" max="750" value="0" step="10">
+                    <div class="time-display">
+                        <span id="timeValue" style="font-size: 20px;">Present Day</span>
+                        <span id="myaValue" class="mya-value">0 MYA</span>
+                    </div>
+                </div>
+
+                <div class="quick-jumps">
+                    <h4>Major Time Periods</h4>
+                    <button class="period-btn active" onclick="jumpToTime(0, 'Present Day')">Present</button>
+                    <button class="period-btn" onclick="jumpToTime(66, 'K-T Extinction')">K-T Extinction</button>
+                    <button class="period-btn" onclick="jumpToTime(150, 'Jurassic')">Jurassic</button>
+                    <button class="period-btn" onclick="jumpToTime(200, 'Pangaea')">Pangaea</button>
+                    <button class="period-btn" onclick="jumpToTime(250, 'Permian')">Great Dying</button>
+                    <button class="period-btn" onclick="jumpToTime(300, 'Carboniferous')">Coal Swamps</button>
+                    <button class="period-btn" onclick="jumpToTime(400, 'Devonian')">First Trees</button>
+                    <button class="period-btn" onclick="jumpToTime(540, 'Cambrian')">Cambrian</button>
+                    <button class="period-btn" onclick="jumpToTime(750, 'Snowball')">Snowball Earth</button>
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <button id="animBtn" onclick="toggleAnimation()" style="background: #4CAF50; color: white; border: none; padding: 12px 20px; border-radius: 5px; width: 100%; font-size: 16px; cursor: pointer;">
+                        ▶️ Play Animation
+                    </button>
+                </div>
+            </div>
+
+            <div class="globe-container">
+                <div id="globeViz">
+                    <div class="loading">Loading Earth...</div>
+                </div>
+                <div class="info-box">
+                    <h4 id="periodName">Present Day</h4>
+                    <p id="periodDesc">Seven continents in their modern configuration</p>
+                    <p style="margin-top: 10px; font-size: 12px; opacity: 0.8;">
+                        Rotate: Click & drag | Zoom: Scroll
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="//unpkg.com/three@0.147.0/build/three.min.js"></script>
+    <script src="//unpkg.com/globe.gl"></script>
+    <script>
+        let globe;
+        let currentTime = 0;
+        let animationInterval = null;
+        
+        // Continental configurations for different time periods
+        const continentData = {
+            0: {
+                name: "Present Day",
+                desc: "Seven continents in their modern configuration",
+                color: "#4A90E2",
+                continents: [
+                    // North America
+                    {
+                        coords: [[
+                            [-165, 55], [-155, 65], [-140, 70], [-120, 70], [-100, 70], [-85, 65],
+                            [-75, 45], [-80, 30], [-90, 20], [-100, 25], [-115, 30], [-120, 40],
+                            [-125, 48], [-130, 53], [-140, 59], [-155, 57], [-165, 55]
+                        ]],
+                        color: "#2E7D32"
+                    },
+                    // South America
+                    {
+                        coords: [[
+                            [-78, 10], [-75, 5], [-70, 0], [-65, -5], [-58, -3], [-52, 2],
+                            [-48, -2], [-44, -8], [-42, -15], [-44, -23], [-48, -28], [-52, -34],
+                            [-56, -36], [-62, -40], [-65, -42], [-68, -45], [-70, -48], [-72, -50],
+                            [-74, -45], [-76, -38], [-74, -30], [-72, -20], [-70, -10], [-73, -2],
+                            [-78, 10]
+                        ]],
+                        color: "#388E3C"
+                    },
+                    // Africa
+                    {
+                        coords: [[
+                            [-17, 35], [-12, 37], [-5, 36], [0, 36], [10, 37], [15, 33],
+                            [20, 31], [25, 30], [32, 27], [35, 22], [38, 15], [42, 11],
+                            [45, 5], [48, 0], [50, -5], [51, -10], [49, -15], [46, -20],
+                            [42, -25], [38, -28], [32, -32], [26, -34], [20, -34], [18, -32],
+                            [15, -28], [12, -20], [8, -12], [4, -5], [0, 0], [-5, 5],
+                            [-10, 8], [-15, 12], [-17, 20], [-18, 25], [-17, 35]
+                        ]],
+                        color: "#6D4C41"
+                    },
+                    // Europe
+                    {
+                        coords: [[
+                            [-10, 62], [-5, 58], [0, 56], [5, 54], [10, 55], [15, 58],
+                            [20, 60], [25, 62], [30, 64], [35, 68], [40, 70], [50, 68],
+                            [60, 65], [50, 60], [45, 55], [40, 52], [35, 50], [30, 48],
+                            [25, 46], [20, 45], [15, 44], [10, 43], [5, 44], [0, 46],
+                            [-5, 48], [-10, 52], [-10, 62]
+                        ]],
+                        color: "#1565C0"
+                    },
+                    // Asia
+                    {
+                        coords: [[
+                            [30, 45], [40, 48], [50, 50], [60, 52], [70, 54], [80, 56],
+                            [90, 58], [100, 60], [110, 62], [120, 64], [130, 66], [140, 68],
+                            [150, 65], [160, 60], [165, 55], [170, 50], [175, 45], [180, 40],
+                            [175, 35], [170, 30], [165, 25], [160, 20], [150, 15], [140, 12],
+                            [130, 10], [120, 8], [110, 6], [100, 5], [90, 8], [80, 12],
+                            [70, 18], [60, 22], [50, 25], [40, 30], [35, 35], [30, 45]
+                        ]],
+                        color: "#D84315"
+                    },
+                    // Australia
+                    {
+                        coords: [[
+                            [113, -12], [120, -10], [130, -11], [135, -12], [142, -15],
+                            [148, -20], [152, -25], [153, -30], [152, -35], [148, -38],
+                            [143, -39], [138, -36], [132, -32], [125, -30], [120, -28],
+                            [115, -25], [112, -20], [113, -12]
+                        ]],
+                        color: "#F57F17"
+                    },
+                    // Antarctica
+                    {
+                        coords: [[
+                            [0, -70], [45, -68], [90, -66], [135, -68], [180, -70],
+                            [-135, -72], [-90, -74], [-45, -72], [0, -70]
+                        ]],
+                        color: "#E3F2FD"
+                    }
+                ]
+            },
+            66: {
+                name: "End of the Dinosaurs",
+                desc: "Just before the asteroid impact - continents approaching modern positions",
+                color: "#FF6F00",
+                continents: [
+                    // North America (more to the west)
+                    {
+                        coords: [[
+                            [-150, 50], [-140, 58], [-125, 65], [-105, 68], [-85, 65],
+                            [-70, 55], [-65, 40], [-70, 25], [-85, 20], [-100, 22], 
+                            [-115, 28], [-125, 38], [-135, 45], [-150, 50]
+                        ]],
+                        color: "#2E7D32"
+                    },
+                    // South America + Africa (still close)
+                    {
+                        coords: [[
+                            [-50, 5], [-40, 10], [-20, 12], [0, 10], [15, 8],
+                            [30, 5], [35, -10], [30, -25], [20, -35], [5, -40],
+                            [-15, -38], [-30, -35], [-45, -30], [-55, -20], [-60, -10],
+                            [-55, 0], [-50, 5]
+                        ]],
+                        color: "#5D4037"
+                    },
+                    // India (separate, moving north)
+                    {
+                        coords: [[
+                            [65, -20], [75, -18], [80, -22], [78, -30], [70, -32],
+                            [65, -28], [65, -20]
+                        ]],
+                        color: "#FF8F00"
+                    }
+                ]
+            },
+            150: {
+                name: "Jurassic Period",
+                desc: "Age of giant dinosaurs - Pangaea beginning to break up",
+                color: "#00C853",
+                continents: [
+                    // Northern Laurasia
+                    {
+                        coords: [[
+                            [-80, 40], [-60, 45], [-40, 48], [-20, 50], [0, 52],
+                            [20, 50], [40, 48], [60, 45], [80, 42], [100, 40],
+                            [120, 38], [130, 35], [120, 30], [100, 28], [80, 25],
+                            [60, 22], [40, 20], [20, 18], [0, 20], [-20, 22],
+                            [-40, 25], [-60, 30], [-80, 35], [-80, 40]
+                        ]],
+                        color: "#1B5E20"
+                    },
+                    // Southern Gondwana
+                    {
+                        coords: [[
+                            [-40, 0], [-20, -5], [0, -10], [20, -15], [40, -20],
+                            [60, -25], [80, -30], [100, -35], [120, -40], [130, -45],
+                            [125, -55], [110, -60], [90, -62], [70, -60], [50, -55],
+                            [30, -50], [10, -45], [-10, -40], [-30, -35], [-50, -30],
+                            [-60, -20], [-55, -10], [-40, 0]
+                        ]],
+                        color: "#4E342E"
+                    }
+                ]
+            },
+            200: {
+                name: "Pangaea Supercontinent",
+                desc: "All continents merged into one giant landmass",
+                color: "#D32F2F",
+                continents: [
+                    // Pangaea
+                    {
+                        coords: [[
+                            [-30, 60], [-10, 65], [10, 68], [30, 65], [50, 60],
+                            [70, 55], [85, 45], [95, 35], [100, 20], [95, 5],
+                            [85, -10], [70, -25], [50, -40], [30, -50], [10, -55],
+                            [-10, -58], [-30, -55], [-50, -50], [-65, -40], [-75, -25],
+                            [-80, -10], [-75, 5], [-65, 20], [-50, 35], [-40, 50],
+                            [-30, 60]
+                        ]],
+                        color: "#8D6E63"
+                    }
+                ]
+            },
+            300: {
+                name: "Carboniferous Period",
+                desc: "Giant coal swamps, continents assembling",
+                color: "#1B5E20",
+                continents: [
+                    // Euramerica
+                    {
+                        coords: [[
+                            [-70, 10], [-50, 15], [-30, 18], [-10, 20], [10, 18],
+                            [30, 15], [45, 10], [50, 0], [45, -10], [30, -15],
+                            [10, -18], [-10, -20], [-30, -18], [-50, -15], [-70, -10],
+                            [-75, 0], [-70, 10]
+                        ]],
+                        color: "#2E7D32"
+                    },
+                    // Gondwana
+                    {
+                        coords: [[
+                            [20, -30], [40, -35], [60, -40], [80, -45], [100, -50],
+                            [110, -60], [100, -70], [80, -75], [60, -77], [40, -75],
+                            [20, -70], [0, -65], [-20, -60], [-40, -55], [-50, -45],
+                            [-40, -35], [-20, -30], [0, -25], [20, -30]
+                        ]],
+                        color: "#3E2723"
+                    }
+                ]
+            },
+            540: {
+                name: "Cambrian Explosion",
+                desc: "Life explodes in the oceans - most land in the south",
+                color: "#01579B",
+                continents: [
+                    // Gondwana (huge southern continent)
+                    {
+                        coords: [[
+                            [0, -20], [30, -25], [60, -30], [90, -35], [120, -40],
+                            [150, -45], [170, -50], [175, -60], [165, -70], [140, -75],
+                            [110, -78], [80, -80], [50, -78], [20, -75], [-10, -70],
+                            [-40, -65], [-60, -60], [-70, -50], [-65, -40], [-50, -30],
+                            [-30, -25], [0, -20]
+                        ]],
+                        color: "#5D4037"
+                    },
+                    // Laurentia (proto North America)
+                    {
+                        coords: [[
+                            [-100, -10], [-80, -5], [-60, -8], [-50, -15], [-60, -22],
+                            [-80, -25], [-100, -22], [-110, -15], [-100, -10]
+                        ]],
+                        color: "#0D47A1"
+                    }
+                ]
+            },
+            750: {
+                name: "Snowball Earth",
+                desc: "Earth completely frozen - Rodinia supercontinent breaking up",
+                color: "#FFFFFF",
+                continents: [
+                    // Rodinia fragments
+                    {
+                        coords: [[
+                            [-60, 10], [-30, 15], [0, 18], [30, 15], [60, 10],
+                            [80, 0], [85, -20], [70, -35], [45, -45], [15, -50],
+                            [-15, -48], [-45, -45], [-70, -35], [-85, -20], [-80, 0],
+                            [-60, 10]
+                        ]],
+                        color: "#CFD8DC"
+                    }
+                ]
+            }
+        };
+        
+        // Initialize globe
+        function initGlobe() {
+            const container = document.getElementById('globeViz');
+            
+            // Create globe without any base image - just ocean color
+            globe = Globe()(container)
+                .backgroundColor('#000000')
+                .showGraticules(true)
+                .showAtmosphere(true)
+                .atmosphereColor('#4A90E2')
+                .atmosphereAltitude(0.15)
+                // Use a solid color for the globe instead of an image
+                .globeImageUrl('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==')
+                .polygonsData([])
+                .polygonCapColor(d => d.color || '#8B4513')
+                .polygonSideColor(() => 'rgba(0, 0, 0, 0.15)')
+                .polygonStrokeColor(() => '#000000')
+                .polygonAltitude(0.01);
+            
+            // Custom material for ocean
+            const globeMaterial = globe.globeMaterial();
+            globeMaterial.color = new window.THREE.Color('#001a33'); // Dark blue ocean
+            
+            // Set view
+            globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 });
+            
+            // Remove loading message
+            setTimeout(() => {
+                const loading = document.querySelector('.loading');
+                if (loading) loading.style.display = 'none';
+            }, 1000);
+            
+            // Initialize with present day
+            updateContinents(0);
+        }
+        
+        // Update continents
+        function updateContinents(time) {
+            // Find nearest time period
+            const times = Object.keys(continentData).map(Number).sort((a,b) => a-b);
+            let nearestTime = 0;
+            
+            for (let t of times) {
+                if (time >= t) nearestTime = t;
+            }
+            
+            const data = continentData[nearestTime];
+            
+            // Update UI
+            document.getElementById('periodName').textContent = data.name;
+            document.getElementById('periodDesc').textContent = data.desc;
+            document.getElementById('timeValue').textContent = data.name;
+            document.getElementById('myaValue').textContent = time + ' MYA';
+            
+            // Convert continent data to GeoJSON
+            const polygons = data.continents.map(continent => ({
+                type: 'Feature',
+                properties: { color: continent.color },
+                geometry: {
+                    type: 'Polygon',
+                    coordinates: continent.coords
+                }
+            }));
+            
+            // Update globe
+            globe.polygonsData(polygons);
+            
+            // Update atmosphere color based on time
+            if (time >= 750) {
+                globe.atmosphereColor('#FFFFFF');
+                const mat = globe.globeMaterial();
+                mat.color = new window.THREE.Color('#E8F5E9'); // Light frozen ocean
+            } else if (time >= 400) {
+                globe.atmosphereColor('#FF9800');
+                const mat = globe.globeMaterial();
+                mat.color = new window.THREE.Color('#00264d'); // Different ocean
+            } else {
+                globe.atmosphereColor('#4A90E2');
+                const mat = globe.globeMaterial();
+                mat.color = new window.THREE.Color('#001a33'); // Modern ocean
+            }
+        }
+        
+        // Time slider
+        document.getElementById('timeSlider').addEventListener('input', (e) => {
+            currentTime = parseInt(e.target.value);
+            updateContinents(currentTime);
+        });
+        
+        // Jump to time
+        function jumpToTime(time, name) {
+            currentTime = time;
+            document.getElementById('timeSlider').value = time;
+            updateContinents(time);
+            
+            // Update buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+        
+        // Animation
+        let isAnimating = false;
+        function toggleAnimation() {
+            const btn = document.getElementById('animBtn');
+            
+            if (isAnimating) {
+                clearInterval(animationInterval);
+                btn.textContent = '▶️ Play Animation';
+                isAnimating = false;
+            } else {
+                animationInterval = setInterval(() => {
+                    currentTime += 5;
+                    if (currentTime > 750) currentTime = 0;
+                    document.getElementById('timeSlider').value = currentTime;
+                    updateContinents(currentTime);
+                }, 150);
+                btn.textContent = '⏸ Stop Animation';
+                isAnimating = true;
+            }
+        }
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            initGlobe();
+        });
+        
+        // Make functions global
+        window.jumpToTime = jumpToTime;
+        window.toggleAnimation = toggleAnimation;
+    </script>
+</body>
+</html>

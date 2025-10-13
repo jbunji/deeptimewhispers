@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deep Time Explorer - Journey Through Earth's History</title>
+    <meta name="description" content="Explore 4.5 billion years of Earth's history with the Deep Time Explorer. From the Hadean to the Holocene, discover the events that shaped our planet.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/timeline.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/DeepTimeWhispers-Final.png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html" class="logo-text">Deep Time Whispers</a>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="timeline.html" class="nav-link active">Timeline</a>
+                    <a href="ancient-earth-viewer.html" class="nav-link">Ancient Earth</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="timeline-hero">
+        <div class="container">
+            <h1 class="timeline-title">Deep Time Explorer</h1>
+            <p class="timeline-subtitle">Journey Through 4.5 Billion Years of Earth's History</p>
+            <div class="timeline-controls">
+                <button class="zoom-btn" id="zoomIn">+ Zoom In</button>
+                <button class="zoom-btn" id="zoomOut">- Zoom Out</button>
+                <button class="zoom-btn" id="resetView">Reset View</button>
+            </div>
+            
+            <!-- Search and Filter Controls -->
+            <div class="timeline-filters">
+                <div class="filter-top-row">
+                    <div class="search-box">
+                        <input type="text" id="eventSearch" placeholder="Search events..." class="event-search-input">
+                        <button id="clearSearch" class="clear-search-btn" style="display: none;">&times;</button>
+                    </div>
+                    <button class="comparison-toggle-btn" onclick="toggleComparison()">
+                        ⚖️ Compare Periods
+                    </button>
+                    <div class="keyboard-help">
+                        <span class="help-icon" title="Keyboard shortcuts: / = Search, 1-7 = Filters, ESC = Clear">⌨️</span>
+                    </div>
+                </div>
+                
+                <div class="filter-controls-row">
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="catastrophe" title="Catastrophes">
+                            <span class="filter-dot" style="background: #ef4444;"></span>
+                        </button>
+                        <button class="filter-btn" data-filter="evolution" title="Evolution">
+                            <span class="filter-dot" style="background: #3b82f6;"></span>
+                        </button>
+                        <button class="filter-btn" data-filter="extinction" title="Extinctions">
+                            <span class="filter-dot" style="background: #dc2626;"></span>
+                        </button>
+                        <button class="filter-btn" data-filter="geological" title="Geological">
+                            <span class="filter-dot" style="background: #f59e0b;"></span>
+                        </button>
+                        <button class="filter-btn" data-filter="climate" title="Climate">
+                            <span class="filter-dot" style="background: #8b5cf6;"></span>
+                        </button>
+                        <button class="filter-btn" data-filter="origin" title="Origins">
+                            <span class="filter-dot" style="background: #10b981;"></span>
+                        </button>
+                    </div>
+                    
+                    <div class="separator"></div>
+                    
+                    <!-- Event Layer Toggles -->
+                    <div class="event-layers">
+                        <label class="layer-toggle" title="Geological Events">
+                            <input type="checkbox" id="layerGeological" checked>
+                            <span class="layer-icon">🌋</span>
+                        </label>
+                        <label class="layer-toggle" title="Climate Changes">
+                            <input type="checkbox" id="layerClimate" checked>
+                            <span class="layer-icon">🌡️</span>
+                        </label>
+                        <label class="layer-toggle" title="Evolution & Life">
+                            <input type="checkbox" id="layerLife" checked>
+                            <span class="layer-icon">🦖</span>
+                        </label>
+                        <label class="layer-toggle" title="Mass Extinctions">
+                            <input type="checkbox" id="layerExtinctions" checked>
+                            <span class="layer-icon">☄️</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="filter-status" id="filterStatus" style="display: none;">
+                    Showing <span id="visibleCount">0</span> of <span id="totalCount">0</span> events
+                </div>
+                
+            </div>
+        </div>
+    </section>
+
+    <!-- Timeline Container -->
+    <section id="timeline" class="timeline-section">
+        <div class="timeline-wrapper">
+            <!-- Scale indicator -->
+            <div class="timeline-scale">
+                <span id="scaleStart">4,500 MYA</span>
+                <span id="scaleCenter">Present</span>
+                <span id="scaleEnd">Today</span>
+            </div>
+            
+            <!-- Main timeline visualization -->
+            <div class="timeline-container" id="timelineContainer">
+                <svg id="timelineSvg" width="100%" height="700"></svg>
+            </div>
+            
+            <!-- Event details panel -->
+            <div class="event-details" id="eventDetails" style="display: none;">
+                <button class="close-btn" onclick="closeEventDetails()">&times;</button>
+                <div class="event-type-badge" id="eventTypeBadge"></div>
+                <h3 id="eventTitle"></h3>
+                <div class="event-meta">
+                    <span id="eventDate" class="event-date-display"></span>
+                    <span id="eventEon" class="event-eon"></span>
+                </div>
+                
+                <!-- Timeline position indicator -->
+                <div class="timeline-position-indicator">
+                    <div class="timeline-position-track">
+                        <div id="eventPositionMarker" class="timeline-position-marker"></div>
+                        <span class="timeline-position-label timeline-position-start">4.5 billion years ago</span>
+                        <span class="timeline-position-label timeline-position-end">Today</span>
+                    </div>
+                </div>
+                <p id="eventDescription" class="event-description-text"></p>
+                
+                <div class="event-context" id="eventContext">
+                    <h4>Historical Context</h4>
+                    <div id="eventContextText"></div>
+                </div>
+                
+                <div class="event-significance" id="eventSignificance">
+                    <h4>Why This Matters</h4>
+                    <div id="eventSignificanceText"></div>
+                </div>
+                
+                <div class="related-events" id="relatedEvents" style="display: none;">
+                    <h4>Related Events</h4>
+                    <div class="related-events-list" id="relatedEventsList"></div>
+                </div>
+                
+                <div class="event-actions">
+                    <a id="eventPodcastLink" class="podcast-link" style="display: none;">
+                        🎧 Listen to the Episode
+                    </a>
+                    <button id="shareEventBtn" class="share-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                            <polyline points="16 6 12 2 8 6"></polyline>
+                            <line x1="12" y1="2" x2="12" y2="15"></line>
+                        </svg>
+                        Share Event
+                    </button>
+                    <button id="citationBtn" class="citation-btn">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                            <polyline points="10 9 9 9 8 9"></polyline>
+                        </svg>
+                        Cite This Event
+                    </button>
+                </div>
+                
+                <!-- Citation Modal -->
+                <div id="citationModal" class="citation-modal" style="display: none;">
+                    <h4>Citation Generator</h4>
+                    <div class="citation-formats">
+                        <button class="citation-format-btn active" data-format="apa">APA</button>
+                        <button class="citation-format-btn" data-format="mla">MLA</button>
+                        <button class="citation-format-btn" data-format="chicago">Chicago</button>
+                    </div>
+                    <div class="citation-text" id="citationText">
+                        <!-- Citation will be generated here -->
+                    </div>
+                    <button id="copyCitation" class="copy-citation-btn">
+                        Copy to Clipboard
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Episode Guide -->
+    <section id="episodes" class="episodes-section">
+        <div class="container">
+            <h2 class="section-title">Episodes in Time</h2>
+            <p class="section-subtitle">Each story placed in its geological context</p>
+            <div class="episodes-grid" id="episodesGrid">
+                <!-- Episodes will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Glossary Preview -->
+    <section id="glossary" class="glossary-section">
+        <div class="container">
+            <h2 class="section-title">Geological Glossary</h2>
+            <p class="section-subtitle">Understanding the language of deep time</p>
+            <div class="glossary-search">
+                <input type="text" id="glossarySearch" placeholder="Search terms...">
+            </div>
+            <div class="glossary-grid" id="glossaryGrid">
+                <!-- Glossary will be populated by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Deep Time Whispers</h3>
+                    <p>Educational Resources</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Explore</h4>
+                    <a href="#timeline">Interactive Timeline</a>
+                    <a href="#episodes">Episode Guide</a>
+                    <a href="#glossary">Glossary</a>
+                    <a href="index.html">Back to Main Site</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Deep Time Whispers. Education through ancient memories.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Timeline Comparison Modal -->
+    <div id="comparisonModal" class="comparison-modal" style="display: none;">
+        <div class="comparison-modal-content">
+            <button class="modal-close" onclick="toggleComparison()">&times;</button>
+            <h3 class="comparison-title">Compare Time Periods</h3>
+            <p class="comparison-subtitle">Put geological time in perspective</p>
+            
+            <select id="periodSelect" class="period-select">
+                <option value="">Select a time period...</option>
+                <option value="65">Since the dinosaurs died (65 MYA)</option>
+                <option value="0.2">Since humans appeared (200,000 years)</option>
+                <option value="0.01">Since agriculture began (10,000 years)</option>
+                <option value="0.002">Since year 0 (2,000 years)</option>
+                <option value="0.00025">Since Industrial Revolution (250 years)</option>
+                <option value="0.0001">Last century (100 years)</option>
+                <option value="0.00005">Your lifetime (50 years)</option>
+            </select>
+            
+            <div id="comparisonResult" class="comparison-result" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script src="js/timeline.js"></script>
+</body>
+</html>
