@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - Basic Working Version</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            z-index: 100;
+        }
+        
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        
+        .time-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .time-btn {
+            background: #2196F3;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .time-btn:hover {
+            background: #1976D2;
+            transform: scale(1.05);
+        }
+        
+        .time-btn.active {
+            background: #4CAF50;
+        }
+        
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 400px;
+            z-index: 100;
+        }
+        
+        .info-panel h2 {
+            margin-bottom: 10px;
+            color: #64B5F6;
+        }
+        
+        .location-test {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+        }
+        
+        .location-test button {
+            background: #FF5722;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            z-index: 1000;
+        }
+        
+        #debug {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 10px;
+            font-family: monospace;
+            font-size: 12px;
+            z-index: 100;
+        }
+        
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="controls">
+            <h1>Ancient Earth - Basic Test</h1>
+            <div class="time-buttons">
+                <button class="time-btn active" onclick="loadTexture(0)">Present</button>
+                <button class="time-btn" onclick="loadTexture(1)">66 MYA</button>
+                <button class="time-btn" onclick="loadTexture(2)">200 MYA</button>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h2 id="periodName">Present Day</h2>
+            <p id="periodDesc">Testing texture loading...</p>
+        </div>
+        
+        <div class="location-test">
+            <h3>Test Location Pin</h3>
+            <button onclick="testPin()">Test Pin</button>
+        </div>
+        
+        <div id="loading">Loading...</div>
+        <div id="debug"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Debug logging
+        function debug(msg) {
+            console.log(msg);
+            document.getElementById('debug').innerHTML += msg + '<br>';
+        }
+        
+        // Global variables
+        let scene, camera, renderer;
+        let earth, pin;
+        
+        // Textures to test
+        const textures = [
+            { name: "Present", file: "textures/paleomap/present_day_000.jpg" },
+            { name: "66 MYA", file: "textures/paleomap/kt_boundary_66mya.jpg" },
+            { name: "200 MYA", file: "textures/paleomap/pangaea_200mya.jpg" }
+        ];
+        
+        function init() {
+            debug('Initializing...');
+            
+            // Scene
+            scene = new THREE.Scene();
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.z = 3;
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Light
+            const light = new THREE.DirectionalLight(0xffffff, 1);
+            light.position.set(5, 5, 5);
+            scene.add(light);
+            scene.add(new THREE.AmbientLight(0x404040));
+            
+            // Create Earth
+            const geometry = new THREE.SphereGeometry(1, 32, 32);
+            const material = new THREE.MeshPhongMaterial({ color: 0x2194ce });
+            earth = new THREE.Mesh(geometry, material);
+            scene.add(earth);
+            
+            // Create pin (hidden)
+            const pinGeometry = new THREE.SphereGeometry(0.05, 8, 8);
+            const pinMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            pin = new THREE.Mesh(pinGeometry, pinMaterial);
+            pin.visible = false;
+            scene.add(pin);
+            
+            debug('Scene created');
+            
+            // Load first texture
+            loadTexture(0);
+            
+            // Start animation
+            animate();
+        }
+        
+        function loadTexture(index) {
+            debug(`Loading texture ${index}: ${textures[index].name}`);
+            
+            const loader = new THREE.TextureLoader();
+            loader.load(
+                textures[index].file,
+                (texture) => {
+                    earth.material.map = texture;
+                    earth.material.needsUpdate = true;
+                    debug(`✓ Texture loaded: ${textures[index].name}`);
+                    document.getElementById('loading').style.display = 'none';
+                    
+                    // Update UI
+                    document.getElementById('periodName').textContent = textures[index].name;
+                    document.querySelectorAll('.time-btn').forEach((btn, i) => {
+                        btn.classList.toggle('active', i === index);
+                    });
+                },
+                (progress) => {
+                    debug(`Loading progress: ${(progress.loaded / progress.total * 100).toFixed(0)}%`);
+                },
+                (error) => {
+                    debug(`✗ Error loading texture: ${error}`);
+                }
+            );
+        }
+        
+        function testPin() {
+            debug('Testing pin at lat:40, lng:-74');
+            
+            // Place pin at New York coordinates
+            const lat = 40;
+            const lng = -74;
+            const radius = 1.1; // Slightly above Earth surface
+            
+            // Convert to 3D coordinates (corrected formula)
+            const phi = (90 - lat) * Math.PI / 180;
+            const theta = lng * Math.PI / 180; // Don't add 180 here
+            
+            const x = radius * Math.sin(phi) * Math.cos(theta);
+            const y = radius * Math.cos(phi); 
+            const z = -radius * Math.sin(phi) * Math.sin(theta); // Negative z
+            
+            pin.position.set(x, y, z);
+            pin.visible = true;
+            
+            debug(`Pin position: x:${x.toFixed(2)}, y:${y.toFixed(2)}, z:${z.toFixed(2)}`);
+            
+            // Make pin bigger and brighter so it's more visible
+            pin.scale.set(2, 2, 2);
+        }
+        
+        let autoRotate = true;
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate Earth
+            if (earth && autoRotate) {
+                earth.rotation.y += 0.005;
+            }
+            
+            // Keep pin facing camera
+            if (pin && pin.visible) {
+                const pinWorldPos = new THREE.Vector3();
+                pin.getWorldPosition(pinWorldPos);
+                
+                // Update pin position to rotate with earth
+                if (earth) {
+                    const lat = 40;
+                    const lng = -74;
+                    const radius = 1.1;
+                    
+                    const phi = (90 - lat) * Math.PI / 180;
+                    const theta = lng * Math.PI / 180 + earth.rotation.y; // Add earth rotation
+                    
+                    const x = radius * Math.sin(phi) * Math.cos(theta);
+                    const y = radius * Math.cos(phi);
+                    const z = -radius * Math.sin(phi) * Math.sin(theta);
+                    
+                    pin.position.set(x, y, z);
+                }
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Add key to stop rotation for debugging
+        window.addEventListener('keydown', (e) => {
+            if (e.key === ' ') {
+                autoRotate = !autoRotate;
+                debug(`Auto-rotate: ${autoRotate}`);
+            }
+        });
+        
+        // Start
+        init();
+    </script>
+</body>
+</html>

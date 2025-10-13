@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth POC - Present vs Pangaea</title>
+    
+    <style>
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+        }
+        
+        .controls {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            margin: 0 0 30px 0;
+            font-size: 36px;
+            font-weight: 300;
+        }
+        
+        .btn-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .time-btn {
+            background: #2196F3;
+            border: none;
+            color: white;
+            padding: 20px 40px;
+            font-size: 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .time-btn:hover {
+            background: #1976D2;
+            transform: scale(1.05);
+        }
+        
+        .time-btn.active {
+            background: #4CAF50;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            display: none;
+        }
+        
+        .hide {
+            display: none !important;
+        }
+        
+        .instructions {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <div class="controls" id="mainControls">
+        <h1>Earth Through Time</h1>
+        <div class="btn-container">
+            <button class="time-btn active" onclick="showPresent()">Present Day</button>
+            <button class="time-btn" onclick="showPangaea()">Pangaea (200 MYA)</button>
+        </div>
+    </div>
+    
+    <div id="loading">Loading textures...</div>
+    
+    <div class="instructions hide" id="instructions">
+        Click and drag to rotate • Scroll to zoom
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    
+    <script>
+        let scene, camera, renderer, controls;
+        let earth, clouds;
+        let currentTexture = 'present';
+        
+        // Texture URLs - Using real sources
+        const textures = {
+            present: {
+                // High quality present day Earth
+                map: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Whole_world_-_land_and_oceans_12000.jpg/2560px-Whole_world_-_land_and_oceans_12000.jpg',
+                name: 'Present Day',
+                description: 'Seven continents as we know them today'
+            },
+            pangaea: {
+                // REPLACE THIS WITH YOUR DOWNLOADED TEXTURE
+                // After downloading from: https://www.earthbyte.org/webdav/ftp/Data_Collections/Scotese_Wright_2018_PaleoDEM/PALEOMAP_PaleoAtlases.zip
+                // Look for 200Ma file and host it on your server
+                map: 'path/to/your/200ma_pangaea.jpg', // <-- PUT YOUR TEXTURE HERE
+                name: 'Pangaea - 200 Million Years Ago',
+                description: 'All continents merged into one supercontinent'
+            }
+        };
+        
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            
+            // Camera
+            const aspect = window.innerWidth / window.innerHeight;
+            camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+            camera.position.z = 3;
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            renderer.shadowMap.enabled = true;
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Lights
+            const ambientLight = new THREE.AmbientLight(0x333333);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 3, 5);
+            directionalLight.castShadow = true;
+            scene.add(directionalLight);
+            
+            // Create Earth
+            createEarth();
+            
+            // Create starfield
+            createStarfield();
+            
+            // Controls
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.enableDamping = true;
+            controls.dampingFactor = 0.05;
+            controls.rotateSpeed = 0.5;
+            controls.minDistance = 1.5;
+            controls.maxDistance = 5;
+            
+            // Start animation
+            animate();
+            
+            // Handle resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        function createEarth() {
+            const geometry = new THREE.SphereGeometry(1, 64, 64);
+            
+            // Load texture
+            const loader = new THREE.TextureLoader();
+            
+            document.getElementById('loading').style.display = 'block';
+            
+            loader.load(
+                textures.present.map,
+                (texture) => {
+                    const material = new THREE.MeshPhongMaterial({
+                        map: texture,
+                        bumpScale: 0.05,
+                        specular: new THREE.Color('grey'),
+                        shininess: 10
+                    });
+                    
+                    earth = new THREE.Mesh(geometry, material);
+                    earth.rotation.y = -Math.PI / 2; // Rotate to show Atlantic
+                    scene.add(earth);
+                    
+                    // Add clouds
+                    const cloudGeometry = new THREE.SphereGeometry(1.01, 64, 64);
+                    const cloudMaterial = new THREE.MeshPhongMaterial({
+                        transparent: true,
+                        opacity: 0.3,
+                        color: 0xffffff
+                    });
+                    
+                    clouds = new THREE.Mesh(cloudGeometry, cloudMaterial);
+                    scene.add(clouds);
+                    
+                    document.getElementById('loading').style.display = 'none';
+                    document.getElementById('mainControls').classList.add('hide');
+                    document.getElementById('instructions').classList.remove('hide');
+                },
+                undefined,
+                (error) => {
+                    console.error('Error loading texture:', error);
+                    document.getElementById('loading').textContent = 'Error loading texture';
+                }
+            );
+        }
+        
+        function createStarfield() {
+            const starsGeometry = new THREE.BufferGeometry();
+            const starsMaterial = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 0.5,
+                transparent: true,
+                opacity: 0.8
+            });
+            
+            const starsVertices = [];
+            for (let i = 0; i < 10000; i++) {
+                const x = (Math.random() - 0.5) * 2000;
+                const y = (Math.random() - 0.5) * 2000;
+                const z = (Math.random() - 0.5) * 2000;
+                starsVertices.push(x, y, z);
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(starsVertices, 3));
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+        }
+        
+        function showPresent() {
+            updateEarthTexture('present');
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        function showPangaea() {
+            updateEarthTexture('pangaea');
+            document.querySelectorAll('.time-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+        }
+        
+        function updateEarthTexture(type) {
+            if (!earth) return;
+            
+            const loader = new THREE.TextureLoader();
+            document.getElementById('loading').style.display = 'block';
+            
+            loader.load(
+                textures[type].map,
+                (texture) => {
+                    earth.material.map = texture;
+                    earth.material.needsUpdate = true;
+                    document.getElementById('loading').style.display = 'none';
+                },
+                undefined,
+                (error) => {
+                    console.error('Error loading texture:', error);
+                    document.getElementById('loading').textContent = 'Error loading texture';
+                }
+            );
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (earth) {
+                earth.rotation.y += 0.001;
+            }
+            
+            if (clouds) {
+                clouds.rotation.y += 0.0005;
+            }
+            
+            controls.update();
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

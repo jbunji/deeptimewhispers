@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "Midjourney Prompt Automator",
+  "version": "1.0",
+  "description": "Automates sending multiple prompts to Midjourney",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icon16.png",
+      "48": "icon48.png",
+      "128": "icon128.png"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://www.midjourney.com/*", "https://discord.com/*"],
+      "js": ["content.js"]
+    }
+  ]
+}

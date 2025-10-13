@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - Animated Continental Drift</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        /* Top controls bar */
+        .top-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            text-align: center;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        h1 {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 15px;
+            letter-spacing: 2px;
+        }
+        
+        /* Animation controls */
+        .animation-controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+        }
+        
+        .control-btn {
+            background: rgba(33, 150, 243, 0.8);
+            border: 2px solid transparent;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        
+        .control-btn:hover {
+            background: rgba(33, 150, 243, 1);
+            transform: scale(1.05);
+        }
+        
+        .control-btn.active {
+            background: #4CAF50;
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        /* Timeline slider */
+        .timeline-container {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+            max-width: 800px;
+            z-index: 100;
+        }
+        
+        .timeline-slider {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 5px;
+            outline: none;
+        }
+        
+        .timeline-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2196F3;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 0 10px rgba(33, 150, 243, 0.5);
+        }
+        
+        .timeline-labels {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 12px;
+            opacity: 0.8;
+        }
+        
+        /* Speed control */
+        .speed-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 10px 20px;
+            border-radius: 20px;
+        }
+        
+        .speed-slider {
+            width: 100px;
+            height: 4px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 2px;
+            outline: none;
+        }
+        
+        .speed-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        /* Info panel */
+        .info-panel {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            max-width: 350px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .info-panel h2 {
+            font-size: 24px;
+            margin-bottom: 10px;
+            color: #64B5F6;
+        }
+        
+        .info-panel .period {
+            color: #FFD700;
+            font-size: 18px;
+            margin-bottom: 10px;
+        }
+        
+        .info-panel .frame-info {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 10px;
+        }
+        
+        /* Location tracking */
+        .location-panel {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+        }
+        
+        .location-panel h3 {
+            margin-bottom: 15px;
+            color: #64B5F6;
+        }
+        
+        .search-box {
+            display: flex;
+            margin-bottom: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 5px 0 0 5px;
+            color: white;
+            font-size: 14px;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #64B5F6;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .search-btn {
+            padding: 10px 20px;
+            background: #2196F3;
+            border: none;
+            color: white;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .search-btn:hover {
+            background: #1976D2;
+        }
+        
+        .preset-locations {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        
+        .preset-btn {
+            padding: 5px 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 15px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+        
+        .preset-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #64B5F6;
+        }
+        
+        /* Controls hint */
+        .controls-hint {
+            position: absolute;
+            top: 120px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            z-index: 100;
+            opacity: 0.8;
+        }
+        
+        #loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            z-index: 1000;
+            text-align: center;
+        }
+        
+        .spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        canvas {
+            display: block;
+            cursor: grab;
+        }
+        
+        canvas:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="top-bar">
+            <h1>Ancient Earth - Continental Drift Animation</h1>
+            <div class="animation-controls">
+                <button class="control-btn" onclick="togglePlay()">
+                    <span id="playText">▶ Play Animation</span>
+                </button>
+                <button class="control-btn" onclick="reverseDirection()">
+                    <span id="directionText">↓ Forward in Time</span>
+                </button>
+                <div class="speed-control">
+                    <label>Speed:</label>
+                    <input type="range" class="speed-slider" id="speedSlider" 
+                           min="1" max="10" value="5" onchange="updateSpeed()">
+                    <span id="speedText">5x</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="timeline-container">
+            <input type="range" class="timeline-slider" id="timelineSlider" 
+                   min="0" max="89" value="0" oninput="jumpToFrame(this.value)">
+            <div class="timeline-labels">
+                <span>Present</span>
+                <span>100 MYA</span>
+                <span>200 MYA</span>
+                <span>300 MYA</span>
+                <span>400 MYA</span>
+                <span>500 MYA</span>
+                <span>600 MYA</span>
+                <span>750 MYA</span>
+            </div>
+        </div>
+        
+        <div class="controls-hint">
+            <strong>Controls:</strong><br>
+            🖱️ Drag to rotate<br>
+            📏 Scroll to zoom<br>
+            ⬆️⬇️ Arrow keys to tilt
+        </div>
+        
+        <div class="info-panel">
+            <h2 id="periodName">Present Day</h2>
+            <div class="period" id="periodTime">0 Million Years Ago</div>
+            <p id="periodDesc">Loading description...</p>
+            <div class="frame-info">Frame: <span id="frameInfo">1/90</span></div>
+        </div>
+        
+        <div class="location-panel">
+            <h3>Track Location Through Time</h3>
+            <div class="search-box">
+                <input type="text" class="search-input" id="locationInput" placeholder="City or lat,lng">
+                <button class="search-btn" onclick="searchLocation()">Track</button>
+            </div>
+            <div class="preset-locations">
+                <button class="preset-btn" onclick="trackLocation('New York', 40.7128, -74.0060)">New York</button>
+                <button class="preset-btn" onclick="trackLocation('London', 51.5074, -0.1278)">London</button>
+                <button class="preset-btn" onclick="trackLocation('Tokyo', 35.6762, 139.6503)">Tokyo</button>
+                <button class="preset-btn" onclick="trackLocation('Sydney', -33.8688, 151.2093)">Sydney</button>
+            </div>
+        </div>
+        
+        <div id="loading">
+            <div class="spinner"></div>
+            <div>Loading 90 time period textures...</div>
+            <div id="loadProgress">0/90</div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene globals
+        let scene, camera, renderer;
+        let earth;
+        let locationPin;
+        let controls = {};
+        
+        // Animation state
+        let currentFrame = 0;
+        let isPlaying = false;
+        let playDirection = 1; // 1 = forward, -1 = reverse
+        let animationSpeed = 5;
+        let lastFrameTime = 0;
+        let frameInterval = 100; // ms between frames
+        
+        // Textures array
+        const textures = [];
+        const textureLoader = new THREE.TextureLoader();
+        let loadedCount = 0;
+        
+        // Location tracking
+        let currentLocation = null;
+        
+        // All 90 texture files in order
+        const textureFileNames = [
+            "Map1a PALEOMAP PaleoAtlas_000.jpg",
+            "Map2a Last Glacial Maximum_001.jpg",
+            "Map3a Pliocene_004.jpg",
+            "Map4a Messinian Event_006.jpg",
+            "Map5a Late Miocene_010.jpg",
+            "Map6a  Middle Miocene_015.jpg",
+            "Map7a  Early Miocene_020.jpg",
+            "Map8a Late Oligocene_025.jpg",
+            "Map9a  Early Oligocene_030.jpg",
+            "Map10a Late Eocene_035.jpg",
+            "Map11a MIddle Eocene_040.jpg",
+            "Map12a early Middle Eocene_045.jpg",
+            "Map13a Early Eocene_050.jpg",
+            "Map14a PETM_055.jpg",
+            "Map15a Paleocene_060.jpg",
+            "Map16a KT Boundary_066.jpg",
+            "Map17a LtK Maastrichtian_070.jpg",
+            "Map18a LtK Late Campanian_075.jpg",
+            "Map19a LtK Early Campanian_080.jpg",
+            "Map21a LtK Turonian_090.jpg",
+            "Map22a LtK Cenomanian_095.jpg",
+            "Map23a EK Late Albian_100.jpg",
+            "Map24a EK Middle Albian_105.jpg",
+            "Map25a EK Early Albian_110.jpg",
+            "Map26a EK Late Aptian_115.jpg",
+            "Map27a EK Early Albian_120.jpg",
+            "Map28a EK Barremian_125.jpg",
+            "Map29a EK Hauterivian_130.jpg",
+            "Map30a EK Valangian_135.jpg",
+            "Map31a EK Berriasian_140.jpg",
+            "Map32a Jurassic-Cretaceous Boundary_145.jpg",
+            "Map33a LtJ Tithonian_150.jpg",
+            "Map34a LtJ Kimmeridgian_155.jpg",
+            "Map35a LtJ Oxfordian_160.jpg",
+            "Map36a MJ Callovian_165.jpg",
+            "Map37a MJ Bajocian&Bathonian_170.jpg",
+            "Map38a MJ Aalenian_175.jpg",
+            "Map39a EJ Toarcian_180.jpg",
+            "Map40a EJ Pliensbachian_185.jpg",
+            "Map41a EJ Sinemurian_190.jpg",
+            "Map42a EJ Hettangian_195.jpg",
+            "Map43a Triassic-Jurassic Boundary_200.jpg",
+            "Map44a LtTr Norian_210.jpg",
+            "Map45a LtTr Carnian_220.jpg",
+            "Map46a MTr Ladinian_230.jpg",
+            "Map47a MTr Anisian_240.jpg",
+            "Map48a ETr Induan-Olenekian_245.jpg",
+            "Map49a Permo-Triassic Boundary_250.jpg",
+            "Map50a LtP Lopingian_255.jpg",
+            "Map51a LtP Capitanian_260.jpg",
+            "Map52a MP Roadian&Wordian_270.jpg",
+            "Map53a EP Kungurian_275.jpg",
+            "Map54a EP Artinskian_280.jpg",
+            "Map55a EP Sakmarian_290.jpg",
+            "Map56a EP Asselian_295.jpg",
+            "Map57a LtCarb Gzhelian_300.jpg",
+            "Map58a LtCarb Kasimovian_305.jpg",
+            "Map59a LtCarb Moscovian_310.jpg",
+            "Map60a LtCarb Bashkirian_315.jpg",
+            "Map61a ECarb Serpukhovian_320.jpg",
+            "Map62a ECarb Late Visean_330.jpg",
+            "Map63a ECarb Early Visean_340.jpg",
+            "Map64a ECarb Tournaisian_350.jpg",
+            "Map65a Devono-Carboniferous Boundary_360.jpg",
+            "Map66a LtD Famennian_370.jpg",
+            "Map67a LtD Frasnian_380.jpg",
+            "Map68a MD Givetian_390.jpg",
+            "Map69a MD Eifelian_395.jpg",
+            "Map70a ED Emsian_400.jpg",
+            "Map71a ED Pragian_410.jpg",
+            "Map72a ED Lochlovian_415.jpg",
+            "Map73a LtS  Ludlow&Pridoli_420.jpg",
+            "Map74a MS Wenlock_425.jpg",
+            "Map75a ES late Llandovery_430.jpg",
+            "Map76a ES early Llandovery_440.jpg",
+            "Map77a LtO Hirnantian_445.jpg",
+            "Map78a LtO Sandbian-Katian_450.jpg",
+            "Map79a LtO Caradoc_460.jpg",
+            "Map80a LtO Darwillian_461.jpg",
+            "Map81a EO Floian-Dapingian_470.jpg",
+            "Map82a EO Tremadoc_480.jpg",
+            "Map83a Cambro-Ordovician Boundary_490.jpg",
+            "Map84a LtC Furongian_500.jpg",
+            "Map85a early Late Cambrian Series 3_510.jpg",
+            "Map86a Middle Cambrian Series 2_520.jpg",
+            "Map87a Early Cambrian Terreneuvian_530.jpg",
+            "Map88a Precambrian-Cambrian Boundary_540.jpg",
+            "Map90a Middle Ediacaran_600.jpg",
+            "Map92a Late Cryogenian_690.jpg",
+            "Map93a MIddle Cryogenian_750.jpg"
+        ];
+        
+        function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000511);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 3);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040, 0.8);
+            scene.add(ambientLight);
+            
+            const sunlight = new THREE.DirectionalLight(0xffffff, 1);
+            sunlight.position.set(5, 3, 5);
+            scene.add(sunlight);
+            
+            // Add stars
+            createStarfield();
+            
+            // Create Earth
+            createEarth();
+            
+            // Create location pin
+            createLocationPin();
+            
+            // Setup controls
+            setupControls();
+            
+            // Load all textures
+            loadAllTextures();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start render loop
+            animate();
+        }
+        
+        function createStarfield() {
+            const starsGeometry = new THREE.BufferGeometry();
+            const starCount = 5000;
+            const positions = [];
+            
+            for (let i = 0; i < starCount; i++) {
+                const radius = 100 + Math.random() * 400;
+                const theta = Math.random() * Math.PI * 2;
+                const phi = Math.acos(2 * Math.random() - 1);
+                
+                positions.push(
+                    radius * Math.sin(phi) * Math.cos(theta),
+                    radius * Math.sin(phi) * Math.sin(theta),
+                    radius * Math.cos(phi)
+                );
+            }
+            
+            starsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+            
+            const starsMaterial = new THREE.PointsMaterial({
+                color: 0xffffff,
+                size: 1,
+                sizeAttenuation: false
+            });
+            
+            const stars = new THREE.Points(starsGeometry, starsMaterial);
+            scene.add(stars);
+        }
+        
+        function createEarth() {
+            const geometry = new THREE.SphereGeometry(1, 128, 64);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x2194ce,
+                shininess: 20
+            });
+            earth = new THREE.Mesh(geometry, material);
+            scene.add(earth);
+        }
+        
+        function createLocationPin() {
+            // Create a group for the pin
+            locationPin = new THREE.Group();
+            
+            // Base sphere (sits on surface)
+            const sphereGeometry = new THREE.SphereGeometry(0.03, 16, 16);
+            const sphereMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xff0000
+            });
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            locationPin.add(sphere);
+            
+            // Pin shaft
+            const shaftGeometry = new THREE.CylinderGeometry(0.01, 0.01, 0.1, 8);
+            const shaftMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xff0000
+            });
+            const shaft = new THREE.Mesh(shaftGeometry, shaftMaterial);
+            shaft.position.y = 0.05;
+            locationPin.add(shaft);
+            
+            // Pin head
+            const headGeometry = new THREE.SphereGeometry(0.02, 16, 16);
+            const head = new THREE.Mesh(headGeometry, sphereMaterial);
+            head.position.y = 0.1;
+            locationPin.add(head);
+            
+            // Add glow effect
+            const glowGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+            const glowMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xff6666,
+                transparent: true,
+                opacity: 0.5
+            });
+            const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+            glow.position.y = 0.05;
+            locationPin.add(glow);
+            
+            // Add a vertical line to make it more visible
+            const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(0, 0.2, 0)
+            ]);
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0xff0000,
+                linewidth: 3
+            });
+            const line = new THREE.Line(lineGeometry, lineMaterial);
+            locationPin.add(line);
+            
+            locationPin.visible = false;
+            scene.add(locationPin);
+        }
+        
+        function loadAllTextures() {
+            // Load all 90 textures
+            for (let i = 0; i < 90; i++) {
+                const fileName = `textures/paleomap/timeline/${textureFileNames[i]}`;
+                
+                textureLoader.load(
+                    fileName,
+                    (texture) => {
+                        textures[i] = texture;
+                        loadedCount++;
+                        document.getElementById('loadProgress').textContent = `${loadedCount}/90`;
+                        
+                        if (loadedCount === 90) {
+                            // All textures loaded
+                            document.getElementById('loading').style.display = 'none';
+                            updateFrame(0);
+                        }
+                    },
+                    undefined,
+                    (error) => {
+                        console.error(`Failed to load texture ${i} (${textureFileNames[i]}):`, error);
+                        // Try to use previous texture as fallback
+                        textures[i] = textures[i-1] || null;
+                        loadedCount++;
+                        document.getElementById('loadProgress').textContent = `${loadedCount}/90`;
+                        
+                        if (loadedCount === 90) {
+                            document.getElementById('loading').style.display = 'none';
+                            updateFrame(0);
+                        }
+                    }
+                );
+            }
+        }
+        
+        function updateFrame(frameIndex) {
+            if (!earth || !textures[frameIndex]) return;
+            
+            currentFrame = frameIndex;
+            earth.material.map = textures[frameIndex];
+            earth.material.needsUpdate = true;
+            
+            // Update UI
+            const timeData = getTimeForFrame(frameIndex);
+            document.getElementById('periodName').textContent = timeData.name;
+            document.getElementById('periodTime').textContent = `${timeData.mya} Million Years Ago`;
+            document.getElementById('frameInfo').textContent = `${frameIndex + 1}/90`;
+            document.getElementById('timelineSlider').value = frameIndex;
+            
+            // Update location
+            if (currentLocation) {
+                updateLocationForFrame(frameIndex);
+            }
+        }
+        
+        function getTimeForFrame(frameIndex) {
+            // Extract time from filename if possible
+            const filename = textureFileNames[frameIndex];
+            const timeMatch = filename.match(/_(\d+)\.jpg/);
+            const mya = timeMatch ? parseInt(timeMatch[1]) : (frameIndex / 89) * 750;
+            
+            // Extract period name from filename
+            let name = filename.replace(/Map\d+[a-z]?\s+/, '') // Remove Map prefix
+                              .replace(/_\d+\.jpg/, '')      // Remove time suffix
+                              .replace(/([A-Z])/g, ' $1')     // Add spaces before capitals
+                              .trim();
+            
+            // Special cases
+            if (frameIndex === 0) name = "Present Day";
+            if (name.includes("PALEOMAP PaleoAtlas")) name = "Present Day";
+            
+            return { mya: Math.round(mya), name };
+        }
+        
+        function setupControls() {
+            controls.rotationX = 0;
+            controls.rotationY = 0;
+            controls.autoRotate = true;
+            controls.mouseDown = false;
+            controls.mouseX = 0;
+            controls.mouseY = 0;
+            
+            // Mouse controls
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                controls.mouseDown = true;
+                controls.mouseX = e.clientX;
+                controls.mouseY = e.clientY;
+                controls.autoRotate = false;
+            });
+            
+            window.addEventListener('mousemove', (e) => {
+                if (!controls.mouseDown) return;
+                
+                const deltaX = e.clientX - controls.mouseX;
+                const deltaY = e.clientY - controls.mouseY;
+                
+                controls.rotationY += deltaX * 0.01;
+                controls.rotationX += deltaY * 0.01;
+                
+                controls.rotationX = Math.max(-Math.PI/2, Math.min(Math.PI/2, controls.rotationX));
+                
+                controls.mouseX = e.clientX;
+                controls.mouseY = e.clientY;
+            });
+            
+            window.addEventListener('mouseup', () => {
+                controls.mouseDown = false;
+            });
+            
+            // Zoom
+            renderer.domElement.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                camera.position.z += e.deltaY * 0.002;
+                camera.position.z = Math.max(1.5, Math.min(5, camera.position.z));
+            });
+            
+            // Keyboard
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowUp') controls.rotationX -= 0.1;
+                else if (e.key === 'ArrowDown') controls.rotationX += 0.1;
+                else if (e.key === 'ArrowLeft' && !isPlaying) jumpToFrame(Math.max(0, currentFrame - 1));
+                else if (e.key === 'ArrowRight' && !isPlaying) jumpToFrame(Math.min(89, currentFrame + 1));
+                else if (e.key === ' ') togglePlay();
+                
+                controls.rotationX = Math.max(-Math.PI/2, Math.min(Math.PI/2, controls.rotationX));
+            });
+        }
+        
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            document.getElementById('playText').textContent = isPlaying ? '⏸ Pause Animation' : '▶ Play Animation';
+            document.querySelector('.control-btn').classList.toggle('active', isPlaying);
+        }
+        
+        function reverseDirection() {
+            playDirection *= -1;
+            document.getElementById('directionText').textContent = 
+                playDirection > 0 ? '↓ Forward in Time' : '↑ Backward in Time';
+        }
+        
+        function updateSpeed() {
+            animationSpeed = parseInt(document.getElementById('speedSlider').value);
+            document.getElementById('speedText').textContent = `${animationSpeed}x`;
+            frameInterval = 500 / animationSpeed; // Adjust frame rate based on speed
+        }
+        
+        function jumpToFrame(frame) {
+            updateFrame(parseInt(frame));
+        }
+        
+        function trackLocation(name, lat, lng) {
+            console.log(`Tracking location: ${name} at ${lat}, ${lng}`);
+            currentLocation = { name, lat, lng };
+            document.getElementById('locationInput').value = name;
+            
+            // Make sure pin is visible and update its position
+            if (locationPin) {
+                locationPin.visible = true;
+                updateLocationForFrame(currentFrame);
+            } else {
+                console.error('Location pin not created yet');
+            }
+        }
+        
+        function searchLocation() {
+            const input = document.getElementById('locationInput').value;
+            const coords = input.match(/(-?\d+\.?\d*),\s*(-?\d+\.?\d*)/);
+            
+            if (coords) {
+                trackLocation('Custom', parseFloat(coords[1]), parseFloat(coords[2]));
+            } else {
+                // Try known cities
+                const cities = {
+                    'new york': [40.7128, -74.0060],
+                    'london': [51.5074, -0.1278],
+                    'tokyo': [35.6762, 139.6503],
+                    'sydney': [-33.8688, 151.2093],
+                    'paris': [48.8566, 2.3522],
+                    'beijing': [39.9042, 116.4074],
+                    'mumbai': [19.0760, 72.8777],
+                    'cairo': [30.0444, 31.2357]
+                };
+                
+                const city = cities[input.toLowerCase()];
+                if (city) {
+                    trackLocation(input, city[0], city[1]);
+                } else {
+                    alert('Enter coordinates as lat,lng or try: New York, London, Tokyo, Sydney, Paris, Beijing, Mumbai, Cairo');
+                }
+            }
+        }
+        
+        function updateLocationForFrame(frame) {
+            if (!currentLocation || !locationPin || !earth) return;
+            
+            const { name, lat, lng } = currentLocation;
+            const mya = getTimeForFrame(frame).mya;
+            
+            // Simple continental drift - adjust longitude based on time
+            // This is simplified - real drift would need plate tectonic data
+            let driftLat = lat;
+            let driftLng = lng;
+            
+            // Example drift: continents generally drift westward over time
+            if (mya > 0) {
+                driftLng = lng + (mya * 0.1); // Drift rate of 0.1 degrees per million years
+            }
+            
+            // Earth radius - slightly above surface for visibility
+            const radius = 1.1;
+            
+            // Convert degrees to radians
+            const latRad = (driftLat * Math.PI) / 180;
+            const lngRad = (driftLng * Math.PI) / 180;
+            
+            // Include Earth's rotation in the longitude
+            // NOTE: PALEOMAP textures appear to be correctly oriented at 0° longitude
+            const rotatedLng = lngRad + earth.rotation.y;
+            
+            // Spherical to Cartesian conversion (Y-up coordinate system)
+            const x = radius * Math.cos(latRad) * Math.sin(rotatedLng);
+            const y = radius * Math.sin(latRad);
+            const z = radius * Math.cos(latRad) * Math.cos(rotatedLng);
+            
+            // Set pin position
+            locationPin.position.set(x, y, z);
+            
+            // Orient pin to point outward from Earth center
+            locationPin.up.set(0, 1, 0);
+            locationPin.lookAt(x * 2, y * 2, z * 2);
+            
+            // Ensure pin is visible
+            locationPin.visible = true;
+            
+            // Store current location in userData for reference
+            locationPin.userData = { lat: driftLat, lng: driftLng, name: name };
+            
+            // Debug logging (reduced frequency)
+            if (frame % 30 === 0) {
+                console.log(`${name} at frame ${frame} (${mya} MYA): position=(${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)})`);
+            }
+        }
+        
+        function animate(currentTime) {
+            requestAnimationFrame(animate);
+            
+            // Handle animation playback
+            if (isPlaying && textures.length === 90) {
+                if (currentTime - lastFrameTime > frameInterval) {
+                    let nextFrame = currentFrame + playDirection;
+                    
+                    // Loop or reverse at ends
+                    if (nextFrame >= 90) {
+                        nextFrame = 0; // Loop to start
+                    } else if (nextFrame < 0) {
+                        nextFrame = 89; // Loop to end
+                    }
+                    
+                    updateFrame(nextFrame);
+                    lastFrameTime = currentTime;
+                }
+            }
+            
+            // Update Earth rotation
+            if (earth) {
+                if (controls.autoRotate) {
+                    controls.rotationY += 0.002;
+                }
+                
+                earth.rotation.y = controls.rotationY;
+                earth.rotation.x = controls.rotationX;
+            }
+            
+            // Always update location pin position if tracking
+            if (locationPin && currentLocation) {
+                updateLocationForFrame(currentFrame);
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Initialize
+        init();
+        
+        // For testing - load a subset first
+        console.log('Loading 90 texture files for continental drift animation...');
+    </script>
+</body>
+</html>

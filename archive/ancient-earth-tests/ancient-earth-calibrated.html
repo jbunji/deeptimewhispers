@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - Calibrated</title>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #000;
+            color: white;
+            overflow: hidden;
+        }
+        
+        #container {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+        }
+        
+        .calibration-panel {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            padding: 20px;
+            border-radius: 10px;
+            z-index: 100;
+            width: 350px;
+        }
+        
+        .calibration-panel h3 {
+            margin-bottom: 15px;
+            color: #64B5F6;
+        }
+        
+        .offset-control {
+            margin: 15px 0;
+        }
+        
+        .offset-slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+        
+        .offset-value {
+            font-family: monospace;
+            color: #FFD700;
+        }
+        
+        button {
+            background: #2196F3;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 14px;
+        }
+        
+        button:hover {
+            background: #1976D2;
+        }
+        
+        .instructions {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        
+        .location-info {
+            margin-top: 15px;
+            padding: 10px;
+            background: rgba(33, 150, 243, 0.2);
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 12px;
+        }
+        
+        canvas {
+            display: block;
+            cursor: grab;
+        }
+        
+        canvas:active {
+            cursor: grabbing;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <div class="calibration-panel">
+            <h3>🎯 Texture Calibration Tool</h3>
+            
+            <div class="offset-control">
+                <label>Longitude Offset (degrees):</label>
+                <input type="range" class="offset-slider" id="offsetSlider" 
+                       min="-180" max="180" value="0" step="5">
+                <div>Current: <span class="offset-value" id="offsetValue">0°</span></div>
+            </div>
+            
+            <div>
+                <button onclick="placeTestPin('Sydney', -33.8688, 151.2093)">Test Sydney</button>
+                <button onclick="placeTestPin('London', 51.5074, -0.1278)">Test London</button>
+                <button onclick="placeTestPin('0,0', 0, 0)">Test 0°,0°</button>
+            </div>
+            
+            <div class="instructions">
+                <strong>Instructions:</strong><br>
+                1. Click "Test Sydney" to place a pin<br>
+                2. Adjust the offset slider until Sydney appears in Australia<br>
+                3. Verify with London and 0,0 coordinates<br>
+                4. Note the offset value that works correctly
+            </div>
+            
+            <div class="location-info" id="locationInfo">
+                No location selected
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Scene globals
+        let scene, camera, renderer;
+        let earth;
+        let testPin;
+        let currentOffset = 0;
+        let currentLocation = null;
+        
+        function init() {
+            // Scene setup
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000511);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 3);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            document.getElementById('container').appendChild(renderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x606060);
+            scene.add(ambientLight);
+            
+            const sunlight = new THREE.DirectionalLight(0xffffff, 1);
+            sunlight.position.set(5, 3, 5);
+            scene.add(sunlight);
+            
+            // Create Earth
+            createEarth();
+            
+            // Create test pin
+            createTestPin();
+            
+            // Add reference markers
+            addReferenceMarkers();
+            
+            // Setup controls
+            setupControls();
+            
+            // Setup offset slider
+            document.getElementById('offsetSlider').addEventListener('input', function(e) {
+                currentOffset = parseInt(e.value);
+                document.getElementById('offsetValue').textContent = `${currentOffset}°`;
+                updatePinPosition();
+            });
+            
+            // Start render loop
+            animate();
+        }
+        
+        function createEarth() {
+            const geometry = new THREE.SphereGeometry(1, 64, 32);
+            
+            // Create Earth with a basic material first
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x2194ce,
+                shininess: 10
+            });
+            earth = new THREE.Mesh(geometry, material);
+            scene.add(earth);
+            
+            // Load the present day texture
+            const textureLoader = new THREE.TextureLoader();
+            textureLoader.load(
+                'textures/paleomap/timeline/Map1a PALEOMAP PaleoAtlas_000.jpg',
+                (texture) => {
+                    earth.material.map = texture;
+                    earth.material.needsUpdate = true;
+                },
+                undefined,
+                (error) => {
+                    console.error('Failed to load texture:', error);
+                    // Keep the blue sphere
+                }
+            );
+        }
+        
+        function createTestPin() {
+            // Create pin group
+            testPin = new THREE.Group();
+            
+            // Large red sphere for visibility
+            const sphereGeometry = new THREE.SphereGeometry(0.04, 16, 16);
+            const sphereMaterial = new THREE.MeshBasicMaterial({ 
+                color: 0xff0000,
+                emissive: 0xff0000,
+                emissiveIntensity: 0.5
+            });
+            const sphere = new THREE.Mesh(sphereGeometry, sphereMaterial);
+            testPin.add(sphere);
+            
+            // Vertical line
+            const lineGeometry = new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(0, 0, 0),
+                new THREE.Vector3(0, 0.3, 0)
+            ]);
+            const lineMaterial = new THREE.LineBasicMaterial({ 
+                color: 0xff0000,
+                linewidth: 3
+            });
+            const line = new THREE.Line(lineGeometry, lineMaterial);
+            testPin.add(line);
+            
+            testPin.visible = false;
+            scene.add(testPin);
+        }
+        
+        function addReferenceMarkers() {
+            // Add axis helper
+            const axesHelper = new THREE.AxesHelper(1.5);
+            scene.add(axesHelper);
+            
+            // Add equator line
+            const equatorPoints = [];
+            for (let i = 0; i <= 360; i += 5) {
+                const rad = (i * Math.PI) / 180;
+                equatorPoints.push(new THREE.Vector3(
+                    Math.cos(rad) * 1.01,
+                    0,
+                    Math.sin(rad) * 1.01
+                ));
+            }
+            const equatorGeometry = new THREE.BufferGeometry().setFromPoints(equatorPoints);
+            const equatorMaterial = new THREE.LineBasicMaterial({ 
+                color: 0xffff00,
+                opacity: 0.3,
+                transparent: true
+            });
+            const equator = new THREE.Line(equatorGeometry, equatorMaterial);
+            scene.add(equator);
+        }
+        
+        function placeTestPin(name, lat, lng) {
+            currentLocation = { name, lat, lng };
+            testPin.visible = true;
+            updatePinPosition();
+            
+            // Update info
+            document.getElementById('locationInfo').innerHTML = `
+                <strong>${name}</strong><br>
+                Latitude: ${lat}°<br>
+                Longitude: ${lng}°<br>
+                Applied Offset: ${currentOffset}°
+            `;
+        }
+        
+        function updatePinPosition() {
+            if (!currentLocation || !testPin || !earth) return;
+            
+            const { lat, lng } = currentLocation;
+            const radius = 1.05;
+            
+            // Convert degrees to radians
+            const latRad = (lat * Math.PI) / 180;
+            const lngRad = (lng * Math.PI) / 180;
+            
+            // Apply offset and earth rotation
+            const offsetRad = (currentOffset * Math.PI) / 180;
+            const adjustedLng = lngRad + offsetRad + (earth.rotation.y || 0);
+            
+            // Spherical to Cartesian
+            const x = radius * Math.cos(latRad) * Math.sin(adjustedLng);
+            const y = radius * Math.sin(latRad);
+            const z = radius * Math.cos(latRad) * Math.cos(adjustedLng);
+            
+            testPin.position.set(x, y, z);
+            
+            // Orient pin outward
+            testPin.up.set(0, 1, 0);
+            testPin.lookAt(x * 2, y * 2, z * 2);
+            
+            console.log(`Pin position - Lat: ${lat}, Lng: ${lng}, Offset: ${currentOffset}°, Position: (${x.toFixed(2)}, ${y.toFixed(2)}, ${z.toFixed(2)})`);
+        }
+        
+        function setupControls() {
+            let mouseDown = false;
+            let mouseX = 0, mouseY = 0;
+            
+            renderer.domElement.addEventListener('mousedown', (e) => {
+                mouseDown = true;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            window.addEventListener('mousemove', (e) => {
+                if (!mouseDown || !earth) return;
+                
+                const deltaX = e.clientX - mouseX;
+                const deltaY = e.clientY - mouseY;
+                
+                earth.rotation.y += deltaX * 0.01;
+                earth.rotation.x += deltaY * 0.01;
+                
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+                
+                updatePinPosition();
+            });
+            
+            window.addEventListener('mouseup', () => {
+                mouseDown = false;
+            });
+            
+            // Zoom
+            renderer.domElement.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                camera.position.z += e.deltaY * 0.002;
+                camera.position.z = Math.max(1.5, Math.min(5, camera.position.z));
+            });
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Update pin position if Earth is rotating
+            if (earth && currentLocation) {
+                updatePinPosition();
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        window.addEventListener('resize', onWindowResize);
+        
+        // Initialize
+        init();
+    </script>
+</body>
+</html>

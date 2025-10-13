@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - Continental Drift Visualization</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/ancient-earth.css">
+    
+    <style>
+        .continent-path {
+            fill: rgba(139, 69, 19, 0.3);
+            stroke: #8b4513;
+            stroke-width: 1;
+            cursor: pointer;
+            transition: fill 0.3s;
+        }
+        .continent-path:hover {
+            fill: rgba(139, 69, 19, 0.5);
+        }
+        .continent-label {
+            pointer-events: none;
+            font-family: 'Raleway', sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            fill: #ffffff;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <span class="logo-text">Deep Time Whispers</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="timeline.html" class="nav-link">Timeline</a>
+                    <a href="#" class="nav-link active">Ancient Earth</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="ancient-earth-hero">
+        <div class="container">
+            <h1 class="page-title">Ancient Earth - Continental Drift</h1>
+            <p class="page-subtitle">Watch continents move through deep time</p>
+            
+            <!-- Location Search -->
+            <div class="location-search-container">
+                <div class="search-wrapper">
+                    <input 
+                        type="text" 
+                        id="locationSearch" 
+                        class="location-search-input" 
+                        placeholder="Enter your city or address..."
+                    >
+                    <button id="searchBtn" class="search-btn">Search</button>
+                </div>
+                <div id="searchStatus" class="search-status"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="ancient-earth-main">
+        <div class="ancient-earth-layout">
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <h3>Time Period</h3>
+                
+                <!-- Time Slider -->
+                <div class="time-slider-container">
+                    <input 
+                        type="range" 
+                        id="timeSlider" 
+                        class="time-slider" 
+                        min="0" 
+                        max="750" 
+                        value="0" 
+                        step="10"
+                    >
+                    <div class="time-display">
+                        <span id="timeValue">Present Day</span>
+                        <span id="myaValue" class="mya-value">0 MYA</span>
+                    </div>
+                </div>
+
+                <!-- Quick Jump Buttons -->
+                <div class="quick-jumps">
+                    <h4>Quick Jumps</h4>
+                    <button class="period-btn active" data-mya="0">Present</button>
+                    <button class="period-btn" data-mya="20">Miocene</button>
+                    <button class="period-btn" data-mya="66">K-Pg Extinction</button>
+                    <button class="period-btn" data-mya="150">Jurassic</button>
+                    <button class="period-btn" data-mya="220">Triassic (Pangaea)</button>
+                    <button class="period-btn" data-mya="300">Carboniferous</button>
+                    <button class="period-btn" data-mya="450">Ordovician</button>
+                    <button class="period-btn" data-mya="540">Cambrian</button>
+                    <button class="period-btn" data-mya="750">Cryogenian</button>
+                </div>
+
+                <!-- Info Panel -->
+                <div id="locationInfo" class="location-info-panel" style="display: none;">
+                    <h4>Your Location</h4>
+                    <div id="currentLocation" class="current-location"></div>
+                    <div id="ancientLocation" class="ancient-location"></div>
+                    
+                    <h4>Continental Configuration</h4>
+                    <div id="continentInfo" class="continent-info"></div>
+                </div>
+            </div>
+
+            <!-- Globe Container -->
+            <div class="globe-container">
+                <div id="globeViz"></div>
+                <div class="globe-controls">
+                    <button id="resetView" class="globe-btn">Reset View</button>
+                    <button id="toggleRotation" class="globe-btn">
+                        <span class="rotation-icon">⟲</span> Auto-Rotate
+                    </button>
+                    <button id="journeyBtn" class="globe-btn">🎬 Journey Through Time</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use globe.gl -->
+    <script src="//unpkg.com/globe.gl"></script>
+    
+    <!-- Continental drift implementation -->
+    <script>
+        // Initialize variables
+        let globe = null;
+        let currentLocation = null;
+        let currentMYA = 0;
+        let autoRotate = false;
+        let animationId = null;
+        
+        // Simplified continent configurations for different time periods
+        const CONTINENT_CONFIGS = {
+            0: { // Present day
+                name: "Present Day",
+                continents: [
+                    { name: "North America", center: { lat: 45, lng: -100 }, color: "#228b22" },
+                    { name: "South America", center: { lat: -15, lng: -60 }, color: "#32cd32" },
+                    { name: "Africa", center: { lat: 0, lng: 20 }, color: "#3cb371" },
+                    { name: "Europe", center: { lat: 50, lng: 10 }, color: "#2e8b57" },
+                    { name: "Asia", center: { lat: 35, lng: 90 }, color: "#006400" },
+                    { name: "Australia", center: { lat: -25, lng: 135 }, color: "#8fbc8f" },
+                    { name: "Antarctica", center: { lat: -80, lng: 0 }, color: "#e0e0e0" }
+                ]
+            },
+            220: { // Triassic - Pangaea
+                name: "Pangaea Supercontinent",
+                continents: [
+                    { name: "Pangaea", center: { lat: 0, lng: 20 }, color: "#8b4513" }
+                ]
+            },
+            300: { // Carboniferous
+                name: "Continents Assembling",
+                continents: [
+                    { name: "Euramerica", center: { lat: 20, lng: -20 }, color: "#6b4423" },
+                    { name: "Gondwana", center: { lat: -30, lng: 30 }, color: "#6b4423" },
+                    { name: "Siberia", center: { lat: 60, lng: 90 }, color: "#6b4423" }
+                ]
+            },
+            450: { // Ordovician
+                name: "Southern Hemisphere Dominance",
+                continents: [
+                    { name: "Gondwana", center: { lat: -60, lng: 0 }, color: "#5b3413" },
+                    { name: "Laurentia", center: { lat: 0, lng: -90 }, color: "#5b3413" },
+                    { name: "Baltica", center: { lat: -30, lng: 30 }, color: "#5b3413" },
+                    { name: "Siberia", center: { lat: 30, lng: 90 }, color: "#5b3413" }
+                ]
+            },
+            750: { // Cryogenian - Snowball Earth
+                name: "Rodinia Breaking Up",
+                continents: [
+                    { name: "Rodinia Fragments", center: { lat: -20, lng: 0 }, color: "#e0e0e0" }
+                ]
+            }
+        };
+        
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', function() {
+            initializeGlobe();
+            setupEventListeners();
+            // Display initial continents after globe loads
+            setTimeout(() => {
+                updateContinents(0);
+            }, 500);
+        });
+        
+        function initializeGlobe() {
+            const globeContainer = document.getElementById('globeViz');
+            
+            // Create globe with solid colors to avoid CORS issues
+            globe = Globe()
+                .backgroundColor('#000033')
+                .showGraticules(true)
+                .showAtmosphere(true)
+                .atmosphereColor('lightskyblue')
+                .atmosphereAltitude(0.15)
+                .polygonsData([])
+                .polygonCapColor(d => d.color || '#8b4513')
+                .polygonSideColor(() => 'rgba(139, 69, 19, 0.2)')
+                .polygonStrokeColor(() => '#ffffff')
+                .polygonLabel(d => `<div style="color: white; background: rgba(0,0,0,0.8); padding: 5px; border-radius: 3px;">${d.name}</div>`)
+                .polygonAltitude(0.01)
+                .onPolygonClick(polygon => {
+                    console.log('Clicked:', polygon.name);
+                })
+                (globeContainer);
+            
+            // Center view
+            setTimeout(() => {
+                globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 0);
+            }, 100);
+        }
+        
+        function setupEventListeners() {
+            // Time slider
+            document.getElementById('timeSlider').addEventListener('input', function(e) {
+                currentMYA = parseInt(e.target.value);
+                updateTimeDisplay(currentMYA);
+                updateContinents(currentMYA);
+            });
+            
+            // Quick jump buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const mya = parseInt(e.target.dataset.mya);
+                    document.getElementById('timeSlider').value = mya;
+                    currentMYA = mya;
+                    updateTimeDisplay(mya);
+                    updateContinents(mya);
+                    
+                    // Update active state
+                    document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                    e.target.classList.add('active');
+                });
+            });
+            
+            // Other controls
+            document.getElementById('resetView').addEventListener('click', function() {
+                globe.pointOfView({ lat: 20, lng: 0, altitude: 2.5 }, 1000);
+            });
+            
+            document.getElementById('journeyBtn').addEventListener('click', startTimeJourney);
+        }
+        
+        function createContinentPolygons(mya) {
+            // Find closest time period
+            const times = Object.keys(CONTINENT_CONFIGS).map(Number).sort((a, b) => a - b);
+            let configTime = 0;
+            
+            for (const time of times) {
+                if (mya >= time) {
+                    configTime = time;
+                } else {
+                    break;
+                }
+            }
+            
+            const config = CONTINENT_CONFIGS[configTime];
+            
+            // Create simple polygons for continents
+            const polygons = config.continents.map(continent => {
+                // Create a circle of points around the center
+                const points = [];
+                const radius = continent.name === "Pangaea" ? 40 : 
+                              continent.name.includes("Gondwana") ? 35 : 20;
+                const segments = 32;
+                
+                for (let i = 0; i < segments; i++) {
+                    const angle = (i / segments) * Math.PI * 2;
+                    const lat = continent.center.lat + radius * Math.sin(angle) * 
+                               (1 + 0.2 * Math.sin(angle * 3)); // Add some variation
+                    const lng = continent.center.lng + radius * Math.cos(angle) * 
+                               (1 + 0.2 * Math.cos(angle * 2));
+                    points.push([lng, lat]);
+                }
+                points.push(points[0]); // Close the polygon
+                
+                return {
+                    name: continent.name,
+                    color: continent.color,
+                    coords: points
+                };
+            });
+            
+            return polygons;
+        }
+        
+        function updateContinents(mya) {
+            const polygons = createContinentPolygons(mya);
+            
+            // Animate transition
+            const currentPolygons = globe.polygonsData();
+            
+            if (currentPolygons.length > 0) {
+                // Fade out current continents
+                globe.polygonsData([]);
+                
+                setTimeout(() => {
+                    // Fade in new continents
+                    globe.polygonsData(polygons);
+                }, 300);
+            } else {
+                globe.polygonsData(polygons);
+            }
+            
+            // Update atmosphere based on time
+            if (mya > 600) {
+                globe.atmosphereColor('white'); // Snowball Earth
+            } else if (mya > 250) {
+                globe.atmosphereColor('orange'); // Different atmosphere
+            } else {
+                globe.atmosphereColor('lightskyblue');
+            }
+        }
+        
+        function updateTimeDisplay(mya) {
+            // Find matching config
+            const times = Object.keys(CONTINENT_CONFIGS).map(Number).sort((a, b) => a - b);
+            let configTime = 0;
+            
+            for (const time of times) {
+                if (mya >= time) {
+                    configTime = time;
+                } else {
+                    break;
+                }
+            }
+            
+            const config = CONTINENT_CONFIGS[configTime];
+            document.getElementById('timeValue').textContent = config.name;
+            document.getElementById('myaValue').textContent = mya + ' MYA';
+            
+            // Update continent info
+            document.getElementById('continentInfo').innerHTML = 
+                `<strong>${config.name}</strong><br>` +
+                `Continents: ${config.continents.map(c => c.name).join(', ')}`;
+        }
+        
+        async function startTimeJourney() {
+            const btn = document.getElementById('journeyBtn');
+            btn.disabled = true;
+            btn.innerHTML = '⏸ Stop Journey';
+            
+            let stopped = false;
+            btn.onclick = () => {
+                stopped = true;
+                btn.disabled = false;
+                btn.innerHTML = '🎬 Journey Through Time';
+                btn.onclick = startTimeJourney;
+            };
+            
+            // Journey through key times
+            const keyTimes = [0, 150, 220, 300, 450, 600, 750, 600, 450, 300, 220, 150, 0];
+            
+            for (const mya of keyTimes) {
+                if (stopped) break;
+                
+                document.getElementById('timeSlider').value = mya;
+                currentMYA = mya;
+                updateTimeDisplay(mya);
+                updateContinents(mya);
+                
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+            
+            btn.disabled = false;
+            btn.innerHTML = '🎬 Journey Through Time';
+            btn.onclick = startTimeJourney;
+        }
+    </script>
+</body>
+</html>

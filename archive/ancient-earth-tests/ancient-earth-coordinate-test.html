@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coordinate System Test</title>
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; background: #000; color: white; }
+        #info { position: absolute; top: 10px; left: 10px; background: rgba(0,0,0,0.8); padding: 20px; }
+        button { margin: 5px; padding: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h3>Coordinate System Test</h3>
+        <p>Testing where coordinates appear on PALEOMAP texture</p>
+        <button onclick="addTestPins()">Add Test Pins</button>
+        <div id="status"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        let scene, camera, renderer, earth;
+        let pins = [];
+        
+        function init() {
+            scene = new THREE.Scene();
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 3);
+            
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+            
+            // Lighting
+            scene.add(new THREE.AmbientLight(0x808080));
+            scene.add(new THREE.DirectionalLight(0xffffff, 1));
+            
+            // Earth
+            const geometry = new THREE.SphereGeometry(1, 64, 32);
+            const material = new THREE.MeshPhongMaterial({ color: 0x2194ce });
+            earth = new THREE.Mesh(geometry, material);
+            scene.add(earth);
+            
+            // Load texture
+            const loader = new THREE.TextureLoader();
+            loader.load('textures/paleomap/timeline/Map1a PALEOMAP PaleoAtlas_000.jpg', (texture) => {
+                earth.material.map = texture;
+                earth.material.needsUpdate = true;
+                document.getElementById('status').textContent = 'Texture loaded!';
+            });
+            
+            // Mouse controls
+            let mouseDown = false, mouseX = 0, mouseY = 0;
+            renderer.domElement.addEventListener('mousedown', (e) => { 
+                mouseDown = true; 
+                mouseX = e.clientX; 
+                mouseY = e.clientY; 
+            });
+            window.addEventListener('mousemove', (e) => {
+                if (!mouseDown) return;
+                earth.rotation.y += (e.clientX - mouseX) * 0.01;
+                earth.rotation.x += (e.clientY - mouseY) * 0.01;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            window.addEventListener('mouseup', () => { mouseDown = false; });
+            
+            animate();
+        }
+        
+        function addTestPins() {
+            // Clear old pins
+            pins.forEach(pin => earth.remove(pin));
+            pins = [];
+            
+            // Test locations with known landmarks
+            const testLocations = [
+                { name: "Greenwich (0,0)", lat: 0, lng: 0, color: 0x00ff00 },
+                { name: "North Pole", lat: 90, lng: 0, color: 0xffffff },
+                { name: "New York", lat: 40.7128, lng: -74.0060, color: 0xff0000 },
+                { name: "Sydney", lat: -33.8688, lng: 151.2093, color: 0xffff00 },
+                { name: "London", lat: 51.5074, lng: -0.1278, color: 0xff00ff },
+                { name: "Tokyo", lat: 35.6762, lng: 139.6503, color: 0x00ffff }
+            ];
+            
+            testLocations.forEach(loc => {
+                const pin = createPin(loc.lat, loc.lng, loc.color, loc.name);
+                earth.add(pin);
+                pins.push(pin);
+            });
+            
+            document.getElementById('status').innerHTML = `
+                Added test pins:<br>
+                🟢 Greenwich (0,0) - Should be off West Africa<br>
+                ⚪ North Pole - Should be at top<br>
+                🔴 New York - Should be on US East Coast<br>
+                🟡 Sydney - Should be in SE Australia<br>
+                🟣 London - Should be in UK<br>
+                🔵 Tokyo - Should be in Japan
+            `;
+        }
+        
+        function createPin(lat, lng, color, name) {
+            const group = new THREE.Group();
+            
+            // Convert to radians
+            const latRad = lat * Math.PI / 180;
+            const lngRad = lng * Math.PI / 180;
+            
+            // Standard spherical to Cartesian
+            const radius = 1.05;
+            const x = radius * Math.cos(latRad) * Math.sin(lngRad);
+            const y = radius * Math.sin(latRad);
+            const z = radius * Math.cos(latRad) * Math.cos(lngRad);
+            
+            // Pin sphere
+            const sphere = new THREE.Mesh(
+                new THREE.SphereGeometry(0.02, 16, 16),
+                new THREE.MeshBasicMaterial({ color })
+            );
+            group.add(sphere);
+            
+            // Label
+            const canvas = document.createElement('canvas');
+            canvas.width = 256;
+            canvas.height = 64;
+            const ctx = canvas.getContext('2d');
+            ctx.fillStyle = 'white';
+            ctx.font = '24px Arial';
+            ctx.fillText(name, 10, 40);
+            
+            const texture = new THREE.CanvasTexture(canvas);
+            const sprite = new THREE.Sprite(new THREE.SpriteMaterial({ map: texture }));
+            sprite.scale.set(0.5, 0.125, 1);
+            sprite.position.y = 0.1;
+            group.add(sprite);
+            
+            // Position the group
+            group.position.set(x, y, z);
+            group.lookAt(0, 0, 0);
+            
+            return group;
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        
+        init();
+    </script>
+</body>
+</html>

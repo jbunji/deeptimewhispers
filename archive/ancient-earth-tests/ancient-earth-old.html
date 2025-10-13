@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth Locator - Deep Time Whispers</title>
+    <meta name="description" content="Discover where your location was millions of years ago. Watch continents drift and see what lived at your address throughout Earth's history.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/ancient-earth.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/DeepTimeWhispers-Final.png">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <span class="logo-text">Deep Time Whispers</span>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="timeline.html" class="nav-link">Timeline</a>
+                    <a href="#" class="nav-link active">Ancient Earth</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="ancient-earth-hero">
+        <div class="container">
+            <h1 class="page-title">Ancient Earth Locator</h1>
+            <p class="page-subtitle">Where was your location throughout deep time?</p>
+            
+            <!-- Location Search -->
+            <div class="location-search-container">
+                <div class="search-wrapper">
+                    <input 
+                        type="text" 
+                        id="locationSearch" 
+                        class="location-search-input" 
+                        placeholder="Enter your city or address..."
+                    >
+                    <button id="searchBtn" class="search-btn">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <path d="m21 21-4.35-4.35"></path>
+                        </svg>
+                    </button>
+                    <button id="useMyLocation" class="location-btn" title="Use my current location">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+                        </svg>
+                    </button>
+                </div>
+                <div id="searchStatus" class="search-status"></div>
+                <p class="demo-note">Demo Mode: Try cities like New York, London, Tokyo, Paris, Los Angeles, Chicago, Seattle, Miami, etc.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="ancient-earth-main">
+        <div class="ancient-earth-layout">
+            <!-- Controls Panel -->
+            <div class="controls-panel">
+                <h3>Time Period</h3>
+                
+                <!-- Time Slider -->
+                <div class="time-slider-container">
+                    <input 
+                        type="range" 
+                        id="timeSlider" 
+                        class="time-slider" 
+                        min="0" 
+                        max="750" 
+                        value="0" 
+                        step="10"
+                    >
+                    <div class="time-display">
+                        <span id="timeValue">Present Day</span>
+                        <span id="myaValue" class="mya-value">0 MYA</span>
+                    </div>
+                </div>
+
+                <!-- Quick Jump Buttons -->
+                <div class="quick-jumps">
+                    <h4>Quick Jumps</h4>
+                    <button class="period-btn" data-mya="0">Present</button>
+                    <button class="period-btn" data-mya="20">Miocene</button>
+                    <button class="period-btn" data-mya="66">K-Pg Extinction</button>
+                    <button class="period-btn" data-mya="150">Jurassic</button>
+                    <button class="period-btn" data-mya="252">Permian</button>
+                    <button class="period-btn" data-mya="359">Carboniferous</button>
+                    <button class="period-btn" data-mya="443">Ordovician</button>
+                    <button class="period-btn" data-mya="541">Cambrian</button>
+                    <button class="period-btn" data-mya="750">Cryogenian</button>
+                </div>
+
+                <!-- Info Panel -->
+                <div id="locationInfo" class="location-info-panel" style="display: none;">
+                    <h4>Your Location</h4>
+                    <div id="currentLocation" class="current-location"></div>
+                    <div id="ancientLocation" class="ancient-location"></div>
+                    
+                    <h4>Continental Configuration</h4>
+                    <div id="continentInfo" class="continent-info"></div>
+                    
+                    <h4>Environment</h4>
+                    <div id="environmentInfo" class="environment-info"></div>
+                    
+                    <h4>What Lived Here?</h4>
+                    <div id="lifeInfo" class="life-info"></div>
+                </div>
+            </div>
+
+            <!-- Globe Container -->
+            <div class="globe-container">
+                <div id="globeViz"></div>
+                <div class="globe-controls">
+                    <button id="resetView" class="globe-btn">Reset View</button>
+                    <button id="toggleRotation" class="globe-btn">
+                        <span class="rotation-icon">⟲</span> Auto-Rotate
+                    </button>
+                </div>
+                <div class="globe-note">
+                    <p><em>Note: This demo shows modern Earth geography. In reality, continents were in completely different positions in the past. The atmosphere color changes to hint at different time periods.</em></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Educational Content -->
+    <section class="educational-section">
+        <div class="container">
+            <h2>Understanding Continental Drift</h2>
+            <div class="education-grid">
+                <div class="edu-card">
+                    <h3>🌍 Plate Tectonics</h3>
+                    <p>Earth's surface is made of massive plates that move at about the speed your fingernails grow. Over millions of years, this movement reshapes our planet dramatically.</p>
+                </div>
+                <div class="edu-card">
+                    <h3>🗺️ Supercontinents</h3>
+                    <p>Throughout Earth's history, continents have merged into supercontinents like Pangaea (335-175 MYA) and Rodinia (1.3-0.9 billion years ago), then broken apart again.</p>
+                </div>
+                <div class="edu-card">
+                    <h3>🌊 Changing Seas</h3>
+                    <p>As continents move, ocean basins open and close. Your location might have been underwater multiple times throughout Earth's history!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Deep Time Whispers</h3>
+                    <p>Educational Resources</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Explore</h4>
+                    <a href="timeline.html">Interactive Timeline</a>
+                    <a href="#">Ancient Earth Locator</a>
+                    <a href="index.html#episodes">Episode Guide</a>
+                    <a href="index.html">Back to Main Site</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Deep Time Whispers. Education through ancient memories.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Use the working version of globe.gl from CDN -->
+    <script src="//unpkg.com/globe.gl"></script>
+    
+    <!-- Simple implementation -->
+    <script>
+        // Initialize globe
+        let globe = null;
+        let currentLocation = null;
+        let currentMYA = 0;
+        let autoRotate = false;
+        let animationId = null;
+        
+        // Initialize when page loads
+        window.addEventListener('DOMContentLoaded', function() {
+            initializeGlobe();
+            setupEventListeners();
+        });
+        
+        function initializeGlobe() {
+            const globeContainer = document.getElementById('globeViz');
+            
+            // Create globe with basic configuration
+            globe = Globe()
+                .globeImageUrl('//unpkg.com/three-globe/example/img/earth-blue-marble.jpg')
+                .backgroundImageUrl('//unpkg.com/three-globe/example/img/night-sky.png')
+                .showAtmosphere(true)
+                .atmosphereColor('lightskyblue')
+                .atmosphereAltitude(0.15)
+                (globeContainer);
+            
+            // Set initial view - wait for globe to initialize
+            setTimeout(() => {
+                globe.pointOfView({ lat: 0, lng: 0, altitude: 2.5 }, 0);
+            }, 100);
+        }
+        
+        function setupEventListeners() {
+            // Search button
+            document.getElementById('searchBtn').addEventListener('click', handleSearch);
+            
+            // Time slider
+            document.getElementById('timeSlider').addEventListener('input', function(e) {
+                currentMYA = parseInt(e.target.value);
+                updateTimeDisplay(currentMYA);
+            });
+            
+            // Quick jump buttons
+            document.querySelectorAll('.period-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    const mya = parseInt(e.target.dataset.mya);
+                    document.getElementById('timeSlider').value = mya;
+                    currentMYA = mya;
+                    updateTimeDisplay(mya);
+                });
+            });
+            
+            // Reset view button
+            document.getElementById('resetView').addEventListener('click', function() {
+                globe.pointOfView({ lat: 0, lng: 0, altitude: 2.5 }, 1000);
+            });
+            
+            // Auto-rotate button
+            document.getElementById('toggleRotation').addEventListener('click', toggleAutoRotation);
+            
+            // Add Journey Through Time button
+            const journeyBtn = document.createElement('button');
+            journeyBtn.id = 'journeyBtn';
+            journeyBtn.className = 'globe-btn';
+            journeyBtn.innerHTML = '🎬 Journey Through Time';
+            journeyBtn.onclick = startJourney;
+            document.querySelector('.globe-controls').appendChild(journeyBtn);
+        }
+        
+        function handleSearch() {
+            const query = document.getElementById('locationSearch').value.trim();
+            if (!query) return;
+            
+            // Demo locations
+            const locations = {
+                'new york': { lat: 40.7128, lon: -74.0060, name: 'New York, NY, USA' },
+                'london': { lat: 51.5074, lon: -0.1278, name: 'London, UK' },
+                'tokyo': { lat: 35.6762, lon: 139.6503, name: 'Tokyo, Japan' },
+                'paris': { lat: 48.8566, lon: 2.3522, name: 'Paris, France' },
+                'los angeles': { lat: 34.0522, lon: -118.2437, name: 'Los Angeles, CA, USA' },
+                'chicago': { lat: 41.8781, lon: -87.6298, name: 'Chicago, IL, USA' },
+                'seattle': { lat: 47.6062, lon: -122.3321, name: 'Seattle, WA, USA' },
+                'miami': { lat: 25.7617, lon: -80.1918, name: 'Miami, FL, USA' },
+                'sydney': { lat: -33.8688, lon: 151.2093, name: 'Sydney, Australia' },
+                'mumbai': { lat: 19.0760, lon: 72.8777, name: 'Mumbai, India' },
+                'beijing': { lat: 39.9042, lon: 116.4074, name: 'Beijing, China' },
+                'cairo': { lat: 30.0444, lon: 31.2357, name: 'Cairo, Egypt' },
+                'rio de janeiro': { lat: -22.9068, lon: -43.1729, name: 'Rio de Janeiro, Brazil' },
+                'moscow': { lat: 55.7558, lon: 37.6173, name: 'Moscow, Russia' }
+            };
+            
+            const location = locations[query.toLowerCase()] || locations['new york'];
+            setLocation(location);
+        }
+        
+        function setLocation(location) {
+            currentLocation = location;
+            
+            // Add marker
+            globe.pointsData([{
+                lat: location.lat,
+                lng: location.lon,
+                color: 'red',
+                altitude: 0.01,
+                radius: 0.5
+            }]);
+            
+            // Center view on location
+            globe.pointOfView({
+                lat: location.lat,
+                lng: location.lon,
+                altitude: 1.5
+            }, 1000);
+            
+            // Show location info
+            document.getElementById('locationInfo').style.display = 'block';
+            updateLocationInfo();
+        }
+        
+        function updateTimeDisplay(mya) {
+            const periods = {
+                0: 'Present Day',
+                20: 'Miocene',
+                66: 'End Cretaceous',
+                150: 'Late Jurassic',
+                220: 'Late Triassic',
+                300: 'Carboniferous',
+                450: 'Ordovician',
+                540: 'Cambrian',
+                750: 'Cryogenian'
+            };
+            
+            // Find closest period
+            const closest = Object.keys(periods).reduce((prev, curr) => 
+                Math.abs(curr - mya) < Math.abs(prev - mya) ? curr : prev
+            );
+            
+            document.getElementById('timeValue').textContent = periods[closest];
+            document.getElementById('myaValue').textContent = mya + ' MYA';
+            
+            // Update atmosphere color based on period
+            if (mya > 600) {
+                globe.atmosphereColor('white'); // Snowball Earth
+            } else if (mya > 250) {
+                globe.atmosphereColor('orange'); // Different atmosphere
+            } else {
+                globe.atmosphereColor('lightskyblue');
+            }
+            
+            if (currentLocation) {
+                updateLocationInfo();
+                // Update location marker position based on time
+                updateLocationMarker(mya);
+            }
+        }
+        
+        function updateLocationInfo() {
+            if (!currentLocation) return;
+            
+            document.getElementById('currentLocation').innerHTML = 
+                `<strong>Modern Location:</strong><br>${currentLocation.name}`;
+            
+            const drift = calculateDrift(currentLocation, currentMYA);
+            document.getElementById('ancientLocation').innerHTML = 
+                `<strong>Position ${currentMYA} MYA:</strong><br>` +
+                `Latitude: ${drift.lat.toFixed(1)}°<br>` +
+                `Longitude: ${drift.lon.toFixed(1)}°<br>` +
+                `Distance moved: ${drift.distance.toFixed(0)} km`;
+            
+            document.getElementById('continentInfo').innerHTML = getContinentInfo(currentMYA);
+            document.getElementById('environmentInfo').innerHTML = getEnvironmentInfo(currentMYA);
+            document.getElementById('lifeInfo').innerHTML = getLifeInfo(currentMYA);
+        }
+        
+        function calculateDrift(location, mya) {
+            // Simplified continental drift simulation
+            let driftLat = location.lat;
+            let driftLon = location.lon;
+            
+            // Simulate drift based on general plate tectonics
+            if (location.lat > 0 && location.lon < -30) {
+                // North America - drifting northwest
+                driftLat = location.lat - (mya * 0.1);
+                driftLon = location.lon + (mya * 0.15);
+            } else if (location.lat > 35 && location.lon > -10 && location.lon < 40) {
+                // Europe - drifting north
+                driftLat = location.lat - (mya * 0.2);
+                driftLon = location.lon - (mya * 0.05);
+            } else if (location.lat < -10) {
+                // Southern hemisphere - various movements
+                driftLat = location.lat - (mya * 0.15);
+                driftLon = location.lon + (mya * 0.1);
+            }
+            
+            // Calculate distance
+            const R = 6371; // Earth radius in km
+            const dLat = (driftLat - location.lat) * Math.PI / 180;
+            const dLon = (driftLon - location.lon) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(location.lat * Math.PI / 180) * Math.cos(driftLat * Math.PI / 180) *
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            const distance = R * c;
+            
+            return {
+                lat: driftLat,
+                lon: driftLon,
+                distance: distance
+            };
+        }
+        
+        function updateLocationMarker(mya) {
+            if (!currentLocation) return;
+            
+            const drift = calculateDrift(currentLocation, mya);
+            
+            // Update the marker position
+            globe.pointsData([{
+                lat: drift.lat,
+                lng: drift.lon,
+                color: mya === 0 ? 'red' : 'orange',
+                altitude: 0.01,
+                radius: 0.5
+            }]);
+        }
+        
+        function getContinentInfo(mya) {
+            if (mya === 0) return "Seven continents in modern positions";
+            if (mya < 180) return "Continents approaching modern positions";
+            if (mya < 250) return "Supercontinent Pangaea";
+            if (mya < 550) return "Continents scattered";
+            return "Ancient supercontinents";
+        }
+        
+        function getEnvironmentInfo(mya) {
+            if (mya === 0) return "Modern climate";
+            if (mya < 100) return "Warm, high sea levels";
+            if (mya < 250) return "Variable climate";
+            if (mya < 550) return "No life on land yet";
+            return "Very different atmosphere";
+        }
+        
+        function getLifeInfo(mya) {
+            if (mya === 0) return "Modern ecosystems";
+            if (mya < 66) return "Dinosaurs dominant";
+            if (mya < 250) return "Early reptiles";
+            if (mya < 550) return "Marine life only";
+            return "Simple organisms";
+        }
+        
+        function toggleAutoRotation() {
+            autoRotate = !autoRotate;
+            const btn = document.getElementById('toggleRotation');
+            
+            if (autoRotate) {
+                btn.classList.add('active');
+                startRotation();
+            } else {
+                btn.classList.remove('active');
+                stopRotation();
+            }
+        }
+        
+        function startRotation() {
+            if (animationId) return;
+            
+            function animate() {
+                const pov = globe.pointOfView();
+                globe.pointOfView({
+                    lat: pov.lat,
+                    lng: pov.lng + 0.2,
+                    altitude: pov.altitude
+                });
+                
+                if (autoRotate) {
+                    animationId = requestAnimationFrame(animate);
+                }
+            }
+            
+            animate();
+        }
+        
+        function stopRotation() {
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+        
+        async function startJourney() {
+            const journeyBtn = document.getElementById('journeyBtn');
+            journeyBtn.disabled = true;
+            journeyBtn.innerHTML = '⏸ Stop Journey';
+            
+            let stopped = false;
+            journeyBtn.onclick = () => {
+                stopped = true;
+                journeyBtn.disabled = false;
+                journeyBtn.innerHTML = '🎬 Journey Through Time';
+                journeyBtn.onclick = startJourney;
+            };
+            
+            // Key time periods
+            const keyTimes = [0, 20, 66, 150, 220, 300, 450, 540, 750];
+            
+            for (const mya of keyTimes) {
+                if (stopped) break;
+                
+                // Update slider and display
+                document.getElementById('timeSlider').value = mya;
+                updateTimeDisplay(mya);
+                
+                // Wait at each period
+                await new Promise(resolve => setTimeout(resolve, 2000));
+            }
+            
+            // Return to present
+            if (!stopped) {
+                await new Promise(resolve => setTimeout(resolve, 1000));
+                document.getElementById('timeSlider').value = 0;
+                updateTimeDisplay(0);
+            }
+            
+            journeyBtn.disabled = false;
+            journeyBtn.innerHTML = '🎬 Journey Through Time';
+            journeyBtn.onclick = startJourney;
+        }
+    </script>
+</body>
+</html>

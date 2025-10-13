@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ancient Earth - Realistic Paleogeographic Visualization</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/ancient-earth.css">
+    
+    <style>
+        #globeContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #000033 0%, #000000 100%);
+            overflow: hidden;
+        }
+        
+        .loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s;
+        }
+        
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-top: 3px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            color: white;
+            font-family: 'Raleway', sans-serif;
+            margin-top: 20px;
+            font-size: 18px;
+        }
+        
+        .time-period-label {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-family: 'Raleway', sans-serif;
+            font-size: 24px;
+            font-weight: 600;
+            z-index: 100;
+        }
+        
+        .location-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #ff0000;
+            border: 3px solid #ffffff;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 20px rgba(255,0,0,0.8);
+            pointer-events: none;
+            z-index: 200;
+        }
+        
+        .controls-overlay {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.8);
+            padding: 20px;
+            border-radius: 15px;
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+        }
+        
+        .control-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Raleway', sans-serif;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .control-btn:hover {
+            background: #45a049;
+        }
+        
+        .control-btn.stop {
+            background: #f44336;
+        }
+        
+        .control-btn.stop:hover {
+            background: #da190b;
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <span class="logo-text">Deep Time Whispers</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <section class="ancient-earth-hero">
+        <div class="container">
+            <h1 class="page-title">Realistic Earth Through Time</h1>
+            <p class="page-subtitle">Experience Earth's changing face with actual paleogeographic reconstructions</p>
+        </div>
+    </section>
+
+    <section class="ancient-earth-main">
+        <div class="ancient-earth-layout">
+            <div class="controls-panel">
+                <h3>Journey Through Deep Time</h3>
+                
+                <div class="time-slider-container">
+                    <input type="range" id="timeSlider" class="time-slider" 
+                           min="0" max="750" value="0" step="10">
+                    <div class="time-display">
+                        <span id="timeValue">Present Day</span>
+                        <span id="myaValue" class="mya-value">0 MYA</span>
+                    </div>
+                </div>
+
+                <div class="quick-jumps">
+                    <h4>Major Events</h4>
+                    <button class="period-btn active" data-time="0">Present</button>
+                    <button class="period-btn" data-time="20">Miocene</button>
+                    <button class="period-btn" data-time="66">End of Dinosaurs</button>
+                    <button class="period-btn" data-time="90">Mid-Cretaceous</button>
+                    <button class="period-btn" data-time="120">Early Cretaceous</button>
+                    <button class="period-btn" data-time="150">Jurassic</button>
+                    <button class="period-btn" data-time="200">Triassic</button>
+                    <button class="period-btn" data-time="240">Pangaea</button>
+                    <button class="period-btn" data-time="300">Coal Forests</button>
+                    <button class="period-btn" data-time="370">First Trees</button>
+                    <button class="period-btn" data-time="430">First Land Plants</button>
+                    <button class="period-btn" data-time="540">Cambrian Explosion</button>
+                    <button class="period-btn" data-time="750">Snowball Earth</button>
+                </div>
+
+                <div class="location-search-container" style="margin-top: 30px;">
+                    <h4>Track a Location</h4>
+                    <div class="search-wrapper">
+                        <input type="text" id="locationSearch" class="location-search-input" 
+                               placeholder="Enter city or coordinates...">
+                        <button id="searchBtn" class="search-btn">Track</button>
+                    </div>
+                    <div id="locationInfo" style="margin-top: 15px; color: #fff; font-size: 14px;"></div>
+                </div>
+            </div>
+
+            <div class="globe-container">
+                <div id="globeContainer">
+                    <div class="loading-screen" id="loadingScreen">
+                        <div class="loading-spinner"></div>
+                        <div class="loading-text">Loading paleogeographic data...</div>
+                    </div>
+                    <div class="time-period-label" id="timePeriodLabel">Present Day</div>
+                    <canvas id="globeCanvas"></canvas>
+                    <div class="location-marker" id="locationMarker" style="display: none;"></div>
+                </div>
+                
+                <div class="controls-overlay">
+                    <button class="control-btn" onclick="toggleRotation()">🔄 Auto-Rotate</button>
+                    <button class="control-btn" onclick="playTimelapse()">▶️ Play Timelapse</button>
+                    <button class="control-btn stop" onclick="stopTimelapse()">⏸ Stop</button>
+                    <button class="control-btn" onclick="resetView()">🏠 Reset View</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Three.js for realistic 3D rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Global variables
+        let scene, camera, renderer, earth;
+        let controls;
+        let autoRotate = false;
+        let timelapseInterval = null;
+        let currentTime = 0;
+        let trackedLocation = null;
+        
+        // Time period data with texture mappings
+        const timePeriods = {
+            0: { name: "Present Day", texture: "present", description: "Modern continental configuration" },
+            20: { name: "Miocene", texture: "miocene", description: "Great apes evolve, grasslands expand" },
+            35: { name: "Oligocene", texture: "oligocene", description: "Modern mammals appear" },
+            50: { name: "Eocene", texture: "eocene", description: "Warm period, no polar ice" },
+            66: { name: "End-Cretaceous", texture: "cretaceous", description: "Dinosaur extinction event" },
+            90: { name: "Mid-Cretaceous", texture: "cretaceous", description: "Dinosaurs dominate, flowering plants appear" },
+            105: { name: "Early Cretaceous", texture: "cretaceous", description: "Breakup of Pangaea accelerates" },
+            120: { name: "Early Cretaceous", texture: "cretaceous", description: "First birds and flowers" },
+            150: { name: "Late Jurassic", texture: "jurassic", description: "Age of giant dinosaurs" },
+            170: { name: "Middle Jurassic", texture: "jurassic", description: "Pangaea begins to break apart" },
+            200: { name: "Late Triassic", texture: "triassic", description: "First dinosaurs appear" },
+            220: { name: "Middle Triassic", texture: "triassic", description: "Life recovers from Great Dying" },
+            240: { name: "Early Triassic", texture: "triassic", description: "Pangaea supercontinent" },
+            260: { name: "Late Permian", texture: "permian", description: "Greatest mass extinction approaching" },
+            280: { name: "Early Permian", texture: "permian", description: "Reptiles diversify on land" },
+            300: { name: "Carboniferous", texture: "carboniferous", description: "Coal forests, giant insects" },
+            340: { name: "Early Carboniferous", texture: "carboniferous", description: "First reptiles appear" },
+            370: { name: "Late Devonian", texture: "devonian", description: "First trees and forests" },
+            400: { name: "Early Devonian", texture: "devonian", description: "First land vertebrates" },
+            430: { name: "Silurian", texture: "silurian", description: "First land plants" },
+            460: { name: "Ordovician", texture: "ordovician", description: "Marine life diversifies" },
+            500: { name: "Cambrian", texture: "cambrian", description: "Explosion of complex life" },
+            540: { name: "Cambrian", texture: "cambrian", description: "Animals with shells appear" },
+            600: { name: "Ediacaran", texture: "ediacaran", description: "First complex animals" },
+            750: { name: "Cryogenian", texture: "cryogenian", description: "Snowball Earth" }
+        };
+        
+        // Initialize Three.js scene
+        function initThreeJS() {
+            const container = document.getElementById('globeContainer');
+            const canvas = document.getElementById('globeCanvas');
+            
+            // Scene setup
+            scene = new THREE.Scene();
+            
+            // Camera setup
+            const aspect = container.clientWidth / container.clientHeight;
+            camera = new THREE.PerspectiveCamera(45, aspect, 0.1, 1000);
+            camera.position.z = 3;
+            
+            // Renderer setup
+            renderer = new THREE.WebGLRenderer({ canvas: canvas, antialias: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            renderer.setPixelRatio(window.devicePixelRatio);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x333333);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 3, 5);
+            scene.add(directionalLight);
+            
+            // Earth sphere
+            const geometry = new THREE.SphereGeometry(1, 64, 64);
+            const material = new THREE.MeshPhongMaterial({
+                map: null,
+                bumpScale: 0.05,
+                specularMap: null,
+                specular: new THREE.Color('grey'),
+                shininess: 10
+            });
+            earth = new THREE.Mesh(geometry, material);
+            scene.add(earth);
+            
+            // Controls
+            setupControls();
+            
+            // Load initial texture
+            loadPaleoTexture(0);
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+            
+            // Start render loop
+            animate();
+        }
+        
+        // Setup mouse controls
+        function setupControls() {
+            let mouseX = 0, mouseY = 0;
+            let targetRotationX = 0, targetRotationY = 0;
+            let mouseDown = false;
+            
+            const container = document.getElementById('globeContainer');
+            
+            container.addEventListener('mousedown', (e) => {
+                mouseDown = true;
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            container.addEventListener('mousemove', (e) => {
+                if (!mouseDown) return;
+                
+                const deltaX = e.clientX - mouseX;
+                const deltaY = e.clientY - mouseY;
+                
+                targetRotationY += deltaX * 0.005;
+                targetRotationX += deltaY * 0.005;
+                
+                mouseX = e.clientX;
+                mouseY = e.clientY;
+            });
+            
+            container.addEventListener('mouseup', () => {
+                mouseDown = false;
+            });
+            
+            container.addEventListener('wheel', (e) => {
+                e.preventDefault();
+                const delta = e.deltaY > 0 ? 1.1 : 0.9;
+                camera.position.z *= delta;
+                camera.position.z = Math.max(2, Math.min(5, camera.position.z));
+            });
+            
+            // Smooth rotation in render loop
+            controls = {
+                update: function() {
+                    earth.rotation.y += (targetRotationY - earth.rotation.y) * 0.1;
+                    earth.rotation.x += (targetRotationX - earth.rotation.x) * 0.1;
+                    
+                    if (autoRotate && !mouseDown) {
+                        targetRotationY += 0.002;
+                    }
+                }
+            };
+        }
+        
+        // Load paleogeographic texture
+        function loadPaleoTexture(timeMA) {
+            const loadingScreen = document.getElementById('loadingScreen');
+            loadingScreen.style.opacity = '1';
+            
+            // Find nearest time period
+            const times = Object.keys(timePeriods).map(Number).sort((a, b) => a - b);
+            let nearestTime = times[0];
+            
+            for (const time of times) {
+                if (timeMA >= time) {
+                    nearestTime = time;
+                } else {
+                    break;
+                }
+            }
+            
+            const period = timePeriods[nearestTime];
+            
+            // For demo purposes, we'll use placeholder textures
+            // In production, you would load actual paleogeographic textures
+            const loader = new THREE.TextureLoader();
+            
+            // Using a modern Earth texture as placeholder
+            // Replace with actual paleogeographic textures
+            const textureUrl = '//unpkg.com/three-globe/example/img/earth-blue-marble.jpg';
+            
+            loader.load(textureUrl, (texture) => {
+                earth.material.map = texture;
+                earth.material.needsUpdate = true;
+                
+                // Update UI
+                document.getElementById('timePeriodLabel').textContent = period.name;
+                document.getElementById('timeValue').textContent = period.name;
+                document.getElementById('myaValue').textContent = timeMA + ' MYA';
+                
+                // Hide loading screen
+                setTimeout(() => {
+                    loadingScreen.style.opacity = '0';
+                }, 500);
+            });
+            
+            // Apply time-based visual effects
+            if (timeMA > 600) {
+                // Snowball Earth - add white overlay
+                earth.material.color = new THREE.Color(0.8, 0.8, 0.9);
+            } else if (timeMA > 300) {
+                // Different atmosphere
+                earth.material.color = new THREE.Color(1.0, 0.9, 0.8);
+            } else {
+                // Normal
+                earth.material.color = new THREE.Color(1, 1, 1);
+            }
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (controls) {
+                controls.update();
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Handle window resize
+        function onWindowResize() {
+            const container = document.getElementById('globeContainer');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        // Control functions
+        function toggleRotation() {
+            autoRotate = !autoRotate;
+        }
+        
+        function playTimelapse() {
+            if (timelapseInterval) return;
+            
+            timelapseInterval = setInterval(() => {
+                currentTime += 10;
+                if (currentTime > 750) currentTime = 0;
+                
+                document.getElementById('timeSlider').value = currentTime;
+                loadPaleoTexture(currentTime);
+            }, 200);
+        }
+        
+        function stopTimelapse() {
+            if (timelapseInterval) {
+                clearInterval(timelapseInterval);
+                timelapseInterval = null;
+            }
+        }
+        
+        function resetView() {
+            earth.rotation.x = 0;
+            earth.rotation.y = 0;
+            camera.position.z = 3;
+        }
+        
+        // Event listeners
+        document.getElementById('timeSlider').addEventListener('input', (e) => {
+            currentTime = parseInt(e.target.value);
+            loadPaleoTexture(currentTime);
+        });
+        
+        // Quick jump buttons
+        document.querySelectorAll('.period-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const time = parseInt(e.target.dataset.time);
+                currentTime = time;
+                document.getElementById('timeSlider').value = time;
+                loadPaleoTexture(time);
+                
+                // Update active state
+                document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+        
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initThreeJS();
+        });
+        
+        // Location tracking (placeholder for now)
+        document.getElementById('searchBtn').addEventListener('click', () => {
+            const location = document.getElementById('locationSearch').value;
+            document.getElementById('locationInfo').textContent = 
+                `Tracking "${location}" through time... (feature coming soon)`;
+        });
+    </script>
+</body>
+</html>

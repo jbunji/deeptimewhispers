@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "api/gplates/reconstruct.js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    {
+      "source": "/api/gplates/reconstruct",
+      "destination": "/api/gplates/reconstruct"
+    }
+  ]
+}

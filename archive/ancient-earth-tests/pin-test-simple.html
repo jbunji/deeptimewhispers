@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Simple Pin Test</title>
+    <style>
+        body { margin: 0; overflow: hidden; font-family: Arial, sans-serif; }
+        #info {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            color: white;
+            background: rgba(0,0,0,0.8);
+            padding: 15px;
+            border-radius: 5px;
+            z-index: 100;
+        }
+        button {
+            margin: 5px;
+            padding: 8px 15px;
+            cursor: pointer;
+            background: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #1976D2;
+        }
+        #debug {
+            margin-top: 10px;
+            font-size: 12px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="info">
+        <h3>Pin Location Test</h3>
+        <button onclick="testNewYork()">New York (40.7°N, 74°W)</button>
+        <button onclick="testLondon()">London (51.5°N, 0.1°W)</button>
+        <button onclick="testEquator()">Equator (0°, 0°)</button>
+        <button onclick="testNorthPole()">North Pole (90°N)</button>
+        <div id="debug">Click a location to test</div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+        // Globals
+        let scene, camera, renderer;
+        let earth, pin;
+        let rotating = true;
+        
+        function init() {
+            // Scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x000033);
+            
+            // Camera
+            camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+            camera.position.set(0, 0, 4);
+            camera.lookAt(0, 0, 0);
+            
+            // Renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.body.appendChild(renderer.domElement);
+            
+            // Lighting
+            const ambientLight = new THREE.AmbientLight(0x404040);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+            
+            // Create Earth (wireframe to see positioning)
+            createEarth();
+            
+            // Create pin
+            createPin();
+            
+            // Add coordinate helpers
+            addHelpers();
+            
+            // Start animation
+            animate();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize);
+        }
+        
+        function createEarth() {
+            const geometry = new THREE.SphereGeometry(1, 32, 16);
+            const material = new THREE.MeshPhongMaterial({
+                color: 0x2194ce,
+                wireframe: true,
+                transparent: true,
+                opacity: 0.8
+            });
+            earth = new THREE.Mesh(geometry, material);
+            scene.add(earth);
+        }
+        
+        function createPin() {
+            // Create pin as a group
+            pin = new THREE.Group();
+            
+            // Red sphere at base
+            const sphereGeometry = new THREE.SphereGeometry(0.05, 16, 16);
+            const redMaterial = new THREE.MeshBasicMaterial({ color: 0xff0000 });
+            const sphere = new THREE.Mesh(sphereGeometry, redMaterial);
+            pin.add(sphere);
+            
+            // Vertical line
+            const points = [];
+            points.push(new THREE.Vector3(0, 0, 0));
+            points.push(new THREE.Vector3(0, 0.3, 0));
+            const lineGeometry = new THREE.BufferGeometry().setFromPoints(points);
+            const lineMaterial = new THREE.LineBasicMaterial({ color: 0xff0000, linewidth: 3 });
+            const line = new THREE.Line(lineGeometry, lineMaterial);
+            pin.add(line);
+            
+            scene.add(pin);
+        }
+        
+        function addHelpers() {
+            // Add axis helper (X=red, Y=green, Z=blue)
+            const axesHelper = new THREE.AxesHelper(2);
+            scene.add(axesHelper);
+            
+            // Add labels for reference
+            // Front = 0° longitude
+            // Right = -90° longitude (West)
+            // Back = ±180° longitude
+            // Left = 90° longitude (East)
+        }
+        
+        function placePin(lat, lng, name) {
+            console.log(`Placing pin at ${name}: ${lat}°, ${lng}°`);
+            
+            // Earth radius
+            const radius = 1.0;
+            
+            // Convert degrees to radians
+            const latRad = (lat * Math.PI) / 180;
+            const lngRad = (lng * Math.PI) / 180;
+            
+            // Spherical to Cartesian
+            // Y is up in Three.js
+            // When Earth rotation = 0:
+            //   Looking at +Z (blue axis) = 0° longitude
+            //   +X (red axis) points to 90° longitude (East)
+            //   -X points to -90° longitude (West)
+            
+            const x = radius * Math.cos(latRad) * Math.sin(lngRad);
+            const y = radius * Math.sin(latRad);
+            const z = radius * Math.cos(latRad) * Math.cos(lngRad);
+            
+            // Position pin at surface
+            pin.position.set(x, y, z);
+            
+            // Point pin outward from center
+            const normal = new THREE.Vector3(x, y, z).normalize();
+            pin.up = new THREE.Vector3(0, 1, 0);
+            pin.lookAt(new THREE.Vector3(x * 2, y * 2, z * 2));
+            
+            // Update debug info
+            document.getElementById('debug').innerHTML = `
+                <strong>${name}</strong><br>
+                Lat: ${lat}°, Lng: ${lng}°<br>
+                Cartesian: x=${x.toFixed(3)}, y=${y.toFixed(3)}, z=${z.toFixed(3)}<br>
+                Rotation: ${rotating ? 'ON' : 'OFF'} (click to toggle)
+            `;
+        }
+        
+        // Test locations
+        function testNewYork() {
+            placePin(40.7128, -74.0060, "New York");
+        }
+        
+        function testLondon() {
+            placePin(51.5074, -0.1278, "London");
+        }
+        
+        function testEquator() {
+            placePin(0, 0, "Equator/Prime Meridian");
+        }
+        
+        function testNorthPole() {
+            placePin(90, 0, "North Pole");
+        }
+        
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            // Rotate Earth
+            if (earth && rotating) {
+                earth.rotation.y += 0.005;
+                
+                // Update pin to stay at same geographic location
+                if (pin.userData.lat !== undefined) {
+                    const lat = pin.userData.lat;
+                    const lng = pin.userData.lng;
+                    const radius = 1.0;
+                    
+                    const latRad = (lat * Math.PI) / 180;
+                    const lngRad = (lng * Math.PI) / 180;
+                    
+                    // Include Earth's rotation
+                    const rotatedLng = lngRad + earth.rotation.y;
+                    
+                    const x = radius * Math.cos(latRad) * Math.sin(rotatedLng);
+                    const y = radius * Math.sin(latRad);
+                    const z = radius * Math.cos(latRad) * Math.cos(rotatedLng);
+                    
+                    pin.position.set(x, y, z);
+                    pin.lookAt(new THREE.Vector3(x * 2, y * 2, z * 2));
+                }
+            }
+            
+            renderer.render(scene, camera);
+        }
+        
+        function onWindowResize() {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+        }
+        
+        // Mouse interaction
+        renderer.domElement.addEventListener('click', () => {
+            rotating = !rotating;
+            if (document.getElementById('debug')) {
+                const text = document.getElementById('debug').innerHTML;
+                document.getElementById('debug').innerHTML = text.replace(
+                    rotating ? 'OFF' : 'ON',
+                    rotating ? 'ON' : 'OFF'
+                );
+            }
+        });
+        
+        // Initialize
+        init();
+        
+        // Test with New York by default
+        setTimeout(() => testNewYork(), 100);
+    </script>
+</body>
+</html>
