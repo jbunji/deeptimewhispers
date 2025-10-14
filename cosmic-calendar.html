@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cosmic Calendar - Deep Time Whispers</title>
+    <meta name="description" content="Experience Earth's 4.5 billion year history compressed into a single year. Discover when major events happened in the cosmic calendar of deep time.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/DeepTimeWhispers-Final.png">
+    
+    <style>
+        :root {
+            --primary-purple: #7B1FA2;
+            --deep-purple: #4A148C;
+            --cosmic-teal: #4DB6AC;
+            --midnight: #1A237E;
+            --stardust: #E1BEE7;
+            --nebula: #7E57C2;
+            --space-black: #0A0E27;
+            --soft-white: #F5F5F5;
+            --text-light: #B39DDB;
+        }
+
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: var(--space-black);
+            color: var(--soft-white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Cosmic Background Animation */
+        .cosmic-bg {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1;
+            background: radial-gradient(ellipse at bottom, #1B2735 0%, #090A0F 100%);
+            overflow: hidden;
+        }
+
+        .stars {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            width: 1px;
+            height: 1px;
+            background: transparent;
+            box-shadow: 779px 1331px #fff, 324px 42px #fff, 303px 586px #fff, 1312px 276px #fff, 451px 625px #fff,
+                        1433px 1732px #fff, 701px 1821px #fff, 1458px 1963px #fff, 357px 1673px #fff, 1238px 1146px #fff;
+            animation: drift 120s linear infinite;
+        }
+
+        @keyframes drift {
+            from { transform: translateY(0px); }
+            to { transform: translateY(-1000px); }
+        }
+
+        /* Main container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header section */
+        .calendar-header {
+            text-align: center;
+            padding: 3rem 0 2rem;
+            margin-top: 80px;
+        }
+
+        .calendar-header h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--stardust), var(--cosmic-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .calendar-header .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        .calendar-description {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--soft-white);
+            text-align: center;
+        }
+
+        /* Today indicator */
+        .cosmic-today {
+            background: rgba(78, 182, 172, 0.1);
+            border: 2px solid var(--cosmic-teal);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem auto;
+            max-width: 600px;
+            text-align: center;
+        }
+
+        .cosmic-today h3 {
+            color: var(--cosmic-teal);
+            margin-bottom: 0.5rem;
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+        }
+
+        .cosmic-today .date {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--stardust);
+            margin-bottom: 0.5rem;
+        }
+
+        .cosmic-today .description {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+
+        /* Calendar year grid */
+        .calendar-year {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .month-container {
+            background: rgba(26, 35, 126, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            backdrop-filter: blur(10px);
+            position: relative;
+            z-index: 1;
+            overflow: visible;
+        }
+
+        .month-header {
+            text-align: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .month-name {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--stardust);
+            margin-bottom: 0.3rem;
+        }
+
+        .month-years {
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        /* Days grid */
+        .days-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 2px;
+            position: relative;
+            overflow: visible;
+        }
+
+        .day-cell {
+            aspect-ratio: 1;
+            position: relative;
+            cursor: pointer;
+            border-radius: 3px;
+            transition: all 0.2s ease;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        /* Geological period colors */
+        .hadean {
+            background: linear-gradient(135deg, #8B0000, #4B0000);
+        }
+
+        .archean {
+            background: linear-gradient(135deg, #8B4513, #654321);
+        }
+
+        .proterozoic {
+            background: linear-gradient(135deg, #4682B4, #191970);
+        }
+
+        .paleozoic {
+            background: linear-gradient(135deg, #228B22, #006400);
+        }
+
+        .mesozoic {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+        }
+
+        .cenozoic {
+            background: linear-gradient(135deg, #9370DB, #4B0082);
+        }
+
+        .quaternary {
+            background: linear-gradient(135deg, #4DB6AC, #00695C);
+        }
+
+        .day-cell:hover {
+            transform: scale(1.2);
+            box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .day-cell.has-event {
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            font-weight: 600;
+        }
+
+        .day-cell.major-event {
+            border: 2px solid #FFD700;
+            box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        /* Day tooltip */
+        .day-tooltip {
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(10, 14, 39, 0.98);
+            border: 1px solid var(--cosmic-teal);
+            border-radius: 8px;
+            padding: 0.8rem;
+            width: 200px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            z-index: 9999;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+        }
+
+        .day-cell:hover {
+            z-index: 9998 !important;
+        }
+
+        .day-cell:hover .day-tooltip {
+            opacity: 1;
+        }
+
+        /* Adjust tooltip position for rightmost days */
+        .day-cell:nth-child(7n) .day-tooltip,
+        .day-cell:nth-child(7n-1) .day-tooltip {
+            left: auto;
+            right: 0;
+            transform: translateX(0);
+        }
+
+        /* Adjust tooltip position for leftmost days */
+        .day-cell:nth-child(7n+1) .day-tooltip,
+        .day-cell:nth-child(7n+2) .day-tooltip {
+            left: 0;
+            transform: translateX(0);
+        }
+
+        .tooltip-date {
+            font-weight: 600;
+            color: var(--cosmic-teal);
+            margin-bottom: 0.3rem;
+        }
+
+        .tooltip-time {
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.5rem;
+        }
+
+        .tooltip-event {
+            font-size: 0.9rem;
+            color: var(--soft-white);
+            margin-bottom: 0.2rem;
+        }
+
+        .tooltip-description {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            line-height: 1.3;
+        }
+
+        /* Legend */
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 4px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .legend-label {
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 1rem;
+            }
+
+            .calendar-header h1 {
+                font-size: 2rem;
+            }
+
+            .calendar-header .subtitle {
+                font-size: 1rem;
+            }
+
+            .calendar-description {
+                font-size: 1rem;
+            }
+
+            .calendar-year {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 1rem;
+            }
+
+            .month-container {
+                padding: 0.75rem;
+            }
+
+            .days-grid {
+                gap: 1px;
+            }
+
+            .day-cell {
+                font-size: 0.6rem;
+            }
+
+            .cosmic-today {
+                margin: 1.5rem auto;
+                padding: 1rem;
+            }
+
+            .cosmic-today .date {
+                font-size: 1.5rem;
+            }
+
+            .legend {
+                gap: 0.5rem;
+                padding: 1rem;
+            }
+
+            .legend-item {
+                font-size: 0.8rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .calendar-year {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Special highlighting for significant events */
+        .major-event {
+            border-left-color: #FFD700 !important;
+            background: rgba(255, 215, 0, 0.1) !important;
+        }
+
+        .major-event .event-date {
+            color: #FFD700;
+        }
+
+        .life-event {
+            border-left-color: #4CAF50 !important;
+            background: rgba(76, 175, 80, 0.1) !important;
+        }
+
+        .life-event .event-date {
+            color: #4CAF50;
+        }
+
+        .extinction-event {
+            border-left-color: #F44336 !important;
+            background: rgba(244, 67, 54, 0.1) !important;
+        }
+
+        .extinction-event .event-date {
+            color: #F44336;
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background Animation -->
+    <div class="cosmic-bg">
+        <div class="stars"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html" class="logo-text">Deep Time Whispers</a>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="timeline.html" class="nav-link">Timeline</a>
+                    <a href="ancient-earth-viewer.html" class="nav-link">Ancient Earth</a>
+                    <a href="cosmic-calendar.html" class="nav-link active">Cosmic Calendar</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="container">
+            <!-- Header -->
+            <section class="calendar-header">
+                <h1>The Cosmic Calendar</h1>
+                <p class="subtitle">Earth's 4.5 Billion Year Story in One Year</p>
+                <div class="calendar-description">
+                    <p>Imagine all of Earth's history compressed into a single year. The planet forms on January 1st, and every second represents about 143 years of real time. Life doesn't appear until spring, complex cells wait until fall, and all of recorded human history happens in the final seconds of December 31st.</p>
+                </div>
+            </section>
+
+            <!-- Today's Cosmic Date -->
+            <section class="cosmic-today">
+                <h3>If Earth's history was one year...</h3>
+                <div class="date">Today is December 31st, 11:59:58 PM</div>
+                <p class="description">All of recorded human history has happened in the last 2 seconds</p>
+            </section>
+
+            <!-- Geological Period Legend -->
+            <section class="legend">
+                <div class="legend-item">
+                    <div class="legend-color hadean"></div>
+                    <span class="legend-label">Hadean (4.5-4.0 BYA)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color archean"></div>
+                    <span class="legend-label">Archean (4.0-2.5 BYA)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color proterozoic"></div>
+                    <span class="legend-label">Proterozoic (2.5-0.54 BYA)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color paleozoic"></div>
+                    <span class="legend-label">Paleozoic (541-252 MYA)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color mesozoic"></div>
+                    <span class="legend-label">Mesozoic (252-66 MYA)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color cenozoic"></div>
+                    <span class="legend-label">Cenozoic (66-2.6 MYA)</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color quaternary"></div>
+                    <span class="legend-label">Quaternary (2.6 MYA-Present)</span>
+                </div>
+            </section>
+
+            <!-- Calendar Year Grid -->
+            <section class="calendar-year" id="calendarYear">
+                <!-- 12 months with day grids will be dynamically generated here -->
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Deep Time Whispers</h3>
+                    <p>Ancient Memories for Modern Dreams</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Explore</h4>
+                    <a href="timeline.html">Timeline</a>
+                    <a href="ancient-earth-viewer.html">Ancient Earth</a>
+                    <a href="cosmic-calendar.html">Cosmic Calendar</a>
+                    <a href="index.html">Back to Main Site</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Deep Time Whispers. You are made of ancient atoms.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Constants
+        const EARTH_AGE = 4500000000; // 4.5 billion years
+        const YEAR_IN_MS = 365 * 24 * 60 * 60 * 1000;
+        const MYA_PER_DAY = EARTH_AGE / 365 / 1000000; // Million years per cosmic day
+
+        // Month data
+        const monthNames = ["January", "February", "March", "April", "May", "June", 
+                           "July", "August", "September", "October", "November", "December"];
+        const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+        // Major events with specific dates
+        const cosmicEvents = [
+            // January - Formation events
+            { day: 1, title: "Earth Forms", mya: 4500, description: "Solar system and Earth form from cosmic dust" },
+            { day: 3, title: "First Atmosphere", mya: 4480, description: "Hydrogen and helium atmosphere forms" },
+            { day: 7, title: "Heavy Bombardment", mya: 4450, description: "Intense asteroid and comet impacts begin" },
+            { day: 15, title: "Moon Forms", mya: 4400, description: "Giant impact creates the Moon" },
+            { day: 22, title: "Magma Ocean", mya: 4350, description: "Earth's surface is molten rock" },
+            
+            // February - Hadean Eon
+            { day: 35, title: "First Oceans", mya: 4200, description: "Water vapor condenses into first oceans" },
+            { day: 42, title: "Late Heavy Bombardment", mya: 4100, description: "Intense period of impacts" },
+            { day: 56, title: "Oldest Rocks", mya: 4000, description: "Earliest surviving rocks on Earth" },
+            
+            // March - Early Life
+            { day: 70, title: "First Organic Molecules", mya: 3900, description: "Complex carbon compounds form" },
+            { day: 84, title: "First Life", mya: 3800, description: "Earliest evidence of life - simple bacteria" },
+            { day: 91, title: "Stromatolites", mya: 3700, description: "Layered bacterial mats in shallow seas" },
+            
+            // April-May - Archean Life
+            { day: 105, title: "Photosynthesis Begins", mya: 3600, description: "Non-oxygen producing photosynthesis" },
+            { day: 135, title: "Cyanobacteria", mya: 3500, description: "Oxygen-producing photosynthesis begins" },
+            { day: 150, title: "First Supercontinent", mya: 3000, description: "Ur forms - first large landmass" },
+            
+            // June-August - Proterozoic
+            { day: 180, title: "Banded Iron Formations", mya: 2500, description: "Oxygen reacts with iron in oceans" },
+            { day: 257, title: "Great Oxidation Event", mya: 2400, description: "Free oxygen accumulates, mass extinction" },
+            { day: 270, title: "First Glaciation", mya: 2200, description: "Huronian glaciation begins" },
+            { day: 290, title: "Atmosphere Stabilizes", mya: 2000, description: "Modern atmosphere composition forms" },
+            { day: 302, title: "Complex Cells", mya: 1800, description: "Eukaryotic cells with nuclei appear" },
+            
+            // September-October - Evolution accelerates
+            { day: 313, title: "Sexual Reproduction", mya: 1200, description: "Sexual reproduction evolves" },
+            { day: 320, title: "Multicellular Life", mya: 1000, description: "First multicellular organisms" },
+            { day: 325, title: "Rodinia Forms", mya: 900, description: "Supercontinent Rodinia assembles" },
+            { day: 329, title: "Snowball Earth", mya: 750, description: "Entire planet freezes over" },
+            { day: 332, title: "Ediacaran Life", mya: 600, description: "First complex soft-bodied animals" },
+            
+            // November - Complex Life
+            { day: 338, title: "First Shells", mya: 550, description: "Animals develop hard shells" },
+            { day: 351, title: "Cambrian Explosion", mya: 540, description: "Most animal body plans appear" },
+            { day: 352, title: "First Eyes", mya: 520, description: "Complex eyes evolve" },
+            { day: 353, title: "First Fish", mya: 500, description: "Vertebrates appear in the oceans" },
+            { day: 354, title: "Ordovician Radiation", mya: 480, description: "Marine life diversifies dramatically" },
+            { day: 355, title: "Life on Land", mya: 450, description: "Plants and arthropods colonize land" },
+            
+            // December - Recent Earth
+            { day: 356, title: "First Trees", mya: 385, description: "Forests spread across continents" },
+            { day: 357, title: "First Amphibians", mya: 365, description: "Vertebrates move onto land" },
+            { day: 358, title: "Great Dying", mya: 252, description: "Largest mass extinction - 90% of species die" },
+            { day: 359, title: "First Dinosaurs", mya: 230, description: "Dinosaurs appear in the Triassic" },
+            { day: 359.5, title: "First Mammals", mya: 200, description: "Small mammals evolve alongside dinosaurs" },
+            { day: 360, title: "First Flowers", mya: 130, description: "Flowering plants evolve" },
+            { day: 360.5, title: "Dinosaur Extinction", mya: 66, description: "Asteroid impact kills the dinosaurs" },
+            
+            // December 31st - The Human Day
+            { day: 364, title: "First Primates", mya: 55, description: "Early primates evolve" },
+            { day: 365, title: "Great Apes", mya: 20, description: "Apes diverge from monkeys" },
+            { day: 365.2, title: "First Hominids", mya: 7, description: "Human ancestors walk upright" },
+            { day: 365.7, title: "Homo sapiens", mya: 0.3, description: "Modern humans appear in Africa" },
+            { day: 365.9, title: "Ice Ages", mya: 0.1, description: "Glacial cycles shape human evolution" },
+            { day: 365.97, title: "Agriculture", mya: 0.01, description: "Humans begin farming" },
+            { day: 365.99, title: "Civilization", mya: 0.005, description: "First cities and writing" },
+            { day: 365.999, title: "Industrial Revolution", mya: 0.0002, description: "Machines transform society" },
+            { day: 365.9999, title: "Space Age", mya: 0.00006, description: "Humans reach space" }
+        ];
+
+        // Calculate geological period for a given day
+        function getGeologicalPeriod(dayOfYear) {
+            const mya = (365 - dayOfYear + 1) * MYA_PER_DAY;
+            
+            if (mya > 4000) return 'hadean';
+            if (mya > 2500) return 'archean';
+            if (mya > 541) return 'proterozoic';
+            if (mya > 252) return 'paleozoic';
+            if (mya > 66) return 'mesozoic';
+            if (mya > 2.6) return 'cenozoic';
+            return 'quaternary';
+        }
+
+        // Get event for a specific day
+        function getEventForDay(dayOfYear) {
+            return cosmicEvents.find(event => event.day === dayOfYear);
+        }
+
+        // Format time in MYA/BYA
+        function formatTime(mya) {
+            if (mya >= 1000) {
+                return `${(mya / 1000).toFixed(1)} BYA`;
+            } else if (mya >= 1) {
+                return `${mya.toFixed(0)} MYA`;
+            } else {
+                return `${(mya * 1000).toFixed(0)} KYA`;
+            }
+        }
+
+        // Generate the full calendar
+        function generateCalendar() {
+            const calendarYear = document.getElementById('calendarYear');
+            let dayOfYear = 1;
+
+            for (let month = 0; month < 12; month++) {
+                const monthContainer = document.createElement('div');
+                monthContainer.className = 'month-container';
+                
+                // Month header
+                const monthHeader = document.createElement('div');
+                monthHeader.className = 'month-header';
+                
+                const startMya = (365 - dayOfYear + 1) * MYA_PER_DAY;
+                const endMya = (365 - (dayOfYear + daysInMonth[month] - 1) + 1) * MYA_PER_DAY;
+                
+                monthHeader.innerHTML = `
+                    <div class="month-name">${monthNames[month]}</div>
+                    <div class="month-years">${formatTime(startMya)} - ${formatTime(endMya)}</div>
+                `;
+                
+                // Days grid
+                const daysGrid = document.createElement('div');
+                daysGrid.className = 'days-grid';
+                
+                // Add empty cells for alignment (start with Sunday)
+                const firstDay = new Date(2024, month, 1).getDay();
+                for (let i = 0; i < firstDay; i++) {
+                    const emptyCell = document.createElement('div');
+                    emptyCell.className = 'day-cell';
+                    emptyCell.style.opacity = '0';
+                    daysGrid.appendChild(emptyCell);
+                }
+                
+                // Add days
+                for (let day = 1; day <= daysInMonth[month]; day++) {
+                    const dayCell = document.createElement('div');
+                    dayCell.className = 'day-cell';
+                    
+                    // Add geological period color
+                    const period = getGeologicalPeriod(dayOfYear);
+                    dayCell.classList.add(period);
+                    
+                    // Check for events
+                    const event = getEventForDay(dayOfYear);
+                    if (event) {
+                        dayCell.classList.add('has-event', 'major-event');
+                    }
+                    
+                    // Day number
+                    dayCell.textContent = day;
+                    
+                    // Calculate time for this day
+                    const mya = (365 - dayOfYear + 1) * MYA_PER_DAY;
+                    
+                    // Create tooltip
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'day-tooltip';
+                    
+                    let tooltipContent = `
+                        <div class="tooltip-date">${monthNames[month]} ${day}</div>
+                        <div class="tooltip-time">${formatTime(mya)}</div>
+                    `;
+                    
+                    if (event) {
+                        tooltipContent += `
+                            <div class="tooltip-event">${event.title}</div>
+                            <div class="tooltip-description">${event.description}</div>
+                        `;
+                    }
+                    
+                    // Add period info
+                    const periodNames = {
+                        hadean: 'Hadean Eon',
+                        archean: 'Archean Eon',
+                        proterozoic: 'Proterozoic Eon',
+                        paleozoic: 'Paleozoic Era',
+                        mesozoic: 'Mesozoic Era',
+                        cenozoic: 'Cenozoic Era',
+                        quaternary: 'Quaternary Period'
+                    };
+                    
+                    tooltipContent += `<div class="tooltip-description" style="margin-top: 0.5rem; font-style: italic;">${periodNames[period]}</div>`;
+                    
+                    tooltip.innerHTML = tooltipContent;
+                    dayCell.appendChild(tooltip);
+                    
+                    daysGrid.appendChild(dayCell);
+                    dayOfYear++;
+                }
+                
+                monthContainer.appendChild(monthHeader);
+                monthContainer.appendChild(daysGrid);
+                calendarYear.appendChild(monthContainer);
+            }
+        }
+
+        // Initialize calendar on page load
+        document.addEventListener('DOMContentLoaded', generateCalendar);
+    </script>
+</body>
+</html>
