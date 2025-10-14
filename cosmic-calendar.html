@@ -518,6 +518,23 @@
         </div>
     </main>
 
+    <!-- Cosmic Microseconds Timeline Section -->
+    <section class="cosmic-microseconds-section">
+        <div class="container">
+            <div class="timeline-header">
+                <h2>The Final Cosmic Microseconds</h2>
+                <p class="timeline-subtitle">The last 0.7 seconds of Earth's cosmic year - from when humans left Africa to today</p>
+            </div>
+            
+            <!-- Vertical Timeline Container -->
+            <div class="microseconds-timeline-container">
+                <svg id="microsecondsTimelineSvg" class="microseconds-timeline-svg">
+                    <!-- Timeline will be dynamically generated here -->
+                </svg>
+            </div>
+        </div>
+    </section>
+
     <!-- Footer -->
     <footer class="footer">
         <div class="container">
@@ -793,6 +810,388 @@
                 });
             }
         }
+    </script>
+    
+    <style>
+        /* Cosmic Microseconds Timeline Styles */
+        .cosmic-microseconds-section {
+            margin-top: 4rem;
+            padding: 3rem 0;
+            background: linear-gradient(180deg, rgba(26, 35, 126, 0.1) 0%, rgba(10, 14, 39, 0.3) 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .timeline-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .timeline-header h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, var(--stardust), var(--cosmic-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 1rem;
+        }
+        
+        .timeline-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-light);
+        }
+        
+        /* Timeline Container */
+        .microseconds-timeline-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            overflow-x: auto;
+        }
+        
+        .microseconds-timeline-svg {
+            width: 100%;
+            min-height: 2500px;
+            display: block;
+            background: transparent;
+        }
+        
+        /* SVG Timeline Styles */
+        .timeline-line {
+            stroke: var(--cosmic-teal);
+            stroke-width: 3;
+            opacity: 0.5;
+        }
+        
+        .event-group {
+            cursor: pointer;
+        }
+        
+        .event-circle {
+            transition: all 0.3s ease;
+        }
+        
+        .event-group:hover .event-circle {
+            transform: scale(1.5);
+            filter: brightness(1.3);
+        }
+        
+        .event-label {
+            font-family: 'Raleway', sans-serif;
+            font-size: 14px;
+            fill: var(--text-light);
+        }
+        
+        .event-title {
+            font-weight: 600;
+            fill: var(--soft-white);
+        }
+        
+        .event-time {
+            font-size: 12px;
+            fill: var(--cosmic-teal);
+        }
+        
+        .event-seconds {
+            font-size: 11px;
+            fill: var(--text-light);
+        }
+        
+        /* Event type colors */
+        .ice-age-event { fill: #87CEEB; stroke: #4682B4; }
+        .geological-event { fill: #8B4513; stroke: #654321; }
+        .prehistoric-event { fill: #FF6347; stroke: #DC143C; }
+        .ancient-event { fill: #FFD700; stroke: #FFA500; }
+        .medieval-event { fill: #9370DB; stroke: #4B0082; }
+        .modern-event { fill: #32CD32; stroke: #228B22; }
+        .future-event { fill: #FF1493; stroke: #DC143C; }
+        
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .timeline-header h2 {
+                font-size: 2rem;
+            }
+            
+            .microseconds-timeline-container {
+                padding: 1rem;
+            }
+            
+            .event-label {
+                font-size: 12px;
+            }
+            
+            .event-time {
+                font-size: 10px;
+            }
+        }
+    </style>
+    
+    <script>
+        // Timeline events from cosmic microseconds
+        const microsecondsEvents = [
+            // Start: Humans Leave Africa
+            { time: 100000, seconds: 0.7, pos: 0, title: "Humans Leave Africa", desc: "First major migrations out of Africa", type: "prehistoric" },
+            { time: 90000, seconds: 0.63, pos: 10, title: "Humans Reach Middle East", desc: "Early settlements in Levant", type: "prehistoric" },
+            { time: 70000, seconds: 0.49, pos: 30, title: "Toba Eruption", desc: "Supervolcano nearly drives humans extinct", type: "geological" },
+            { time: 65000, seconds: 0.455, pos: 35, title: "Humans Reach Australia", desc: "First sea crossings, island-hopping", type: "prehistoric" },
+            { time: 50000, seconds: 0.35, pos: 50, title: "Neanderthals Peak", desc: "Neanderthals at their height in Europe", type: "prehistoric" },
+            { time: 45000, seconds: 0.315, pos: 55, title: "Humans Reach Europe", desc: "Cave paintings and complex tools", type: "prehistoric" },
+            { time: 40000, seconds: 0.28, pos: 60, title: "Neanderthals Extinct", desc: "Last Neanderthals disappear", type: "prehistoric" },
+            { time: 30000, seconds: 0.21, pos: 70, title: "Denisovans Extinct", desc: "Denisovan humans go extinct", type: "prehistoric" },
+            { time: 25000, seconds: 0.175, pos: 75, title: "Last Glacial Maximum", desc: "Ice age reaches its peak", type: "ice-age" },
+            { time: 18000, seconds: 0.126, pos: 82, title: "Homo floresiensis Extinct", desc: "Last 'hobbits' of Indonesia disappear", type: "prehistoric" },
+            { time: 15000, seconds: 0.105, pos: 85, title: "Humans Reach Americas", desc: "First peoples cross to the Americas", type: "prehistoric" },
+            { time: 13000, seconds: 0.091, pos: 87, title: "Lake Agassiz Dam Breaks", desc: "Massive glacial lake drains, changes climate", type: "geological" },
+            { time: 11700, seconds: 0.082, pos: 88.3, title: "Last Ice Age Ends", desc: "Holocene epoch begins, stable climate", type: "ice-age" },
+            { time: 11500, seconds: 0.081, pos: 88.5, title: "Göbekli Tepe Built", desc: "World's oldest known temple complex", type: "ancient" },
+            { time: 10000, seconds: 0.07, pos: 90, title: "Agriculture Begins", desc: "Farming revolution in Fertile Crescent", type: "ancient" },
+            { time: 8000, seconds: 0.056, pos: 92, title: "Cities Founded", desc: "First permanent settlements", type: "ancient" },
+            { time: 5000, seconds: 0.035, pos: 95, title: "Writing Invented", desc: "Cuneiform and hieroglyphs appear", type: "ancient" },
+            { time: 4600, seconds: 0.032, pos: 95.4, title: "Great Pyramid Built", desc: "Pyramid of Giza constructed", type: "ancient" },
+            { time: 3000, seconds: 0.021, pos: 97, title: "Bronze Age", desc: "Metal working spreads", type: "ancient" },
+            { time: 2400, seconds: 0.017, pos: 97.6, title: "Alexander the Great", desc: "Conquers known world", type: "ancient" },
+            { time: 2000, seconds: 0.014, pos: 98, title: "Jesus of Nazareth", desc: "Birth of Christianity", type: "ancient" },
+            { time: 1500, seconds: 0.011, pos: 98.5, title: "Fall of Rome", desc: "Western Roman Empire collapses", type: "medieval" },
+            { time: 1000, seconds: 0.007, pos: 99, title: "Medieval Period", desc: "European dark ages", type: "medieval" },
+            { time: 500, seconds: 0.0035, pos: 99.5, title: "Renaissance", desc: "Cultural and scientific revival", type: "modern" },
+            { time: 250, seconds: 0.00175, pos: 99.75, title: "Industrial Revolution", desc: "Steam power transforms society", type: "modern" },
+            { time: 100, seconds: 0.0007, pos: 99.9, title: "World Wars", desc: "Two global conflicts", type: "modern" },
+            { time: 60, seconds: 0.00042, pos: 99.94, title: "Space Age", desc: "Humans reach space", type: "modern" },
+            { time: 30, seconds: 0.00021, pos: 99.97, title: "Internet Age", desc: "Digital revolution", type: "modern" },
+            { time: 0, seconds: 0, pos: 100, title: "Present Day", desc: "You are here, reading this", type: "modern" }
+        ];
+
+        function createSVGElement(type, attributes = {}) {
+            const element = document.createElementNS('http://www.w3.org/2000/svg', type);
+            for (const [key, value] of Object.entries(attributes)) {
+                element.setAttribute(key, value);
+            }
+            return element;
+        }
+
+        function generateMicrosecondsTimeline() {
+            const svg = document.getElementById('microsecondsTimelineSvg');
+            if (!svg) {
+                console.error('Timeline SVG not found');
+                return;
+            }
+            
+            console.log('Generating timeline with', microsecondsEvents.length, 'events');
+            
+            const width = 1000;
+            // Use logarithmic scale to show both ancient and recent events
+            const minHeight = 2500; // Increased height for better spacing
+            const height = Math.max(minHeight, microsecondsEvents.length * 100);
+            const leftMargin = 350; // Space for labels on left
+            const rightMargin = 350; // Space for labels on right
+            const topMargin = 50;
+            const bottomMargin = 100;
+            const lineX = width / 2;
+            
+            // Calculate scale factor for time
+            const oldestTime = 100000; // 100,000 years ago
+            const timeRange = oldestTime;
+            
+            svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
+            svg.style.height = `${height}px`;
+            
+            // Clear existing content
+            svg.innerHTML = '';
+            
+            // Create main timeline line
+            const mainLine = createSVGElement('line', {
+                x1: lineX,
+                y1: topMargin,
+                x2: lineX,
+                y2: height - bottomMargin,
+                class: 'timeline-line'
+            });
+            svg.appendChild(mainLine);
+            
+            // Add scale markers at actual time positions
+            const scaleMarkers = [
+                { time: 100000, label: '0.7s ago', years: '100,000 years ago' },
+                { time: 70000, label: '0.49s ago', years: '70,000 years ago' },
+                { time: 50000, label: '0.35s ago', years: '50,000 years ago' },
+                { time: 15000, label: '0.105s ago', years: '15,000 years ago' },
+                { time: 10000, label: '0.07s ago', years: '10,000 years ago' },
+                { time: 1000, label: '0.007s ago', years: '1,000 years ago' },
+                { time: 0, label: 'NOW', years: 'Present' }
+            ];
+            
+            scaleMarkers.forEach(marker => {
+                let scaledPosition;
+                if (marker.time === 0) {
+                    scaledPosition = 1;
+                } else {
+                    const sqrtTime = Math.sqrt(marker.time);
+                    const maxSqrtTime = Math.sqrt(oldestTime);
+                    scaledPosition = 1 - (sqrtTime / maxSqrtTime);
+                }
+                const y = topMargin + scaledPosition * (height - topMargin - bottomMargin);
+                
+                // Scale line
+                const scaleLine = createSVGElement('line', {
+                    x1: lineX - 20,
+                    y1: y,
+                    x2: lineX + 20,
+                    y2: y,
+                    stroke: 'var(--cosmic-teal)',
+                    'stroke-width': '2',
+                    opacity: '0.7'
+                });
+                svg.appendChild(scaleLine);
+                
+                // Scale label
+                const scaleText = createSVGElement('text', {
+                    x: lineX - 30,
+                    y: y + 5,
+                    'text-anchor': 'end',
+                    class: 'event-time'
+                });
+                scaleText.textContent = marker.label;
+                svg.appendChild(scaleText);
+            });
+            
+            // Add events using square root scale for better distribution
+            microsecondsEvents.forEach((event, index) => {
+                let scaledPosition;
+                
+                // Use square root scale to give more space to recent events
+                // while still showing proper time relationships
+                if (event.time === 0) {
+                    scaledPosition = 1; // Present at the bottom
+                } else {
+                    // Square root scale: compresses large times, expands small times
+                    const sqrtTime = Math.sqrt(event.time);
+                    const maxSqrtTime = Math.sqrt(oldestTime);
+                    // Invert so oldest is at top (0) and newest is at bottom (1)
+                    scaledPosition = 1 - (sqrtTime / maxSqrtTime);
+                }
+                
+                const y = topMargin + scaledPosition * (height - topMargin - bottomMargin);
+                const isLeftSide = index % 2 === 0;
+                
+                // Create event group
+                const eventGroup = createSVGElement('g', {
+                    class: 'event-group',
+                    transform: `translate(0, ${y})`
+                });
+                
+                // Event circle
+                const circle = createSVGElement('circle', {
+                    cx: lineX,
+                    cy: 0,
+                    r: 8,
+                    class: `event-circle ${event.type}-event`,
+                    'stroke-width': '2'
+                });
+                eventGroup.appendChild(circle);
+                
+                // Connector line
+                const connectorEndX = isLeftSide ? lineX - 100 : lineX + 100;
+                const connector = createSVGElement('line', {
+                    x1: lineX + (isLeftSide ? -8 : 8),
+                    y1: 0,
+                    x2: connectorEndX,
+                    y2: 0,
+                    stroke: 'var(--text-light)',
+                    'stroke-width': '1',
+                    opacity: '0.5',
+                    'stroke-dasharray': '2,2'
+                });
+                eventGroup.appendChild(connector);
+                
+                // Event text group
+                const textGroup = createSVGElement('g', {
+                    transform: `translate(${isLeftSide ? connectorEndX - 10 : connectorEndX + 10}, 0)`
+                });
+                
+                // Event title
+                const title = createSVGElement('text', {
+                    x: 0,
+                    y: -5,
+                    'text-anchor': isLeftSide ? 'end' : 'start',
+                    class: 'event-title'
+                });
+                title.textContent = event.title;
+                textGroup.appendChild(title);
+                
+                // Time labels
+                let timeStr, secondsStr;
+                if (event.time >= 1000) {
+                    timeStr = `${(event.time / 1000).toFixed(0)}k years ago`;
+                } else if (event.time > 0) {
+                    timeStr = `${event.time} years ago`;
+                } else {
+                    timeStr = "Present";
+                }
+                
+                if (event.seconds >= 0.1) {
+                    secondsStr = `${event.seconds.toFixed(1)}s ago`;
+                } else if (event.seconds >= 0.001) {
+                    secondsStr = `${(event.seconds * 1000).toFixed(0)}ms ago`;
+                } else if (event.seconds > 0) {
+                    secondsStr = `${(event.seconds * 1000000).toFixed(0)}μs ago`;
+                } else {
+                    secondsStr = "Now";
+                }
+                
+                const timeLabel = createSVGElement('text', {
+                    x: 0,
+                    y: 10,
+                    'text-anchor': isLeftSide ? 'end' : 'start',
+                    class: 'event-time'
+                });
+                timeLabel.textContent = `${timeStr} • ${secondsStr}`;
+                textGroup.appendChild(timeLabel);
+                
+                eventGroup.appendChild(textGroup);
+                
+                // Add hover effect with description
+                if (event.desc) {
+                    const descTitle = createSVGElement('title');
+                    descTitle.textContent = event.desc;
+                    eventGroup.appendChild(descTitle);
+                }
+                
+                svg.appendChild(eventGroup);
+            });
+            
+            // Add "Present" marker at bottom
+            const presentY = height - bottomMargin;
+            const presentMarker = createSVGElement('circle', {
+                cx: lineX,
+                cy: presentY,
+                r: 12,
+                fill: 'var(--cosmic-teal)',
+                stroke: 'var(--soft-white)',
+                'stroke-width': '3'
+            });
+            svg.appendChild(presentMarker);
+            
+            const presentText = createSVGElement('text', {
+                x: lineX,
+                y: presentY + 30,
+                'text-anchor': 'middle',
+                class: 'event-title',
+                style: 'font-size: 16px; fill: var(--cosmic-teal);'
+            });
+            presentText.textContent = 'PRESENT DAY';
+            svg.appendChild(presentText);
+        }
+        
+        // Wait for both DOMContentLoaded and any existing calendar generation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Small delay to ensure calendar loads first
+            setTimeout(generateMicrosecondsTimeline, 100);
+        });
     </script>
 </body>
 </html>
