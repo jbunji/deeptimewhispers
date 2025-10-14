@@ -8,22 +8,82 @@ let currentFilter = 'all';
 let searchTerm = '';
 let allEvents = []; // Store all events for filtering
 
-// Load timeline data
+// Load timeline data with improved error handling and loading states
 async function loadTimelineData() {
+    const loadingEl = document.getElementById('timelineLoading');
+    const controlsEl = document.getElementById('timelineControls');
+    const filtersEl = document.getElementById('timelineFilters');
+    const scaleEl = document.getElementById('timelineScale');
+    const svgEl = document.getElementById('timelineSvg');
+    const errorEl = document.getElementById('timelineError');
+    
     try {
+        // Show loading state
+        if (loadingEl) loadingEl.style.display = 'block';
+        
         const response = await fetch('data/timeline-events.json');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        }
+        
         timelineData = await response.json();
+        
+        // Validate data structure
+        if (!timelineData || !timelineData.eons || !Array.isArray(timelineData.eons)) {
+            throw new Error('Invalid timeline data format');
+        }
+        
+        // Extract all events from eons
+        timelineData.events = [];
+        if (timelineData.eons && Array.isArray(timelineData.eons)) {
+            timelineData.eons.forEach(eon => {
+                if (eon && eon.keyEvents && Array.isArray(eon.keyEvents)) {
+                    eon.keyEvents.forEach(event => {
+                        if (event) {
+                            // Add eon information to each event
+                            timelineData.events.push({
+                                ...event,
+                                eon: eon.name || 'Unknown',
+                                eonColor: eon.color || '#666666'
+                            });
+                        }
+                    });
+                }
+            });
+        }
+        
+        // Hide loading, show controls
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (controlsEl) controlsEl.style.display = 'flex';
+        if (filtersEl) filtersEl.style.display = 'block';
+        if (scaleEl) scaleEl.style.display = 'flex';
+        if (svgEl) svgEl.style.display = 'block';
+        
+        // Initialize components
         initializeTimeline();
-        populateEpisodes();
+        
+        // Only call these if the elements exist
+        if (document.getElementById('episodesGrid')) {
+            populateEpisodes();
+        }
+        if (document.getElementById('glossaryGrid')) {
+            createGlossary();
+        }
+        
         setupEventListeners();
-        // Delay setup to ensure DOM is ready
-        setTimeout(() => {
-            setupSearchAndFilter();
-        }, 100);
+        setupSearchAndFilter();
+        
+        console.log(`Timeline loaded: ${timelineData.events ? timelineData.events.length : 0} events`);
+        
     } catch (error) {
         console.error('Error loading timeline data:', error);
-        document.getElementById('timelineContainer').innerHTML = 
-            '<div class="loading">Error loading timeline data. Please refresh the page.</div>';
+        
+        // Hide loading, show error
+        if (loadingEl) loadingEl.style.display = 'none';
+        if (errorEl) {
+            errorEl.style.display = 'block';
+            errorEl.innerHTML = `<p>⚠️ Failed to load timeline: ${error.message}<br><button onclick="location.reload()">Reload Page</button></p>`;
+        }
     }
 }
 
@@ -31,6 +91,17 @@ async function loadTimelineData() {
 function initializeTimeline() {
     const svg = document.getElementById('timelineSvg');
     const container = document.getElementById('timelineContainer');
+    
+    if (!svg) {
+        console.error('Timeline SVG element not found');
+        return;
+    }
+    
+    if (!container) {
+        console.error('Timeline container element not found');
+        return;
+    }
+    
     const baseWidth = 1200;
     const height = 700;
     
@@ -71,10 +142,16 @@ function initializeTimeline() {
     const startX = 50;
     
     // Draw eons
-    timelineData.eons.forEach((eon, index) => {
-        const eonDuration = eon.startMYA - eon.endMYA;
-        const eonWidth = (eonDuration / totalTime) * timelineWidth;
-        const eonX = startX + ((totalTime - eon.startMYA) / totalTime) * timelineWidth;
+    if (timelineData.eons && Array.isArray(timelineData.eons)) {
+        timelineData.eons.forEach((eon, index) => {
+            if (!eon || typeof eon.startMYA !== 'number' || typeof eon.endMYA !== 'number') {
+                console.warn('Invalid eon data:', eon);
+                return;
+            }
+            
+            const eonDuration = eon.startMYA - eon.endMYA;
+            const eonWidth = (eonDuration / totalTime) * timelineWidth;
+            const eonX = startX + ((totalTime - eon.startMYA) / totalTime) * timelineWidth;
         
         // Create eon group
         const eonGroup = createSVGElement('g', {
@@ -159,7 +236,8 @@ function initializeTimeline() {
         }
         
         mainGroup.appendChild(eonGroup);
-    });
+        });
+    }
     
     // Add dual timeline labels
     for (let i = 0; i <= 4500; i += 500) {
@@ -204,7 +282,11 @@ function initializeTimeline() {
         mainGroup.appendChild(timeUntilPresent);
     }
     
+    // Store all events globally for filtering
+    allEvents = timelineData.events || [];
+    
     svg.appendChild(mainGroup);
+    console.log(`Timeline initialized with ${allEvents.length} events`);
 }
 
 // Track event positions for collision detection
@@ -724,13 +806,21 @@ function populateEpisodes() {
             }, 150);
         });
         
-        episodesGrid.appendChild(card);
+        if (episodesGrid) {
+            episodesGrid.appendChild(card);
+        }
     });
 }
 
 // Create basic glossary (will be expanded later)
 function createGlossary() {
     const glossaryGrid = document.getElementById('glossaryGrid');
+    
+    // Check if glossary grid exists (it was removed in our streamlined design)
+    if (!glossaryGrid) {
+        console.log('Glossary grid not found - glossary section was streamlined out');
+        return;
+    }
     
     const terms = [
         { term: 'MYA', definition: 'Million Years Ago - Standard unit for measuring deep geological time.' },
@@ -750,7 +840,9 @@ function createGlossary() {
             <h4>${item.term}</h4>
             <p>${item.definition}</p>
         `;
-        glossaryGrid.appendChild(termDiv);
+        if (glossaryGrid) {
+            glossaryGrid.appendChild(termDiv);
+        }
     });
 }
 
@@ -758,40 +850,50 @@ function createGlossary() {
 function setupEventListeners() {
     const timelineContainer = document.getElementById('timelineContainer');
     
-    // Zoom controls
-    document.getElementById('zoomIn').addEventListener('click', () => {
-        if (currentZoom < 5) {
-            const container = document.getElementById('timelineContainer');
-            const scrollPercent = container.scrollLeft / container.scrollWidth;
-            currentZoom *= 1.5;
-            initializeTimeline(); // Redraw timeline at new zoom
-            // Restore scroll position
-            setTimeout(() => {
-                container.scrollLeft = container.scrollWidth * scrollPercent;
-            }, 10);
-        }
-    });
+    // Zoom controls - check if they exist
+    const zoomInBtn = document.getElementById('zoomIn');
+    const zoomOutBtn = document.getElementById('zoomOut');
+    const resetBtn = document.getElementById('resetView');
     
-    document.getElementById('zoomOut').addEventListener('click', () => {
-        if (currentZoom > 0.5) {
-            const container = document.getElementById('timelineContainer');
-            const scrollPercent = container.scrollLeft / container.scrollWidth;
-            currentZoom /= 1.5;
-            initializeTimeline(); // Redraw timeline at new zoom
-            // Restore scroll position
-            setTimeout(() => {
-                container.scrollLeft = container.scrollWidth * scrollPercent;
-            }, 10);
-        }
-    });
+    if (zoomInBtn) {
+        zoomInBtn.addEventListener('click', () => {
+            if (currentZoom < 5) {
+                const container = document.getElementById('timelineContainer');
+                const scrollPercent = container.scrollLeft / container.scrollWidth;
+                currentZoom *= 1.5;
+                initializeTimeline(); // Redraw timeline at new zoom
+                // Restore scroll position
+                setTimeout(() => {
+                    container.scrollLeft = container.scrollWidth * scrollPercent;
+                }, 10);
+            }
+        });
+    }
     
-    document.getElementById('resetView').addEventListener('click', () => {
-        currentZoom = 1;
-        currentPan = 0;
-        const container = document.getElementById('timelineContainer');
-        container.scrollLeft = 0;
-        initializeTimeline(); // Redraw timeline at default zoom
-    });
+    if (zoomOutBtn) {
+        zoomOutBtn.addEventListener('click', () => {
+            if (currentZoom > 0.5) {
+                const container = document.getElementById('timelineContainer');
+                const scrollPercent = container.scrollLeft / container.scrollWidth;
+                currentZoom /= 1.5;
+                initializeTimeline(); // Redraw timeline at new zoom
+                // Restore scroll position
+                setTimeout(() => {
+                    container.scrollLeft = container.scrollWidth * scrollPercent;
+                }, 10);
+            }
+        });
+    }
+    
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            currentZoom = 1;
+            currentPan = 0;
+            const container = document.getElementById('timelineContainer');
+            container.scrollLeft = 0;
+            initializeTimeline(); // Redraw timeline at default zoom
+        });
+    }
     
     // Mouse wheel zoom - COMPLETELY REMOVED
     // Only use buttons for zooming
@@ -799,30 +901,38 @@ function setupEventListeners() {
     // Pan functionality - DISABLED since we now use native scrolling
     // The timeline container will handle scrolling automatically
     
-    // Glossary search
-    document.getElementById('glossarySearch').addEventListener('input', (e) => {
-        const searchTerm = e.target.value.toLowerCase();
-        const terms = document.querySelectorAll('.glossary-term');
-        
-        terms.forEach(term => {
-            const text = term.textContent.toLowerCase();
-            term.style.display = text.includes(searchTerm) ? 'block' : 'none';
+    // Glossary search - check if element exists
+    const glossarySearch = document.getElementById('glossarySearch');
+    if (glossarySearch) {
+        glossarySearch.addEventListener('input', (e) => {
+            const searchTerm = e.target.value.toLowerCase();
+            const terms = document.querySelectorAll('.glossary-term');
+            
+            terms.forEach(term => {
+                const text = term.textContent.toLowerCase();
+                term.style.display = text.includes(searchTerm) ? 'block' : 'none';
+            });
         });
-    });
+    }
     
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         // Escape key
         if (e.key === 'Escape') {
             const detailsPanel = document.getElementById('eventDetails');
-            if (detailsPanel.style.display === 'block') {
+            if (detailsPanel && detailsPanel.style.display === 'block') {
                 closeEventDetails();
             } else if (searchTerm) {
                 // Clear search if no details panel is open
                 const searchInput = document.getElementById('eventSearch');
-                searchInput.value = '';
-                searchTerm = '';
-                document.getElementById('clearSearch').style.display = 'none';
+                const clearSearch = document.getElementById('clearSearch');
+                if (searchInput) {
+                    searchInput.value = '';
+                    searchTerm = '';
+                }
+                if (clearSearch) {
+                    clearSearch.style.display = 'none';
+                }
                 applyFilters();
             }
         }
@@ -883,19 +993,19 @@ document.addEventListener('DOMContentLoaded', () => {
 function setupSearchAndFilter() {
     const searchInput = document.getElementById('eventSearch');
     const clearBtn = document.getElementById('clearSearch');
-    const filterBtns = document.querySelectorAll('.filter-btn');
+    const filterBtns = document.querySelectorAll('.filter-btn, .filter-pill');
     
-    // Layer checkboxes
+    // Check if search elements exist
+    if (!searchInput) {
+        console.log('Search elements not found - using streamlined filters');
+        return;
+    }
+    
+    // Layer checkboxes - check if they exist
     const layerGeological = document.getElementById('layerGeological');
     const layerClimate = document.getElementById('layerClimate');
     const layerLife = document.getElementById('layerLife');
     const layerExtinctions = document.getElementById('layerExtinctions');
-    
-    // Check if elements exist
-    if (!searchInput) {
-        console.error('Search input not found!');
-        return;
-    }
     
     console.log('Setting up search and filter...', { searchInput, filterBtns: filterBtns.length });
     
@@ -922,12 +1032,14 @@ function setupSearchAndFilter() {
         applyFilters();
     });
     
-    clearBtn.addEventListener('click', () => {
-        searchInput.value = '';
-        searchTerm = '';
-        clearBtn.style.display = 'none';
-        applyFilters();
-    });
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            searchTerm = '';
+            clearBtn.style.display = 'none';
+            applyFilters();
+        });
+    }
     
     // Filter buttons
     filterBtns.forEach(btn => {
@@ -1219,3 +1331,15 @@ window.closeEventDetails = function() {
     const detailsPanel = document.getElementById('eventDetails');
     detailsPanel.style.display = 'none';
 };
+
+// Initialize when DOM is ready with performance monitoring
+document.addEventListener('DOMContentLoaded', () => {
+    const startTime = performance.now();
+    
+    loadTimelineData().then(() => {
+        const loadTime = performance.now() - startTime;
+        console.log(`Timeline fully loaded in ${loadTime.toFixed(2)}ms`);
+    }).catch(error => {
+        console.error('Timeline initialization failed:', error);
+    });
+});

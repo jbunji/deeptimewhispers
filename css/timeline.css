@@ -1,5 +1,58 @@
 /* Timeline Explorer Specific Styles */
 
+/* Performance optimizations */
+* {
+    will-change: auto;
+}
+
+.timeline-section {
+    contain: layout style paint;
+}
+
+/* Loading states */
+.timeline-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+    color: var(--text-light);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(77, 182, 172, 0.3);
+    border-top: 3px solid var(--cosmic-teal);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 20px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Error states */
+.timeline-error {
+    text-align: center;
+    padding: 40px;
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    border-radius: 10px;
+    margin: 20px;
+}
+
+.timeline-error button {
+    background: var(--cosmic-teal);
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
 /* Timeline Hero */
 .timeline-hero {
     background: linear-gradient(135deg, var(--midnight) 0%, var(--space-black) 100%);
@@ -47,34 +100,39 @@
 .zoom-btn:hover {
     background: rgba(77, 182, 172, 0.2);
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(77, 182, 172, 0.3);
 }
 
-/* Search and Filter Controls */
+.zoom-btn:active {
+    transform: translateY(0);
+}
+
+/* Simplified Search and Filter Controls */
 .timeline-filters {
-    margin-top: 20px;
+    margin-top: 30px;
     padding: 0 20px;
-    margin-bottom: 15px;
-    max-width: 1400px;
+    margin-bottom: 30px;
+    max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
 }
 
-.filter-top-row {
+.filter-main-row {
     display: flex;
-    gap: 15px;
+    gap: 20px;
     align-items: center;
-    margin-bottom: 15px;
+    justify-content: center;
     flex-wrap: wrap;
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
 }
 
-.filter-controls-row {
+.quick-filters {
     display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 12px 20px;
-    background: rgba(255, 255, 255, 0.03);
-    border-radius: 10px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 10px;
     flex-wrap: wrap;
 }
 
@@ -93,6 +151,7 @@
 .comparison-toggle-btn:hover {
     background: rgba(167, 139, 250, 0.2);
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(167, 139, 250, 0.3);
 }
 
 .separator {
@@ -169,28 +228,36 @@
 .filter-btn {
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 6px 12px;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 20px;
-    color: #a8a8b8;
+    gap: 6px;
+    padding: 10px 16px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    border-radius: 25px;
+    color: var(--soft-white);
     font-family: 'Raleway', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
     white-space: nowrap;
+    min-width: 100px;
+    justify-content: center;
 }
 
 .filter-btn:hover {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--cosmic-teal);
+    color: var(--cosmic-teal);
     transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(77, 182, 172, 0.3);
 }
 
 .filter-btn.active {
-    background: rgba(167, 139, 250, 0.2);
-    border-color: #a78bfa;
-    color: #f0f0f0;
+    background: var(--cosmic-teal);
+    border-color: var(--cosmic-teal);
+    color: var(--space-black);
+    font-weight: 600;
+    box-shadow: 0 0 20px rgba(77, 182, 172, 0.4);
 }
 
 .filter-dot {
@@ -1280,23 +1347,110 @@
     
     /* Search and filter mobile adjustments */
     .timeline-filters {
-        padding: 0 10px;
+        padding: 0 15px;
+        margin-top: 25px;
     }
     
-    .filter-buttons {
-        gap: 5px;
+    .filter-main-row {
+        flex-direction: column;
+        gap: 15px;
+        padding: 15px;
+    }
+    
+    .quick-filters {
+        justify-content: center;
+        gap: 8px;
     }
     
     .filter-btn {
         font-size: 0.8rem;
-        padding: 6px 12px;
+        padding: 8px 12px;
+        min-width: 80px;
     }
     
-    .filter-label {
-        display: block;
+    .comparison-toggle-btn {
+        padding: 8px 16px;
+        font-size: 0.8rem;
+    }
+    
+    .search-box {
         width: 100%;
+        max-width: 300px;
+    }
+    
+    .event-search-input {
+        width: 100%;
+    }
+    
+    .timeline-container {
+        margin: 0 10px;
+    }
+    
+    .timeline-scale {
+        padding: 0 15px;
+        font-size: 0.8rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+    .timeline-hero {
+        padding: 70px 0 25px;
+    }
+    
+    .timeline-title {
+        font-size: 1.8rem;
+        line-height: 1.2;
+    }
+    
+    .timeline-subtitle {
+        font-size: 0.9rem;
+        line-height: 1.4;
+    }
+    
+    .timeline-controls {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.8rem;
+    }
+    
+    .zoom-btn {
+        width: 180px;
         text-align: center;
-        margin-bottom: 10px;
+        padding: 10px 16px;
+    }
+    
+    .filter-main-row {
+        padding: 12px;
+    }
+    
+    .quick-filters {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .filter-btn {
+        width: 100%;
+        max-width: 200px;
+        margin: 0 auto;
+    }
+    
+    .comparison-toggle-btn {
+        width: 100%;
+        max-width: 200px;
+    }
+    
+    .timeline-section {
+        padding: 20px 5px;
+    }
+    
+    .timeline-container {
+        margin: 0 5px;
+        min-height: 400px;
+    }
+    
+    #timelineSvg {
+        height: 400px;
     }
 }
 
