@@ -168,10 +168,13 @@
         
         @media (max-width: 768px) {
             .top-bar {
-                height: 60px;
-                padding: 10px 15px;
-                gap: 10px;
-                flex-wrap: wrap;
+                top: 70px;
+                height: 30px;
+                padding: 2px 10px;
+                gap: 5px;
+                flex-direction: row;
+                justify-content: center;
+                align-items: center;
             }
         }
         
@@ -184,6 +187,12 @@
             background: linear-gradient(45deg, var(--stardust), var(--cosmic-teal));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
+        }
+        
+        @media (max-width: 768px) {
+            .top-bar h1 {
+                display: none;
+            }
         }
         
         /* Main content area */
@@ -200,8 +209,8 @@
         
         @media (max-width: 768px) {
             .main-content {
-                top: 140px;
-                bottom: 100px;
+                top: 100px;
+                bottom: 60px;
                 grid-template-columns: 1fr;
                 grid-template-rows: 1fr auto;
             }
@@ -227,8 +236,9 @@
             .side-panel {
                 border-left: none;
                 border-top: 1px solid rgba(255, 255, 255, 0.1);
-                padding: 15px;
-                max-height: 250px;
+                padding: 8px;
+                height: auto;
+                min-height: 60px;
                 overflow-y: auto;
             }
         }
@@ -244,9 +254,12 @@
         
         @media (max-width: 768px) {
             .animation-controls {
-                gap: 10px;
-                flex-wrap: wrap;
-                margin-top: 10px;
+                gap: 5px;
+                flex-wrap: nowrap;
+                margin-top: 0;
+                justify-content: flex-end;
+                align-items: center;
+                flex-shrink: 0;
             }
         }
         
@@ -263,8 +276,9 @@
         
         @media (max-width: 768px) {
             .control-btn {
-                padding: 8px 15px;
-                font-size: 12px;
+                padding: 4px 8px;
+                font-size: 10px;
+                border-radius: 15px;
             }
         }
         
@@ -298,8 +312,11 @@
         
         @media (max-width: 768px) {
             .timeline-container {
-                height: 100px;
-                padding: 15px;
+                height: 60px;
+                padding: 8px 15px;
+                left: 0;
+                right: 0;
+                width: 100%;
             }
         }
         
@@ -345,8 +362,13 @@
         
         @media (max-width: 768px) {
             .speed-control {
-                padding: 8px 15px;
-                gap: 8px;
+                padding: 3px 8px;
+                gap: 4px;
+                border-radius: 15px;
+            }
+            
+            .speed-control label {
+                font-size: 0.7rem;
             }
         }
         
@@ -379,6 +401,14 @@
             cursor: pointer;
             transition: all 0.3s;
             font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .speed-btn {
+                padding: 3px 6px;
+                font-size: 10px;
+                border-radius: 10px;
+            }
         }
         
         .speed-btn:hover {
