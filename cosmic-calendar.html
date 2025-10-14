@@ -232,7 +232,8 @@
             background: linear-gradient(135deg, #4DB6AC, #00695C);
         }
 
-        .day-cell:hover {
+        .day-cell:hover,
+        .day-cell.touch-active {
             transform: scale(1.2);
             box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
         }
@@ -266,11 +267,13 @@
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
         }
 
-        .day-cell:hover {
+        .day-cell:hover,
+        .day-cell.touch-active {
             z-index: 9998 !important;
         }
 
-        .day-cell:hover .day-tooltip {
+        .day-cell:hover .day-tooltip,
+        .day-cell.touch-active .day-tooltip {
             opacity: 1;
         }
 
@@ -742,7 +745,54 @@
         }
 
         // Initialize calendar on page load
-        document.addEventListener('DOMContentLoaded', generateCalendar);
+        document.addEventListener('DOMContentLoaded', () => {
+            generateCalendar();
+            
+            // Add touch support for mobile
+            addMobileTouchSupport();
+        });
+        
+        // Add touch event handlers for mobile
+        function addMobileTouchSupport() {
+            // Detect if device is touch-enabled
+            const isTouchDevice = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            
+            if (isTouchDevice) {
+                let activeTooltip = null;
+                
+                // Add touch handlers to all day cells
+                document.querySelectorAll('.day-cell').forEach(cell => {
+                    cell.addEventListener('touchstart', function(e) {
+                        e.preventDefault();
+                        
+                        // Hide any previously active tooltip
+                        if (activeTooltip && activeTooltip !== this) {
+                            activeTooltip.classList.remove('touch-active');
+                            const prevTooltip = activeTooltip.querySelector('.day-tooltip');
+                            if (prevTooltip) prevTooltip.style.opacity = '0';
+                        }
+                        
+                        // Show this cell's tooltip
+                        this.classList.add('touch-active');
+                        const tooltip = this.querySelector('.day-tooltip');
+                        if (tooltip) {
+                            tooltip.style.opacity = '1';
+                            activeTooltip = this;
+                        }
+                    });
+                });
+                
+                // Hide tooltip when touching elsewhere
+                document.addEventListener('touchstart', function(e) {
+                    if (!e.target.closest('.day-cell') && activeTooltip) {
+                        activeTooltip.classList.remove('touch-active');
+                        const tooltip = activeTooltip.querySelector('.day-tooltip');
+                        if (tooltip) tooltip.style.opacity = '0';
+                        activeTooltip = null;
+                    }
+                });
+            }
+        }
     </script>
 </body>
 </html>
