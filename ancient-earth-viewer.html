@@ -93,7 +93,7 @@
             align-items: center;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1rem 2rem;
+            padding: 1.5rem 2rem;
         }
         
         /* Mobile Optimizations */
@@ -150,12 +150,12 @@
         /* Top controls bar */
         .top-bar {
             position: fixed;
-            top: 60px;
+            top: 80px;
             left: 0;
             right: 0;
-            height: 50px;
+            height: 80px;
             background: rgba(10, 14, 39, 0.95);
-            padding: 10px 20px;
+            padding: 15px 20px;
             text-align: center;
             z-index: 100;
             backdrop-filter: blur(10px);
@@ -198,12 +198,12 @@
         /* Main content area */
         .main-content {
             position: fixed;
-            top: 110px;
+            top: 160px;
             left: 0;
             right: 0;
-            bottom: 80px;
+            bottom: 120px;
             display: grid;
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr 300px;
             gap: 0;
         }
         
@@ -230,7 +230,6 @@
             border-left: 1px solid rgba(255, 255, 255, 0.1);
             padding: 20px;
             overflow-y: auto;
-            display: none; /* Hide by default to maximize globe area */
         }
         
         @media (max-width: 768px) {
@@ -300,11 +299,11 @@
             bottom: 0;
             left: 0;
             right: 0;
-            height: 80px;
+            height: 120px;
             background: rgba(10, 14, 39, 0.95);
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 15px 20px;
+            padding: 20px;
             z-index: 100;
             display: flex;
             flex-direction: column;
@@ -346,8 +345,8 @@
         .timeline-labels {
             display: flex;
             justify-content: space-between;
-            margin-top: 5px;
-            font-size: 11px;
+            margin-top: 10px;
+            font-size: 12px;
             opacity: 0.8;
         }
         
