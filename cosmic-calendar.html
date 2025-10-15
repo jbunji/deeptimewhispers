@@ -349,42 +349,163 @@
 
         /* Mobile responsive */
         @media (max-width: 768px) {
+            body {
+                padding-top: 70px;
+            }
+            
             .container {
-                padding: 0 1rem;
+                padding: 0 !important;
+                max-width: 100vw !important;
+                margin: 0 !important;
+            }
+
+            .calendar-header {
+                padding: 1.5rem 1rem;
+                margin-bottom: 0;
             }
 
             .calendar-header h1 {
-                font-size: 2rem;
+                font-size: 2.5rem !important;
+                margin-bottom: 1rem !important;
+                line-height: 1.1 !important;
             }
 
             .calendar-header .subtitle {
-                font-size: 1rem;
+                font-size: 1.2rem !important;
+                margin-bottom: 1rem !important;
+                line-height: 1.3 !important;
             }
 
             .calendar-description {
-                font-size: 1rem;
+                font-size: 1.1rem;
+                line-height: 1.5;
+                margin-bottom: 2rem;
+                padding: 0 1rem;
             }
 
             .calendar-year {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 1rem;
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+                margin: 2rem 1rem;
             }
 
             .month-container {
-                padding: 0.75rem;
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
+                border-radius: 12px;
+            }
+            
+            .month-header {
+                margin-bottom: 1.2rem;
+            }
+            
+            .month-name {
+                font-size: 1.6rem !important;
+                margin-bottom: 0.5rem !important;
+            }
+            
+            .month-years {
+                font-size: 1rem !important;
+                line-height: 1.4 !important;
             }
 
             .days-grid {
-                gap: 1px;
+                gap: 2px !important;
             }
 
             .day-cell {
-                font-size: 0.6rem;
+                font-size: 1rem !important;
+                min-height: 44px !important;
+                font-weight: 600 !important;
+                display: flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+            }
+            
+            .day-tooltip {
+                font-size: 1rem;
+                padding: 1rem;
+                min-width: 260px;
+                max-width: 320px;
+            }
+            
+            .tooltip-date {
+                font-size: 1.2rem;
+                margin-bottom: 0.6rem;
+                font-weight: 600;
+            }
+            
+            .tooltip-event {
+                font-size: 1rem;
+                line-height: 1.5;
             }
 
             .cosmic-today {
-                margin: 1.5rem auto;
+                margin: 2rem 1rem;
+                padding: 2rem;
+            }
+            
+            .cosmic-today h3 {
+                font-size: 1.6rem;
+                margin-bottom: 1rem;
+            }
+            
+            .cosmic-today .date {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .cosmic-today .description {
+                font-size: 1.2rem;
+                line-height: 1.6;
+            }
+            
+            .legend {
+                gap: 1.5rem;
+                margin: 2rem 1rem;
                 padding: 1rem;
+            }
+            
+            .legend-item {
+                font-size: 1.1rem;
+                line-height: 1.5;
+            }
+            
+            /* Timeline section - the key fix */
+            .timeline-header {
+                padding: 2rem 1rem 1rem !important;
+                text-align: center !important;
+            }
+            
+            .timeline-header h2 {
+                font-size: 2.2rem !important;
+                margin-bottom: 1rem !important;
+                line-height: 1.2 !important;
+            }
+            
+            .timeline-subtitle {
+                font-size: 1.1rem !important;
+                line-height: 1.4 !important;
+                margin-bottom: 2rem !important;
+            }
+            
+            .microseconds-timeline-container {
+                padding: 1rem !important;
+                margin: 0 1rem 2rem !important;
+                min-height: 70vh !important;
+                overflow-x: visible !important;
+                overflow-y: auto !important;
+                max-width: calc(100vw - 2rem) !important;
+            }
+            
+            .event-label {
+                font-size: 18px !important;
+                font-weight: 600;
+            }
+            
+            .event-time {
+                font-size: 15px !important;
+                opacity: 0.9;
             }
 
             .cosmic-today .date {
@@ -402,8 +523,107 @@
         }
 
         @media (max-width: 480px) {
+            .calendar-header {
+                padding: 1rem 0.5rem;
+            }
+            
+            .calendar-header h1 {
+                font-size: 2rem;
+            }
+            
+            .calendar-header .subtitle {
+                font-size: 1rem;
+            }
+            
+            .calendar-description {
+                font-size: 1rem;
+                padding: 0 0.5rem;
+                margin-bottom: 1.5rem;
+            }
+            
             .calendar-year {
-                grid-template-columns: 1fr;
+                margin: 1.5rem 0.5rem;
+                gap: 1rem;
+            }
+            
+            .month-container {
+                padding: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .month-name {
+                font-size: 1.3rem;
+            }
+            
+            .month-years {
+                font-size: 0.9rem;
+            }
+            
+            .day-cell {
+                font-size: 0.9rem;
+                min-height: 40px;
+            }
+            
+            .day-tooltip {
+                min-width: 240px;
+                font-size: 0.9rem;
+                padding: 0.8rem;
+            }
+            
+            .cosmic-today {
+                padding: 1.5rem;
+                margin: 1.5rem 0.5rem;
+            }
+            
+            .cosmic-today h3 {
+                font-size: 1.3rem;
+            }
+            
+            .cosmic-today .date {
+                font-size: 2rem;
+            }
+            
+            .cosmic-today .description {
+                font-size: 1rem;
+            }
+            
+            .legend {
+                margin: 1.5rem 0.5rem;
+                gap: 1rem;
+            }
+            
+            .legend-item {
+                font-size: 1rem;
+            }
+            
+            .timeline-header {
+                padding: 1.5rem 0.5rem 1rem;
+            }
+            
+            .timeline-header h2 {
+                font-size: 1.8rem;
+            }
+            
+            .timeline-subtitle {
+                font-size: 1rem;
+            }
+            
+            .microseconds-timeline-container {
+                margin: 0 0.5rem 1.5rem;
+                padding: 0.8rem;
+                min-height: 60vh;
+            }
+            
+            .microseconds-timeline-svg {
+                min-height: 70vh;
+            }
+            
+            .event-label {
+                font-size: 16px !important;
+            }
+            
+            .event-time {
+                font-size: 13px !important;
             }
         }
 
@@ -447,7 +667,10 @@
         <div class="container">
             <div class="nav-content">
                 <div class="logo">
-                    <a href="index.html" class="logo-text">Deep Time Whispers</a>
+                    <a href="index.html" class="logo-text">
+                        <span class="logo-full">Deep Time Whispers</span>
+                        <span class="logo-short">DTW</span>
+                    </a>
                 </div>
                 <div class="nav-links">
                     <a href="index.html" class="nav-link">Home</a>
@@ -862,6 +1085,18 @@
             background: transparent;
         }
         
+        @media (max-width: 768px) {
+            .microseconds-timeline-svg {
+                min-height: 1500px !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .microseconds-timeline-svg {
+                min-height: 1200px !important;
+            }
+        }
+        
         /* SVG Timeline Styles */
         .timeline-line {
             stroke: var(--cosmic-teal);
@@ -874,12 +1109,7 @@
         }
         
         .event-circle {
-            transition: all 0.3s ease;
-        }
-        
-        .event-group:hover .event-circle {
-            transform: scale(1.5);
-            filter: brightness(1.3);
+            /* Removed annoying hover animation that covers text */
         }
         
         .event-label {
@@ -891,10 +1121,11 @@
         .event-title {
             font-weight: 600;
             fill: var(--soft-white);
+            font-size: 16px;
         }
         
         .event-time {
-            font-size: 12px;
+            font-size: 14px;
             fill: var(--cosmic-teal);
         }
         
@@ -984,14 +1215,17 @@
             
             console.log('Generating timeline with', microsecondsEvents.length, 'events');
             
-            const width = 1000;
-            // Use logarithmic scale to show both ancient and recent events
-            const minHeight = 2500; // Increased height for better spacing
-            const height = Math.max(minHeight, microsecondsEvents.length * 100);
-            const leftMargin = 350; // Space for labels on left
-            const rightMargin = 350; // Space for labels on right
-            const topMargin = 50;
-            const bottomMargin = 100;
+            // Responsive dimensions
+            const isMobile = window.innerWidth <= 768;
+            const isSmallMobile = window.innerWidth <= 480;
+            
+            const width = isMobile ? (isSmallMobile ? 380 : 420) : 1000;
+            const minHeight = isMobile ? (isSmallMobile ? 800 : 1000) : 2500;
+            const height = Math.max(minHeight, microsecondsEvents.length * (isMobile ? 60 : 100));
+            const leftMargin = isMobile ? (isSmallMobile ? 40 : 50) : 350;
+            const rightMargin = isMobile ? (isSmallMobile ? 40 : 50) : 350;
+            const topMargin = isMobile ? 30 : 50;
+            const bottomMargin = isMobile ? 50 : 100;
             const lineX = width / 2;
             
             // Calculate scale factor for time
@@ -1094,36 +1328,24 @@
                 });
                 eventGroup.appendChild(circle);
                 
-                // Connector line
-                const connectorEndX = isLeftSide ? lineX - 100 : lineX + 100;
-                const connector = createSVGElement('line', {
-                    x1: lineX + (isLeftSide ? -8 : 8),
-                    y1: 0,
-                    x2: connectorEndX,
-                    y2: 0,
-                    stroke: 'var(--text-light)',
-                    'stroke-width': '1',
-                    opacity: '0.5',
-                    'stroke-dasharray': '2,2'
-                });
-                eventGroup.appendChild(connector);
+                // Position text for better readability - both title and time on same side
+                const textOffset = isMobile ? (isSmallMobile ? 25 : 35) : 50;
                 
-                // Event text group
-                const textGroup = createSVGElement('g', {
-                    transform: `translate(${isLeftSide ? connectorEndX - 10 : connectorEndX + 10}, 0)`
-                });
+                // Both title and time on SAME side, stacked vertically
+                const textX = isLeftSide ? lineX - textOffset : lineX + textOffset;
+                const textAnchor = isLeftSide ? 'end' : 'start';
                 
-                // Event title
+                // Event title (slightly above center)
                 const title = createSVGElement('text', {
-                    x: 0,
-                    y: -5,
-                    'text-anchor': isLeftSide ? 'end' : 'start',
+                    x: textX,
+                    y: -8,
+                    'text-anchor': textAnchor,
                     class: 'event-title'
                 });
                 title.textContent = event.title;
-                textGroup.appendChild(title);
+                eventGroup.appendChild(title);
                 
-                // Time labels
+                // Time labels stacked below title
                 let timeStr, secondsStr;
                 if (event.time >= 1000) {
                     timeStr = `${(event.time / 1000).toFixed(0)}k years ago`;
@@ -1144,15 +1366,13 @@
                 }
                 
                 const timeLabel = createSVGElement('text', {
-                    x: 0,
-                    y: 10,
-                    'text-anchor': isLeftSide ? 'end' : 'start',
+                    x: textX,
+                    y: 12,
+                    'text-anchor': textAnchor,
                     class: 'event-time'
                 });
                 timeLabel.textContent = `${timeStr} • ${secondsStr}`;
-                textGroup.appendChild(timeLabel);
-                
-                eventGroup.appendChild(textGroup);
+                eventGroup.appendChild(timeLabel);
                 
                 // Add hover effect with description
                 if (event.desc) {
@@ -1191,6 +1411,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             // Small delay to ensure calendar loads first
             setTimeout(generateMicrosecondsTimeline, 100);
+        });
+        
+        // Regenerate timeline on window resize
+        let resizeTimeout;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                generateMicrosecondsTimeline();
+            }, 250);
         });
     </script>
 </body>

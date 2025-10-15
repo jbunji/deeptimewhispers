@@ -106,6 +106,14 @@
                 font-size: 1.2rem;
             }
             
+            .logo-short {
+                display: inline;
+            }
+            
+            .logo-full {
+                display: none;
+            }
+            
             .nav-links {
                 gap: 1rem;
             }
@@ -124,6 +132,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             text-decoration: none;
+        }
+        
+        .logo-short {
+            display: none;
+        }
+        
+        .logo-full {
+            display: inline;
         }
         
         .nav-links {
@@ -729,6 +745,14 @@
         }
         
         @media (max-width: 480px) {
+            .logo-short {
+                display: inline;
+            }
+            
+            .logo-full {
+                display: none;
+            }
+            
             h1 {
                 font-size: 14px;
             }
@@ -763,7 +787,10 @@
         <div class="container">
             <div class="nav-content">
                 <div class="logo">
-                    <a href="index.html" class="logo-text">Deep Time Whispers</a>
+                    <a href="index.html" class="logo-text">
+                        <span class="logo-full">Deep Time Whispers</span>
+                        <span class="logo-short">DTW</span>
+                    </a>
                 </div>
                 <div class="nav-links">
                     <a href="index.html" class="nav-link">Home</a>

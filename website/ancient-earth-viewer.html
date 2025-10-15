@@ -82,9 +82,9 @@
             position: fixed;
             top: 0;
             width: 100%;
-            background: rgba(10, 14, 39, 0.9);
+            background: rgba(10, 14, 39, 0.95);
             backdrop-filter: blur(10px);
-            z-index: 1000;
+            z-index: 2000;
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
         }
         
@@ -94,7 +94,7 @@
             align-items: center;
             max-width: 1400px;
             margin: 0 auto;
-            padding: 1.5rem 2rem;
+            padding: 1rem 2rem;
         }
         
         .logo-text {
@@ -131,13 +131,13 @@
         /* Top controls bar */
         .top-bar {
             position: fixed;
-            top: 80px;
+            top: 70px;
             left: 0;
             right: 0;
-            background: rgba(10, 14, 39, 0.9);
+            background: rgba(10, 14, 39, 0.95);
             padding: 15px 20px;
             text-align: center;
-            z-index: 100;
+            z-index: 1900;
             backdrop-filter: blur(10px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.1);
             height: 120px; /* Fixed height for consistent spacing */
@@ -206,12 +206,12 @@
             bottom: 0;
             left: 0;
             right: 0;
-            padding: 20px 30px;
+            padding: 25px 30px 30px 30px;
             background: rgba(10, 14, 39, 0.95);
-            z-index: 100;
+            z-index: 1900;
             backdrop-filter: blur(10px);
             border-top: 1px solid rgba(255, 255, 255, 0.1);
-            height: 100px;
+            height: 110px;
         }
         
         .timeline-slider {
@@ -258,12 +258,12 @@
         .info-panel {
             position: fixed;
             left: 20px;
-            top: 220px; /* Below the top bar */
-            background: rgba(10, 14, 39, 0.9);
+            top: 210px; /* Below the top bar */
+            background: rgba(10, 14, 39, 0.95);
             padding: 20px;
             border-radius: 15px;
             max-width: 280px;
-            z-index: 100;
+            z-index: 1800;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -292,12 +292,12 @@
         .location-panel {
             position: fixed;
             right: 20px;
-            top: 220px; /* Below the top bar */
-            background: rgba(10, 14, 39, 0.9);
+            top: 210px; /* Below the top bar */
+            background: rgba(10, 14, 39, 0.95);
             padding: 20px;
             border-radius: 15px;
             width: 260px;
-            z-index: 100;
+            z-index: 1800;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
@@ -380,9 +380,10 @@
         
         #globeViz {
             width: 100%;
-            height: calc(100vh - 300px); /* Account for nav (80px) + top-bar (120px) + timeline (100px) */
-            margin-top: 80px; /* Start below the nav */
+            height: calc(100vh - 300px); /* Account for nav (70px) + top-bar (120px) + timeline (110px) */
+            margin-top: 70px; /* Start below the nav */
             position: relative;
+            z-index: 1;
         }
         
         .loading-message {
@@ -412,7 +413,7 @@
         /* Mobile adjustments */
         @media (max-width: 768px) {
             #globeViz {
-                height: calc(100vh - 280px); /* Account for nav + top + timeline on mobile */
+                height: calc(100vh - 290px); /* Account for nav + top + timeline on mobile */
             }
             
             .top-bar {
@@ -453,8 +454,8 @@
             }
             
             .timeline-container {
-                padding: 15px;
-                height: 80px;
+                padding: 20px 15px 25px 15px;
+                height: 90px;
             }
         }
         
@@ -494,7 +495,7 @@
     <!-- Navigation -->
     <nav class="nav">
         <div class="nav-content">
-            <a href="index.html" class="logo-text">Deep Time Whispers</a>
+            <a href="index.html" class="logo-text">DTW</a>
             <div class="nav-links">
                 <a href="index.html#listen" class="nav-link">Listen</a>
                 <a href="index.html#stories" class="nav-link">Episodes</a>

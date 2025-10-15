@@ -131,6 +131,14 @@ body {
     -webkit-text-fill-color: transparent;
 }
 
+.logo-short {
+    display: none;
+}
+
+.logo-full {
+    display: inline;
+}
+
 .nav-links {
     display: flex;
     gap: 2rem;
@@ -617,6 +625,14 @@ body {
 
 /* Responsive */
 @media (max-width: 768px) {
+    .logo-short {
+        display: inline;
+    }
+    
+    .logo-full {
+        display: none;
+    }
+    
     .hero {
         min-height: 100vh;
         padding-bottom: 120px; /* Extra space for scroll indicator */
