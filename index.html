@@ -3,8 +3,82 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Deep Time Whispers - Ancient Memories for Modern Dreams</title>
-    <meta name="description" content="Journey through Earth's deepest memories with The Chrononaut. Transform catastrophes into calm, experience ancient lives, and drift to sleep with stories from deep time.">
+    <title>Deep Time Whispers - Ancient Memories for Modern Dreams | Earth History Podcast</title>
+    <meta name="description" content="Journey through Earth's 4.5 billion year history with The Chrononaut. Sleep stories, catastrophe meditations, and ancient lives. Interactive timeline, ancient Earth viewer, and cosmic calendar.">
+    <meta name="keywords" content="deep time, earth history, geology podcast, sleep stories, paleontology, evolution, mass extinctions, geological timeline, ancient earth, cosmic calendar, chrononaut, educational podcast">
+    <meta name="author" content="Deep Time Whispers">
+    <link rel="canonical" href="https://deeptimewhispers.com/">
+    
+    <!-- Enhanced Open Graph -->
+    <meta property="og:title" content="Deep Time Whispers - Ancient Memories for Modern Dreams">
+    <meta property="og:description" content="Journey through Earth's deepest memories with The Chrononaut. Sleep stories, catastrophe meditations, and ancient lives from 4.5 billion years of history.">
+    <meta property="og:image" content="https://deeptimewhispers.com/assets/images/DeepTimeWhispers-Final.png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:url" content="https://deeptimewhispers.com/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Deep Time Whispers">
+    <meta property="og:locale" content="en_US">
+    
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Deep Time Whispers - Ancient Memories for Modern Dreams">
+    <meta name="twitter:description" content="Journey through Earth's 4.5 billion year history with sleep stories, catastrophe meditations, and ancient lives.">
+    <meta name="twitter:image" content="https://deeptimewhispers.com/assets/images/DeepTimeWhispers-Final.png">
+    <meta name="twitter:creator" content="@deeptimewhispers">
+    <meta name="twitter:site" content="@deeptimewhispers">
+    
+    <!-- Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "Deep Time Whispers",
+      "alternateName": "DTW",
+      "url": "https://deeptimewhispers.com",
+      "description": "Educational podcast and interactive platform exploring Earth's 4.5 billion year history through sleep stories, catastrophe meditations, and ancient lives.",
+      "publisher": {
+        "@type": "Organization",
+        "name": "Deep Time Whispers",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://deeptimewhispers.com/assets/images/DeepTimeWhispers-Final.png"
+        }
+      },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://deeptimewhispers.com/timeline.html?search={search_term_string}",
+        "query-input": "required name=search_term_string"
+      },
+      "sameAs": [
+        "https://open.spotify.com/show/5PDayEum5JCqlfoPG1fBlT",
+        "https://www.youtube.com/@deeptimewhispers"
+      ]
+    }
+    </script>
+    
+    <!-- Podcast Structured Data -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "PodcastSeries",
+      "name": "Deep Time Whispers",
+      "description": "Journey through Earth's deepest memories with The Chrononaut. Transform catastrophes into calm, experience ancient lives, and drift to sleep with stories from deep time.",
+      "url": "https://deeptimewhispers.com",
+      "image": "https://deeptimewhispers.com/assets/images/DeepTimeWhispers-Final.png",
+      "author": {
+        "@type": "Person",
+        "name": "The Chrononaut"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "Deep Time Whispers"
+      },
+      "genre": ["Education", "Science", "Sleep", "Meditation"],
+      "inLanguage": "en-US",
+      "webFeed": "https://open.spotify.com/show/5PDayEum5JCqlfoPG1fBlT"
+    }
+    </script>
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,12 +92,43 @@
     <link rel="icon" type="image/png" href="assets/images/DeepTimeWhispers-Final.png">
     <link rel="apple-touch-icon" href="assets/images/DeepTimeWhispers-Final.png">
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="Deep Time Whispers - Ancient Memories for Modern Dreams">
-    <meta property="og:description" content="Journey through Earth's deepest memories with The Chrononaut. Sleep stories, catastrophe meditations, and ancient lives.">
-    <meta property="og:image" content="assets/images/DeepTimeWhispers-Final.png">
-    <meta property="og:url" content="https://deeptimewhispers.com">
-    <meta name="twitter:card" content="summary_large_image">
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        gtag('config', 'G-XXXXXXXXXX', {
+            page_title: 'Deep Time Whispers Homepage',
+            page_location: window.location.href,
+            custom_map: {'custom_parameter_1': 'page_type'}
+        });
+        
+        // Track custom events for Deep Time Whispers
+        function trackEvent(eventName, parameters = {}) {
+            gtag('event', eventName, {
+                event_category: 'Deep Time Whispers',
+                ...parameters
+            });
+        }
+        
+        // Track Spotify clicks
+        function trackSpotifyClick() {
+            trackEvent('spotify_click', {
+                event_category: 'Podcast',
+                event_label: 'Main CTA'
+            });
+        }
+        
+        // Track section views
+        function trackSectionView(sectionName) {
+            trackEvent('section_view', {
+                event_category: 'Engagement',
+                event_label: sectionName
+            });
+        }
+    </script>
 </head>
 <body>
     <!-- Cosmic Background Animation -->
@@ -49,6 +154,8 @@
                     <a href="timeline.html" class="nav-link">Timeline</a>
                     <a href="ancient-earth-viewer.html" class="nav-link">Ancient Earth</a>
                     <a href="cosmic-calendar.html" class="nav-link">Cosmic Calendar</a>
+                    <a href="episodes.html" class="nav-link">Episodes</a>
+                    <a href="ask-chrononaut.html" class="nav-link">Ask Chrononaut</a>
                     <a href="#about" class="nav-link">About</a>
                 </div>
             </div>
@@ -70,7 +177,7 @@
                     Let catastrophes become calm. Let ancient memories guide you to peaceful sleep.
                 </p>
                 <div class="hero-buttons">
-                    <a href="https://open.spotify.com/show/5PDayEum5JCqlfoPG1fBlT?si=0y_RJyiWSjuOGu-uCM3lLw" class="btn btn-primary" target="_blank" rel="noopener noreferrer">Start Listening</a>
+                    <a href="https://open.spotify.com/show/5PDayEum5JCqlfoPG1fBlT?si=0y_RJyiWSjuOGu-uCM3lLw" class="btn btn-primary" target="_blank" rel="noopener noreferrer" onclick="trackSpotifyClick()">Start Listening</a>
                     <a href="#stories" class="btn btn-secondary">Explore Stories</a>
                 </div>
             </div>

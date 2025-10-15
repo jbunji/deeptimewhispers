@@ -10,6 +10,53 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
     
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        gtag('config', 'G-XXXXXXXXXX', {
+            page_title: 'Ancient Earth Viewer',
+            page_location: window.location.href
+        });
+        
+        // Track Ancient Earth interactions
+        function trackAncientEarthEvent(eventType, details = {}) {
+            gtag('event', 'ancient_earth_interaction', {
+                event_category: 'Ancient Earth',
+                event_label: eventType,
+                custom_parameter_1: 'ancient_earth_page',
+                ...details
+            });
+        }
+        
+        // Track time slider changes
+        function trackTimeChange(mya) {
+            trackAncientEarthEvent('time_change', {
+                million_years_ago: mya
+            });
+        }
+        
+        // Track location searches
+        function trackLocationSearch(location) {
+            gtag('event', 'search', {
+                search_term: location,
+                event_category: 'Ancient Earth'
+            });
+        }
+        
+        // Track location pins
+        function trackLocationPin(lat, lng, mya) {
+            trackAncientEarthEvent('location_pin', {
+                latitude: lat,
+                longitude: lng,
+                million_years_ago: mya
+            });
+        }
+    </script>
+    
     <style>
         :root {
             --primary-purple: #7B1FA2;
@@ -797,6 +844,8 @@
                     <a href="timeline.html" class="nav-link">Timeline</a>
                     <a href="ancient-earth-viewer.html" class="nav-link active">Ancient Earth</a>
                     <a href="cosmic-calendar.html" class="nav-link">Cosmic Calendar</a>
+                    <a href="episodes.html" class="nav-link">Episodes</a>
+                    <a href="ask-chrononaut.html" class="nav-link">Ask Chrononaut</a>
                     <a href="index.html#about" class="nav-link">About</a>
                 </div>
             </div>

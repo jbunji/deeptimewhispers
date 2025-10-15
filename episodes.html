@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Episodes - Deep Time Whispers</title>
+    <meta name="description" content="Explore all Deep Time Whispers episodes. Sunday Sleep Journeys, Wednesday Catastrophes, and Friday Ancient Lives - journey through Earth's deepest memories.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/DeepTimeWhispers-Final.png">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        gtag('config', 'G-XXXXXXXXXX', {
+            page_title: 'Episodes - Deep Time Whispers',
+            page_location: window.location.href
+        });
+        
+        // Track episode interactions
+        function trackEpisodeEvent(eventType, details = {}) {
+            gtag('event', 'episode_interaction', {
+                event_category: 'Episodes',
+                event_label: eventType,
+                custom_parameter_1: 'episodes_page',
+                ...details
+            });
+        }
+        
+        // Track episode plays
+        function trackEpisodePlay(episodeTitle, category) {
+            trackEpisodeEvent('play_episode', {
+                episode_title: episodeTitle,
+                episode_category: category
+            });
+        }
+        
+        // Track search and filters
+        function trackEpisodeSearch(searchTerm) {
+            gtag('event', 'search', {
+                search_term: searchTerm,
+                event_category: 'Episodes'
+            });
+        }
+        
+        function trackEpisodeFilter(category) {
+            trackEpisodeEvent('filter_category', {
+                filter_category: category
+            });
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: var(--space-black);
+            color: var(--soft-white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Main container */
+        .episodes-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header section */
+        .episodes-header {
+            text-align: center;
+            padding: 3rem 0 2rem;
+            margin-top: 80px;
+        }
+
+        .episodes-header h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--stardust), var(--cosmic-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .episodes-header .subtitle {
+            font-size: 1.2rem;
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            font-weight: 300;
+        }
+
+        /* Featured Episode */
+        .featured-episode {
+            background: linear-gradient(135deg, rgba(123, 31, 162, 0.15), rgba(77, 182, 172, 0.15));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 3rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .featured-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: var(--cosmic-teal);
+            color: var(--space-black);
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .featured-episode h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2.2rem;
+            margin-bottom: 1rem;
+            color: var(--soft-white);
+        }
+
+        .episode-meta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .category-badge {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .category-badge.catastrophe {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .category-badge.ancient_lives {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .category-badge.long_format {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .episode-duration {
+            color: var(--text-light);
+            font-size: 0.9rem;
+        }
+
+        .episode-description {
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 2rem;
+        }
+
+        .episode-actions {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .listen-btn {
+            background: linear-gradient(45deg, var(--primary-purple), var(--nebula));
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .listen-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 30px rgba(123, 31, 162, 0.6);
+        }
+
+        /* Category sections */
+        .category-section {
+            margin: 4rem 0;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--cosmic-teal);
+        }
+
+        .category-icon {
+            font-size: 2.5rem;
+        }
+
+        .category-header h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            color: var(--cosmic-teal);
+            margin: 0;
+        }
+
+        .category-description {
+            color: var(--text-light);
+            margin-left: 3.5rem;
+        }
+
+        /* Episode grid */
+        .episodes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .episode-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .episode-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--cosmic-teal);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .episode-card h3 {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--soft-white);
+        }
+
+        .episode-card .episode-description {
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .episode-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            background: rgba(167, 139, 250, 0.2);
+            color: var(--stardust);
+            padding: 0.3rem 0.8rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(167, 139, 250, 0.3);
+        }
+
+        .geological-info {
+            background: rgba(77, 182, 172, 0.1);
+            border: 1px solid rgba(77, 182, 172, 0.2);
+            border-radius: 8px;
+            padding: 0.8rem;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+        }
+
+        .geological-info strong {
+            color: var(--cosmic-teal);
+        }
+
+        /* Empty state */
+        .no-episodes {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+            font-style: italic;
+        }
+
+        /* Search and filter */
+        .episodes-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: var(--soft-white);
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--cosmic-teal);
+            box-shadow: 0 0 20px rgba(77, 182, 172, 0.3);
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(77, 182, 172, 0.2);
+            border-color: var(--cosmic-teal);
+            color: var(--cosmic-teal);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .episodes-container {
+                padding: 0 1rem;
+            }
+
+            .episodes-header {
+                padding: 2rem 0 1rem;
+            }
+
+            .episodes-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .featured-episode {
+                padding: 2rem;
+                margin: 2rem 0;
+            }
+
+            .category-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .category-description {
+                margin-left: 0;
+            }
+
+            .episodes-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .episodes-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                min-width: auto;
+            }
+
+            .episode-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background Animation -->
+    <div class="cosmic-bg">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+        <div class="nebula"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html" class="logo-text">
+                        <span class="logo-full">Deep Time Whispers</span>
+                        <span class="logo-short">DTW</span>
+                    </a>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="timeline.html" class="nav-link">Timeline</a>
+                    <a href="ancient-earth-viewer.html" class="nav-link">Ancient Earth</a>
+                    <a href="cosmic-calendar.html" class="nav-link">Cosmic Calendar</a>
+                    <a href="episodes.html" class="nav-link active">Episodes</a>
+                    <a href="ask-chrononaut.html" class="nav-link">Ask Chrononaut</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="episodes-container">
+            <!-- Header -->
+            <section class="episodes-header">
+                <h1>Deep Time Episodes</h1>
+                <p class="subtitle">Journey through Earth's deepest memories with The Chrononaut</p>
+            </section>
+
+            <!-- Search and Filter Controls -->
+            <section class="episodes-controls">
+                <input type="text" id="episodeSearch" class="search-input" placeholder="Search episodes...">
+                <button class="filter-btn active" data-filter="all">All Episodes</button>
+                <button class="filter-btn" data-filter="catastrophe">Catastrophes</button>
+                <button class="filter-btn" data-filter="ancient_lives">Ancient Lives</button>
+                <button class="filter-btn" data-filter="long_format">Sleep Journeys</button>
+            </section>
+
+            <!-- Featured Episode -->
+            <section id="featuredEpisode" class="featured-episode" style="display: none;">
+                <!-- Will be populated by JavaScript -->
+            </section>
+
+            <!-- Episode Categories -->
+            <div id="episodeCategories">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <!-- Loading State -->
+            <div id="loadingState" class="no-episodes">
+                <h3>Loading episodes...</h3>
+                <p>Gathering memories from the deep past...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Deep Time Whispers</h3>
+                    <p>Ancient Memories for Modern Dreams</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Listen On</h4>
+                    <a href="https://open.spotify.com/show/5PDayEum5JCqlfoPG1fBlT" target="_blank">Spotify</a>
+                    <a href="https://www.youtube.com/@deeptimewhispers" target="_blank">YouTube</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Explore</h4>
+                    <a href="timeline.html">Timeline</a>
+                    <a href="ancient-earth-viewer.html">Ancient Earth</a>
+                    <a href="cosmic-calendar.html">Cosmic Calendar</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Deep Time Whispers. You are made of ancient atoms.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Episode data and functionality
+        let episodesData = null;
+        let filteredEpisodes = [];
+        let currentFilter = 'all';
+
+        // Load episodes data
+        async function loadEpisodes() {
+            try {
+                const response = await fetch('data/episodes.json');
+                episodesData = await response.json();
+                filteredEpisodes = episodesData.episodes;
+                renderEpisodes();
+                setupInteractions();
+            } catch (error) {
+                console.error('Failed to load episodes:', error);
+                document.getElementById('loadingState').innerHTML = `
+                    <h3>Unable to load episodes</h3>
+                    <p>Please check your connection and try again.</p>
+                `;
+            }
+        }
+
+        // Render all episodes
+        function renderEpisodes() {
+            const container = document.getElementById('episodeCategories');
+            const loadingState = document.getElementById('loadingState');
+            
+            if (!episodesData || filteredEpisodes.length === 0) {
+                container.innerHTML = '';
+                loadingState.style.display = 'block';
+                return;
+            }
+
+            loadingState.style.display = 'none';
+
+            // Show featured episode
+            renderFeaturedEpisode();
+
+            // Group episodes by category
+            const categories = groupEpisodesByCategory();
+            
+            let html = '';
+            
+            // Render each category
+            Object.entries(categories).forEach(([categoryKey, episodes]) => {
+                if (episodes.length === 0) return;
+                
+                const categoryInfo = episodesData.categories[categoryKey];
+                
+                html += `
+                    <section class="category-section">
+                        <div class="category-header">
+                            <span class="category-icon">${categoryInfo.icon}</span>
+                            <div>
+                                <h2>${categoryInfo.name}</h2>
+                                <p class="category-description">${categoryInfo.description}</p>
+                            </div>
+                        </div>
+                        <div class="episodes-grid">
+                            ${episodes.map(episode => createEpisodeCard(episode)).join('')}
+                        </div>
+                    </section>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // Render featured episode
+        function renderFeaturedEpisode() {
+            const featuredContainer = document.getElementById('featuredEpisode');
+            const featuredEpisode = filteredEpisodes.find(ep => ep.featured);
+            
+            if (!featuredEpisode) {
+                featuredContainer.style.display = 'none';
+                return;
+            }
+
+            featuredContainer.style.display = 'block';
+            featuredContainer.innerHTML = `
+                <div class="featured-badge">Featured</div>
+                <h2>${featuredEpisode.title}</h2>
+                <div class="episode-meta">
+                    <span class="category-badge ${featuredEpisode.category}">${getCategoryName(featuredEpisode.category)}</span>
+                    <span class="episode-duration">${featuredEpisode.duration}</span>
+                    ${featuredEpisode.geological_period ? `<span class="episode-duration">${featuredEpisode.geological_period} Period</span>` : ''}
+                </div>
+                <p class="episode-description">${featuredEpisode.description}</p>
+                <div class="episode-actions">
+                    ${featuredEpisode.spotify_link ? `<a href="${featuredEpisode.spotify_link}" target="_blank" class="listen-btn">🎧 Listen on Spotify</a>` : ''}
+                </div>
+            `;
+        }
+
+        // Group episodes by category
+        function groupEpisodesByCategory() {
+            const groups = {
+                long_format: [],
+                catastrophe: [],
+                ancient_lives: []
+            };
+
+            filteredEpisodes.forEach(episode => {
+                if (groups[episode.category]) {
+                    groups[episode.category].push(episode);
+                }
+            });
+
+            // Sort each group by release date (newest first)
+            Object.keys(groups).forEach(key => {
+                groups[key].sort((a, b) => new Date(b.release_date) - new Date(a.release_date));
+            });
+
+            return groups;
+        }
+
+        // Create episode card HTML
+        function createEpisodeCard(episode) {
+            const categoryName = getCategoryName(episode.category);
+            const releaseDate = new Date(episode.release_date).toLocaleDateString();
+            
+            return `
+                <div class="episode-card">
+                    <h3>${episode.title}</h3>
+                    <div class="episode-meta">
+                        <span class="category-badge ${episode.category}">${categoryName}</span>
+                        <span class="episode-duration">${episode.duration}</span>
+                    </div>
+                    ${episode.geological_period ? `
+                        <div class="geological-info">
+                            <strong>Period:</strong> ${episode.geological_period} (${formatMYA(episode.mya)})
+                        </div>
+                    ` : ''}
+                    <p class="episode-description">${episode.description}</p>
+                    <div class="episode-tags">
+                        ${episode.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    <div class="episode-actions">
+                        ${episode.spotify_link ? `<a href="${episode.spotify_link}" target="_blank" class="listen-btn">🎧 Listen</a>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Helper functions
+        function getCategoryName(categoryKey) {
+            const names = {
+                long_format: 'Sleep Journey',
+                catastrophe: 'Catastrophe',
+                ancient_lives: 'Ancient Lives'
+            };
+            return names[categoryKey] || categoryKey;
+        }
+
+        function formatMYA(mya) {
+            if (mya >= 1000) {
+                return `${(mya / 1000).toFixed(1)} billion years ago`;
+            } else if (mya >= 1) {
+                return `${Math.round(mya)} million years ago`;
+            } else {
+                return `${Math.round(mya * 1000)} thousand years ago`;
+            }
+        }
+
+        // Search and filter functionality
+        function setupInteractions() {
+            const searchInput = document.getElementById('episodeSearch');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+
+            // Search functionality
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                applyFilters(searchTerm, currentFilter);
+            });
+
+            // Filter buttons
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    applyFilters(searchInput.value.toLowerCase(), currentFilter);
+                });
+            });
+        }
+
+        function applyFilters(searchTerm, category) {
+            filteredEpisodes = episodesData.episodes.filter(episode => {
+                // Category filter
+                const matchesCategory = category === 'all' || episode.category === category;
+                
+                // Search filter
+                const matchesSearch = !searchTerm || 
+                    episode.title.toLowerCase().includes(searchTerm) ||
+                    episode.description.toLowerCase().includes(searchTerm) ||
+                    episode.tags.some(tag => tag.toLowerCase().includes(searchTerm)) ||
+                    (episode.geological_period && episode.geological_period.toLowerCase().includes(searchTerm));
+
+                return matchesCategory && matchesSearch;
+            });
+
+            renderEpisodes();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadEpisodes);
+    </script>
+</body>
+</html>

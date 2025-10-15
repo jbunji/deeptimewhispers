@@ -1,0 +1,32 @@
+User-agent: *
+Allow: /
+
+# Main pages
+Allow: /index.html
+Allow: /timeline.html
+Allow: /ancient-earth-viewer.html
+Allow: /cosmic-calendar.html
+Allow: /episodes.html
+Allow: /ask-chrononaut.html
+
+# Assets
+Allow: /css/
+Allow: /js/
+Allow: /assets/
+Allow: /data/
+Allow: /textures/
+
+# Sitemaps
+Sitemap: https://deeptimewhispers.com/sitemap.xml
+
+# Crawl delay to be respectful
+Crawl-delay: 1
+
+# SEO optimizations
+User-agent: Googlebot
+Allow: /
+Crawl-delay: 0
+
+User-agent: Bingbot
+Allow: /
+Crawl-delay: 1

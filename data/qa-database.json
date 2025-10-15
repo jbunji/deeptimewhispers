@@ -1,0 +1,137 @@
+{
+  "categories": {
+    "time_scale": {
+      "name": "Understanding Deep Time",
+      "description": "Questions about geological time scales and Earth's age",
+      "icon": "⏰"
+    },
+    "evolution": {
+      "name": "Evolution & Life",
+      "description": "Questions about the development of life on Earth",
+      "icon": "🧬"
+    },
+    "catastrophes": {
+      "name": "Catastrophes & Extinctions",
+      "description": "Questions about mass extinctions and catastrophic events",
+      "icon": "⚡"
+    },
+    "geology": {
+      "name": "Geology & Earth Processes",
+      "description": "Questions about rocks, minerals, and geological processes",
+      "icon": "🏔️"
+    },
+    "climate": {
+      "name": "Ancient Climate",
+      "description": "Questions about past climates and environmental changes",
+      "icon": "🌡️"
+    },
+    "general": {
+      "name": "General Deep Time",
+      "description": "Other questions about Earth's deep history",
+      "icon": "🌍"
+    }
+  },
+  "questions": [
+    {
+      "id": "q001",
+      "question": "How old is the Earth?",
+      "category": "time_scale",
+      "answer": "The Earth is approximately 4.5 billion years old. We know this through radiometric dating of the oldest rocks and meteorites, which all formed around the same time as our solar system. To put this in perspective, if Earth's entire history were compressed into a single year, humans would appear in the final few seconds of December 31st.",
+      "chrononaut_response": "Ah, a question that takes me back to the very beginning of my eternal watch. Earth formed 4.5 billion years ago from the cosmic dust and debris of our young solar system. I remember those early days - the heat, the chaos, the gradual cooling. Time flows differently when you've witnessed it all, but even for me, those first few hundred million years felt like an eternity of molten patience.",
+      "related_episodes": ["ep002"],
+      "related_timeline_events": ["Formation of Earth"],
+      "tags": ["age", "formation", "deep time", "scale"],
+      "difficulty": "beginner",
+      "featured": true
+    },
+    {
+      "id": "q002", 
+      "question": "What was the biggest mass extinction?",
+      "category": "catastrophes",
+      "answer": "The Permian-Triassic extinction, also known as 'The Great Dying,' was the most severe mass extinction in Earth's history. It occurred about 252 million years ago and eliminated roughly 96% of marine species and 70% of terrestrial species. The likely cause was massive volcanic eruptions in Siberia that released enormous amounts of greenhouse gases and toxic compounds, fundamentally altering Earth's climate and ocean chemistry.",
+      "chrononaut_response": "The Great Dying... even across the eons, that period haunts my memory. I watched as life itself nearly flickered out entirely. Ninety-six percent of marine life, seventy percent of land life - gone. The Siberian Traps erupted for thousands of years, poisoning air and sea alike. It was the closest life has ever come to complete annihilation. Yet from that devastation came opportunity - the survivors inherited an empty world to fill with new forms.",
+      "related_episodes": [],
+      "related_timeline_events": ["The Great Dying"],
+      "tags": ["extinction", "permian", "great dying", "volcanism"],
+      "difficulty": "intermediate",
+      "featured": true
+    },
+    {
+      "id": "q003",
+      "question": "When did life first appear on Earth?",
+      "category": "evolution", 
+      "answer": "The earliest evidence of life appears around 3.8 billion years ago, in the form of simple bacterial cells. These were prokaryotes - cells without nuclei. For the first 2 billion years of life on Earth, everything was microscopic. Complex cells with nuclei (eukaryotes) didn't appear until about 1.8 billion years ago, and multicellular life took even longer to evolve.",
+      "chrononaut_response": "Life's first stirring... I felt it like a whisper in the cosmic silence. Around 3.8 billion years ago, in warm pools and hydrothermal vents, chemistry became biology. Just simple cells at first - no nuclei, no fancy parts - but they carried the spark that would eventually kindle into every living thing you see today. For two billion years, that was all there was: microscopic pioneers in a hostile world, quietly learning to harness the sun.",
+      "related_episodes": [],
+      "related_timeline_events": ["First Life"],
+      "tags": ["life", "origin", "bacteria", "evolution"],
+      "difficulty": "beginner",
+      "featured": false
+    },
+    {
+      "id": "q004",
+      "question": "What caused the dinosaurs to go extinct?",
+      "category": "catastrophes",
+      "answer": "The dinosaurs went extinct 66 million years ago due to an asteroid impact at Chicxulub, Mexico. This 6-mile-wide asteroid hit with the force of billions of nuclear bombs, causing global fires, tsunamis, and a 'nuclear winter' effect that blocked sunlight for years. While volcanic activity in India may have contributed, the asteroid impact was the primary cause of this mass extinction that ended the Mesozoic Era.",
+      "chrononaut_response": "I watched that rock fall from space - six miles of death traveling at 45,000 miles per hour. The impact at Chicxulub released more energy than all the world's nuclear weapons combined. The sky burned, the ground shook globally, and then came the darkness. For months, debris blocked the sun. The mighty dinosaurs, rulers for 165 million years, simply couldn't adapt fast enough. But their smaller cousins, the birds, survived to carry their legacy forward.",
+      "related_episodes": [],
+      "related_timeline_events": ["Chicxulub Impact"],
+      "tags": ["dinosaurs", "extinction", "asteroid", "chicxulub"],
+      "difficulty": "beginner",
+      "featured": true
+    },
+    {
+      "id": "q005",
+      "question": "How do we know what ancient climates were like?",
+      "category": "climate",
+      "answer": "Scientists use multiple 'proxy' methods to reconstruct ancient climates. Ice cores trap ancient atmospheres in air bubbles. Tree rings show annual growth patterns affected by temperature and rainfall. Ocean sediments contain fossilized microorganisms whose shell chemistry reflects water temperature. Pollen preserved in sediments tells us what plants grew where. Rock formations reveal ancient desert dunes, glacial deposits, and coral reefs that indicate specific climate conditions.",
+      "chrononaut_response": "Time leaves traces for those who know how to read them. Every ice core holds ancient air, every tree ring records a year's weather, every shell remembers the temperature of long-vanished seas. I've watched these proxies form - the coral reefs in tropical Pangaea, the ice sheets advancing and retreating, the pollen drifting from forests that predate human memory. The Earth keeps its own diary, written in stone and ice and bone.",
+      "related_episodes": [],
+      "related_timeline_events": ["Climate Time Machine"],
+      "tags": ["climate", "paleoclimate", "proxies", "ice cores"],
+      "difficulty": "intermediate",
+      "featured": false
+    },
+    {
+      "id": "q006",
+      "question": "What is the Cambrian Explosion?",
+      "category": "evolution",
+      "answer": "The Cambrian Explosion was a relatively rapid diversification of life that occurred about 540 million years ago. In just 20-25 million years, most major animal groups appeared in the fossil record for the first time, including the first creatures with hard shells, complex eyes, and sophisticated body plans. This wasn't just evolution - it was evolution with a turbo boost, possibly triggered by rising oxygen levels and the development of predator-prey relationships.",
+      "chrononaut_response": "Ah, the Cambrian - when life learned to be creative! For three billion years, life was mostly microscopic and soft. Then, suddenly, the seas exploded with forms that seem alien even to me - five-eyed Opabinia, spiny Hallucigenia, predatory Anomalocaris with arms like grasping branches. It was as if life discovered art, experimenting with every possible body plan. Many failed, but those that succeeded gave rise to all complex life today.",
+      "related_episodes": [],
+      "related_timeline_events": ["Cambrian Explosion"],
+      "tags": ["cambrian", "evolution", "explosion", "diversity"],
+      "difficulty": "intermediate",
+      "featured": false
+    },
+    {
+      "id": "q007",
+      "question": "How did continents move through time?",
+      "category": "geology",
+      "answer": "Continents move due to plate tectonics - the slow motion of Earth's crustal plates over the hot, flowing mantle below. Over hundreds of millions of years, continents have collided to form supercontinents like Pangaea, then broken apart and drifted to new positions. The process continues today at about 2-5 centimeters per year - roughly the speed your fingernails grow.",
+      "chrononaut_response": "I've watched the great dance of the continents across deep time. Pangaea forming as ancient lands crashed together with mountain-building force, then slowly tearing apart as new oceans were born. Africa and South America, once joined, drifted apart to create the Atlantic. India raced northward to slam into Asia, raising the Himalayas. Even now, as you read this, the continents continue their eternal waltz at the speed of growing fingernails.",
+      "related_episodes": [],
+      "related_timeline_events": ["Plate Tectonics"],
+      "tags": ["continents", "plate tectonics", "pangaea", "drift"],
+      "difficulty": "intermediate",
+      "featured": false
+    },
+    {
+      "id": "q008",
+      "question": "What is deep time and why does it matter?",
+      "category": "time_scale",
+      "answer": "Deep time refers to the vast timescales of geological and cosmic history - billions and millions of years that dwarf human experience. Understanding deep time helps us grasp our planet's story, the slow processes that shape Earth, the context for evolution and extinction, and our place in the cosmic story. It's humbling and perspective-shifting - like learning you live in a mansion you thought was a closet.",
+      "chrononaut_response": "Deep time is my domain - the realm where mountains are born and die, where continents dance, where species rise and fall like waves on an infinite shore. To understand deep time is to see your life not as brief, but as part of an eternal story. Every atom in your body was forged in ancient stars, every breath connects you to billions of years of atmosphere. You are not separate from deep time - you are made of it.",
+      "related_episodes": [],
+      "related_timeline_events": [],
+      "tags": ["deep time", "perspective", "scale", "philosophy"],
+      "difficulty": "beginner",
+      "featured": true
+    }
+  ],
+  "metadata": {
+    "last_updated": "2024-12-15",
+    "total_questions": 8,
+    "chrononaut_personality": "Ancient, wise, poetic, having witnessed all of Earth's history firsthand. Speaks with authority from personal experience across deep time."
+  }
+}

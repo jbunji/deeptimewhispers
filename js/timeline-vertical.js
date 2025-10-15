@@ -9,6 +9,18 @@ class VerticalTimeline {
         this.activeFilters = new Set(['all']);
         this.currentOutsideClickHandler = null;
         
+        // Episode ID to Spotify URL mapping
+        this.episodeMapping = {
+            'birth-of-the-moon': 'https://open.spotify.com/episode/6esy2rmF8e1t46eXEckOAw',
+            'when-earth-froze-solid': 'https://open.spotify.com/episode/77VT0LHUYMb9C0GpecFVDZ', // Snowball Earth
+            'day-of-the-pillars': 'https://open.spotify.com/episode/3K5edVOzxVGPrznAT17PuM', // Day Mountains Were Born
+            'the-day-the-earth-nearly-died': 'https://open.spotify.com/episode/13IcAGNEPfz8JiVUCLU7BB', // Great Dying
+            'cretaceous-hypercane': 'https://open.spotify.com/episode/5JIOz4oSAkbuGBy6WxKEqT',
+            'the-day-the-dinosaurs-died': 'https://open.spotify.com/episode/6RhuihCnFlsHZC6Yc4KXAy', // Chicxulub Impact Weather
+            'when-the-ice-wall-broke': 'https://open.spotify.com/episode/3OcxbHaSSenvOhYDWytrnE', // Laurentide Ice Dam
+            'when-the-sky-turned-to-glass': 'https://open.spotify.com/episode/0igyfGd7CNjJNEmgP9cb2w' // Taupo Super-eruption
+        };
+        
         this.init();
     }
 
@@ -250,8 +262,8 @@ class VerticalTimeline {
             ${this.getTimeComparison(event)}
             
             <div class="detail-actions">
-                ${event.podcastEpisode ? `
-                    <a href="#${event.podcastEpisode}" class="btn-primary">
+                ${event.podcastEpisode && this.episodeMapping[event.podcastEpisode] ? `
+                    <a href="${this.episodeMapping[event.podcastEpisode]}" target="_blank" rel="noopener noreferrer" class="btn-primary" onclick="trackTimelineEvent('episode_click', {episode_id: '${event.podcastEpisode}'})">
                         🎧 Listen to Episode
                     </a>
                 ` : ''}

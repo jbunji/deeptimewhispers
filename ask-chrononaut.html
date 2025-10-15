@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ask the Chrononaut - Deep Time Whispers</title>
+    <meta name="description" content="Ask The Chrononaut your questions about Earth's deep history. Get answers about evolution, extinctions, geology, and the 4.5 billion year story of our planet.">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Raleway:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/main.css">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="assets/images/DeepTimeWhispers-Final.png">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        gtag('config', 'G-XXXXXXXXXX', {
+            page_title: 'Ask the Chrononaut',
+            page_location: window.location.href
+        });
+        
+        // Track Q&A interactions
+        function trackQAEvent(eventType, details = {}) {
+            gtag('event', 'qa_interaction', {
+                event_category: 'Ask Chrononaut',
+                event_label: eventType,
+                custom_parameter_1: 'qa_page',
+                ...details
+            });
+        }
+        
+        // Track question views
+        function trackQuestionView(questionId, category) {
+            trackQAEvent('question_view', {
+                question_id: questionId,
+                question_category: category
+            });
+        }
+        
+        // Track answer type switches
+        function trackAnswerSwitch(answerType, questionId) {
+            trackQAEvent('answer_switch', {
+                answer_type: answerType,
+                question_id: questionId
+            });
+        }
+        
+        // Track searches
+        function trackQASearch(searchTerm) {
+            gtag('event', 'search', {
+                search_term: searchTerm,
+                event_category: 'Ask Chrononaut'
+            });
+        }
+        
+        // Track category filters
+        function trackQAFilter(category) {
+            trackQAEvent('filter_category', {
+                filter_category: category
+            });
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Raleway', sans-serif;
+            background: var(--space-black);
+            color: var(--soft-white);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+        }
+
+        /* Main container */
+        .qa-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        /* Header section */
+        .qa-header {
+            text-align: center;
+            padding: 3rem 0 2rem;
+            margin-top: 80px;
+        }
+
+        .qa-header h1 {
+            font-family: 'Crimson Text', serif;
+            font-size: 3.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, var(--stardust), var(--cosmic-teal));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .qa-header .subtitle {
+            font-size: 1.3rem;
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            font-weight: 300;
+        }
+
+        .chrononaut-intro {
+            max-width: 800px;
+            margin: 0 auto 3rem;
+            background: linear-gradient(135deg, rgba(123, 31, 162, 0.1), rgba(77, 182, 172, 0.1));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            font-style: italic;
+            font-size: 1.1rem;
+            line-height: 1.6;
+            color: var(--text-light);
+            position: relative;
+        }
+
+        .chrononaut-intro::before {
+            content: '"';
+            font-size: 4rem;
+            position: absolute;
+            top: 1rem;
+            left: 2rem;
+            color: var(--cosmic-teal);
+            opacity: 0.3;
+            font-family: 'Crimson Text', serif;
+        }
+
+        /* Search and controls */
+        .qa-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 3rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 300px;
+            padding: 1rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: var(--soft-white);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--cosmic-teal);
+            box-shadow: 0 0 20px rgba(77, 182, 172, 0.3);
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: rgba(77, 182, 172, 0.2);
+            border-color: var(--cosmic-teal);
+            color: var(--cosmic-teal);
+            transform: translateY(-2px);
+        }
+
+        /* Featured questions */
+        .featured-section {
+            margin-bottom: 4rem;
+        }
+
+        .section-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--cosmic-teal);
+        }
+
+        .section-header h2 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            color: var(--cosmic-teal);
+            margin: 0;
+        }
+
+        /* Question cards */
+        .questions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .question-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .question-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--cosmic-teal);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .question-text {
+            font-family: 'Crimson Text', serif;
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--soft-white);
+            line-height: 1.4;
+        }
+
+        .question-meta {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .category-tag {
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .category-tag.time_scale {
+            background: rgba(139, 92, 246, 0.2);
+            color: #8b5cf6;
+            border: 1px solid rgba(139, 92, 246, 0.3);
+        }
+
+        .category-tag.evolution {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .category-tag.catastrophes {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.3);
+        }
+
+        .category-tag.geology {
+            background: rgba(245, 158, 11, 0.2);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        .category-tag.climate {
+            background: rgba(59, 130, 246, 0.2);
+            color: #3b82f6;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+
+        .category-tag.general {
+            background: rgba(107, 114, 128, 0.2);
+            color: #9ca3af;
+            border: 1px solid rgba(107, 114, 128, 0.3);
+        }
+
+        .difficulty-badge {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+
+        .answer-preview {
+            color: var(--text-light);
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .read-more {
+            color: var(--cosmic-teal);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Answer modal */
+        .answer-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .answer-modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, rgba(10, 14, 39, 0.95), rgba(26, 35, 126, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: var(--soft-white);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: rotate(90deg);
+        }
+
+        .modal-question {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            color: var(--soft-white);
+            line-height: 1.3;
+        }
+
+        .answer-tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .tab-btn {
+            padding: 0.8rem 1.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: rgba(77, 182, 172, 0.2);
+            border-color: var(--cosmic-teal);
+            color: var(--cosmic-teal);
+        }
+
+        .answer-content {
+            font-size: 1.1rem;
+            line-height: 1.7;
+            color: var(--soft-white);
+            margin-bottom: 2rem;
+        }
+
+        .chrononaut-answer {
+            background: linear-gradient(135deg, rgba(123, 31, 162, 0.1), rgba(77, 182, 172, 0.1));
+            border-left: 4px solid var(--cosmic-teal);
+            padding: 2rem;
+            border-radius: 10px;
+            font-style: italic;
+            position: relative;
+        }
+
+        .chrononaut-answer::before {
+            content: '✨';
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .related-content {
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .related-content h4 {
+            color: var(--cosmic-teal);
+            margin-bottom: 1rem;
+        }
+
+        .related-links {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .related-link {
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            color: var(--text-light);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .related-link:hover {
+            background: rgba(77, 182, 172, 0.2);
+            color: var(--cosmic-teal);
+        }
+
+        /* Empty state */
+        .no-results {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-light);
+        }
+
+        .no-results h3 {
+            font-family: 'Crimson Text', serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: var(--cosmic-teal);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .qa-container {
+                padding: 0 1rem;
+            }
+
+            .qa-header {
+                padding: 2rem 0 1rem;
+            }
+
+            .qa-header h1 {
+                font-size: 2.5rem;
+            }
+
+            .chrononaut-intro {
+                padding: 2rem;
+                margin-bottom: 2rem;
+                font-size: 1rem;
+            }
+
+            .qa-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .search-input {
+                min-width: auto;
+            }
+
+            .filter-buttons {
+                justify-content: center;
+            }
+
+            .questions-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                padding: 2rem;
+                margin: 1rem;
+                max-height: 90vh;
+            }
+
+            .modal-question {
+                font-size: 1.5rem;
+            }
+
+            .answer-tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Cosmic Background Animation -->
+    <div class="cosmic-bg">
+        <div class="stars"></div>
+        <div class="stars2"></div>
+        <div class="stars3"></div>
+        <div class="nebula"></div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content">
+                <div class="logo">
+                    <a href="index.html" class="logo-text">
+                        <span class="logo-full">Deep Time Whispers</span>
+                        <span class="logo-short">DTW</span>
+                    </a>
+                </div>
+                <div class="nav-links">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="timeline.html" class="nav-link">Timeline</a>
+                    <a href="ancient-earth-viewer.html" class="nav-link">Ancient Earth</a>
+                    <a href="cosmic-calendar.html" class="nav-link">Cosmic Calendar</a>
+                    <a href="episodes.html" class="nav-link">Episodes</a>
+                    <a href="ask-chrononaut.html" class="nav-link active">Ask Chrononaut</a>
+                    <a href="index.html#about" class="nav-link">About</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        <div class="qa-container">
+            <!-- Header -->
+            <section class="qa-header">
+                <h1>Ask the Chrononaut</h1>
+                <p class="subtitle">Your guide through Earth's deepest mysteries</p>
+                
+                <div class="chrononaut-intro">
+                    I have drifted through 4.5 billion years, witnessing every moment of Earth's story. 
+                    From the formation of the first oceans to the rise and fall of countless species, 
+                    I have seen it all. Ask me anything about our planet's deep history, and I will 
+                    share what I have learned across the eons.
+                </div>
+            </section>
+
+            <!-- Search and Filter Controls -->
+            <section class="qa-controls">
+                <input type="text" id="questionSearch" class="search-input" placeholder="Ask your question about deep time...">
+                
+                <div class="filter-buttons">
+                    <button class="filter-btn active" data-filter="all">
+                        🌍 All Questions
+                    </button>
+                    <button class="filter-btn" data-filter="time_scale">
+                        ⏰ Deep Time
+                    </button>
+                    <button class="filter-btn" data-filter="evolution">
+                        🧬 Evolution
+                    </button>
+                    <button class="filter-btn" data-filter="catastrophes">
+                        ⚡ Catastrophes
+                    </button>
+                    <button class="filter-btn" data-filter="geology">
+                        🏔️ Geology
+                    </button>
+                    <button class="filter-btn" data-filter="climate">
+                        🌡️ Climate
+                    </button>
+                </div>
+            </section>
+
+            <!-- Featured Questions -->
+            <section id="featuredSection" class="featured-section">
+                <div class="section-header">
+                    <h2>✨ Popular Questions</h2>
+                </div>
+                <div id="featuredQuestions" class="questions-grid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- All Questions -->
+            <section id="allQuestionsSection">
+                <div class="section-header">
+                    <h2>🤔 All Questions</h2>
+                </div>
+                <div id="allQuestions" class="questions-grid">
+                    <!-- Populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- No Results -->
+            <section id="noResults" class="no-results" style="display: none;">
+                <h3>No answers found in the cosmic archives</h3>
+                <p>The Chrononaut is still gathering knowledge about that topic. Try a different question or explore our other features.</p>
+            </section>
+        </div>
+    </main>
+
+    <!-- Answer Modal -->
+    <div id="answerModal" class="answer-modal">
+        <div class="modal-content">
+            <button class="modal-close" onclick="closeAnswerModal()">&times;</button>
+            <h2 id="modalQuestion" class="modal-question"></h2>
+            
+            <div class="answer-tabs">
+                <button class="tab-btn active" onclick="showAnswerTab('scientific')">📚 Scientific Answer</button>
+                <button class="tab-btn" onclick="showAnswerTab('chrononaut')">✨ The Chrononaut Speaks</button>
+            </div>
+            
+            <div id="scientificAnswer" class="answer-content">
+                <!-- Populated by JavaScript -->
+            </div>
+            
+            <div id="chrononautAnswer" class="chrononaut-answer" style="display: none;">
+                <!-- Populated by JavaScript -->
+            </div>
+            
+            <div id="relatedContent" class="related-content">
+                <!-- Populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>Deep Time Whispers</h3>
+                    <p>Ancient Memories for Modern Dreams</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Explore</h4>
+                    <a href="timeline.html">Timeline</a>
+                    <a href="ancient-earth-viewer.html">Ancient Earth</a>
+                    <a href="cosmic-calendar.html">Cosmic Calendar</a>
+                    <a href="episodes.html">Episodes</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2024 Deep Time Whispers. You are made of ancient atoms.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Q&A data and functionality
+        let qaData = null;
+        let filteredQuestions = [];
+        let currentFilter = 'all';
+        let currentQuestion = null;
+
+        // Load Q&A data
+        async function loadQAData() {
+            try {
+                const response = await fetch('data/qa-database.json');
+                qaData = await response.json();
+                filteredQuestions = qaData.questions;
+                renderQuestions();
+                setupInteractions();
+            } catch (error) {
+                console.error('Failed to load Q&A data:', error);
+                document.getElementById('noResults').style.display = 'block';
+                document.getElementById('noResults').innerHTML = `
+                    <h3>Unable to load questions</h3>
+                    <p>Please check your connection and try again.</p>
+                `;
+            }
+        }
+
+        // Render all questions
+        function renderQuestions() {
+            if (!qaData || filteredQuestions.length === 0) {
+                showNoResults();
+                return;
+            }
+
+            hideNoResults();
+
+            // Render featured questions
+            const featuredQuestions = filteredQuestions.filter(q => q.featured);
+            const featuredContainer = document.getElementById('featuredQuestions');
+            
+            if (featuredQuestions.length > 0) {
+                featuredContainer.innerHTML = featuredQuestions.map(createQuestionCard).join('');
+                document.getElementById('featuredSection').style.display = 'block';
+            } else {
+                document.getElementById('featuredSection').style.display = 'none';
+            }
+
+            // Render all questions
+            const allContainer = document.getElementById('allQuestions');
+            allContainer.innerHTML = filteredQuestions.map(createQuestionCard).join('');
+        }
+
+        // Create question card HTML
+        function createQuestionCard(question) {
+            const categoryInfo = qaData.categories[question.category];
+            
+            return `
+                <div class="question-card" onclick="showAnswer('${question.id}')">
+                    <div class="question-text">${question.question}</div>
+                    <div class="question-meta">
+                        <span class="category-tag ${question.category}">
+                            ${categoryInfo.icon} ${categoryInfo.name}
+                        </span>
+                        <span class="difficulty-badge">${question.difficulty}</span>
+                    </div>
+                    <div class="answer-preview">${question.answer}</div>
+                    <div class="read-more">Read Full Answer →</div>
+                </div>
+            `;
+        }
+
+        // Show answer modal
+        function showAnswer(questionId) {
+            currentQuestion = qaData.questions.find(q => q.id === questionId);
+            if (!currentQuestion) return;
+
+            document.getElementById('modalQuestion').textContent = currentQuestion.question;
+            document.getElementById('scientificAnswer').innerHTML = currentQuestion.answer;
+            document.getElementById('chrononautAnswer').innerHTML = currentQuestion.chrononaut_response;
+            
+            // Show related content
+            let relatedHTML = '';
+            if (currentQuestion.related_episodes && currentQuestion.related_episodes.length > 0) {
+                relatedHTML += '<h4>🎧 Related Episodes</h4>';
+                relatedHTML += '<div class="related-links">';
+                currentQuestion.related_episodes.forEach(episodeId => {
+                    relatedHTML += `<a href="episodes.html#${episodeId}" class="related-link">Episode: ${episodeId}</a>`;
+                });
+                relatedHTML += '</div>';
+            }
+            
+            if (currentQuestion.related_timeline_events && currentQuestion.related_timeline_events.length > 0) {
+                relatedHTML += '<h4>🕰️ Related Timeline Events</h4>';
+                relatedHTML += '<div class="related-links">';
+                currentQuestion.related_timeline_events.forEach(event => {
+                    relatedHTML += `<a href="timeline.html#${event}" class="related-link">${event}</a>`;
+                });
+                relatedHTML += '</div>';
+            }
+            
+            document.getElementById('relatedContent').innerHTML = relatedHTML;
+            
+            // Reset to scientific answer tab
+            showAnswerTab('scientific');
+            
+            document.getElementById('answerModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Show answer tab
+        function showAnswerTab(tab) {
+            // Update tab buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Show correct content
+            if (tab === 'scientific') {
+                document.getElementById('scientificAnswer').style.display = 'block';
+                document.getElementById('chrononautAnswer').style.display = 'none';
+            } else {
+                document.getElementById('scientificAnswer').style.display = 'none';
+                document.getElementById('chrononautAnswer').style.display = 'block';
+            }
+        }
+
+        // Close answer modal
+        function closeAnswerModal() {
+            document.getElementById('answerModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        // Setup search and filter interactions
+        function setupInteractions() {
+            const searchInput = document.getElementById('questionSearch');
+            const filterButtons = document.querySelectorAll('.filter-btn');
+
+            // Search functionality
+            searchInput.addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                applyFilters(searchTerm, currentFilter);
+            });
+
+            // Filter buttons
+            filterButtons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    filterButtons.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentFilter = btn.dataset.filter;
+                    applyFilters(searchInput.value.toLowerCase(), currentFilter);
+                });
+            });
+
+            // Close modal on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    closeAnswerModal();
+                }
+            });
+
+            // Close modal on backdrop click
+            document.getElementById('answerModal').addEventListener('click', (e) => {
+                if (e.target === e.currentTarget) {
+                    closeAnswerModal();
+                }
+            });
+        }
+
+        // Apply search and filter
+        function applyFilters(searchTerm, category) {
+            filteredQuestions = qaData.questions.filter(question => {
+                // Category filter
+                const matchesCategory = category === 'all' || question.category === category;
+                
+                // Search filter
+                const matchesSearch = !searchTerm || 
+                    question.question.toLowerCase().includes(searchTerm) ||
+                    question.answer.toLowerCase().includes(searchTerm) ||
+                    question.chrononaut_response.toLowerCase().includes(searchTerm) ||
+                    question.tags.some(tag => tag.toLowerCase().includes(searchTerm));
+
+                return matchesCategory && matchesSearch;
+            });
+
+            renderQuestions();
+        }
+
+        // Show/hide no results
+        function showNoResults() {
+            document.getElementById('featuredSection').style.display = 'none';
+            document.getElementById('allQuestionsSection').style.display = 'none';
+            document.getElementById('noResults').style.display = 'block';
+        }
+
+        function hideNoResults() {
+            document.getElementById('featuredSection').style.display = 'block';
+            document.getElementById('allQuestionsSection').style.display = 'block';
+            document.getElementById('noResults').style.display = 'none';
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', loadQAData);
+
+        // Global function for tab switching (needed for onclick)
+        window.showAnswerTab = showAnswerTab;
+        window.closeAnswerModal = closeAnswerModal;
+        window.showAnswer = showAnswer;
+    </script>
+</body>
+</html>

@@ -17,6 +17,45 @@
     
     <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/images/DeepTimeWhispers-Final.png">
+    
+    <!-- Google Analytics 4 -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        
+        gtag('config', 'G-XXXXXXXXXX', {
+            page_title: 'Deep Time Timeline',
+            page_location: window.location.href
+        });
+        
+        // Track timeline interactions
+        function trackTimelineEvent(eventType, details = {}) {
+            gtag('event', 'timeline_interaction', {
+                event_category: 'Timeline',
+                event_label: eventType,
+                custom_parameter_1: 'timeline_page',
+                ...details
+            });
+        }
+        
+        // Track period clicks
+        function trackPeriodClick(periodName, mya) {
+            trackTimelineEvent('period_click', {
+                period_name: periodName,
+                million_years_ago: mya
+            });
+        }
+        
+        // Track search usage
+        function trackTimelineSearch(searchTerm) {
+            gtag('event', 'search', {
+                search_term: searchTerm,
+                event_category: 'Timeline'
+            });
+        }
+    </script>
 </head>
 <body>
     <!-- Cosmic Background Animation -->
@@ -41,6 +80,8 @@
                     <a href="timeline.html" class="nav-link active">Timeline</a>
                     <a href="ancient-earth-viewer.html" class="nav-link">Ancient Earth</a>
                     <a href="cosmic-calendar.html" class="nav-link">Cosmic Calendar</a>
+                    <a href="episodes.html" class="nav-link">Episodes</a>
+                    <a href="ask-chrononaut.html" class="nav-link">Ask Chrononaut</a>
                     <a href="index.html#about" class="nav-link">About</a>
                 </div>
             </div>
