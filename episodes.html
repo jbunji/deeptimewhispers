@@ -206,6 +206,40 @@
             transform: translateY(-2px);
             box-shadow: 0 6px 30px rgba(123, 31, 162, 0.6);
         }
+        
+        .coming-soon-btn {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            padding: 1rem 2rem;
+            border-radius: 25px;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+        
+        .release-status {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+        
+        .episode-card.scheduled {
+            opacity: 0.8;
+            border: 1px solid rgba(255, 193, 7, 0.2);
+        }
+        
+        .episode-card.scheduled:hover {
+            border-color: rgba(255, 193, 7, 0.4);
+        }
 
         /* Category sections */
         .category-section {
@@ -576,6 +610,11 @@
                 return;
             }
 
+            const today = new Date();
+            const episodeDate = new Date(featuredEpisode.release_date);
+            const isReleased = episodeDate <= today && featuredEpisode.spotify_link && featuredEpisode.spotify_link !== "";
+            const releaseDate = episodeDate.toLocaleDateString();
+
             featuredContainer.style.display = 'block';
             featuredContainer.innerHTML = `
                 <div class="featured-badge">Featured</div>
@@ -584,10 +623,14 @@
                     <span class="category-badge ${featuredEpisode.category}">${getCategoryName(featuredEpisode.category)}</span>
                     <span class="episode-duration">${featuredEpisode.duration}</span>
                     ${featuredEpisode.geological_period ? `<span class="episode-duration">${featuredEpisode.geological_period} Period</span>` : ''}
+                    ${!isReleased ? '<span class="release-status">Coming Soon</span>' : ''}
                 </div>
                 <p class="episode-description">${featuredEpisode.description}</p>
                 <div class="episode-actions">
-                    ${featuredEpisode.spotify_link ? `<a href="${featuredEpisode.spotify_link}" target="_blank" class="listen-btn">🎧 Listen on Spotify</a>` : ''}
+                    ${isReleased ? 
+                        `<a href="${featuredEpisode.spotify_link}" target="_blank" class="listen-btn" onclick="trackEpisodePlay('${featuredEpisode.title}', '${featuredEpisode.category}')">🎧 Listen on Spotify</a>` : 
+                        `<span class="coming-soon-btn">📅 Releases ${releaseDate}</span>`
+                    }
                 </div>
             `;
         }
@@ -618,13 +661,17 @@
         function createEpisodeCard(episode) {
             const categoryName = getCategoryName(episode.category);
             const releaseDate = new Date(episode.release_date).toLocaleDateString();
+            const today = new Date();
+            const episodeDate = new Date(episode.release_date);
+            const isReleased = episodeDate <= today && episode.spotify_link && episode.spotify_link !== "";
             
             return `
-                <div class="episode-card">
+                <div class="episode-card ${isReleased ? '' : 'scheduled'}">
                     <h3>${episode.title}</h3>
                     <div class="episode-meta">
                         <span class="category-badge ${episode.category}">${categoryName}</span>
                         <span class="episode-duration">${episode.duration}</span>
+                        ${!isReleased ? '<span class="release-status">Coming Soon</span>' : ''}
                     </div>
                     ${episode.geological_period ? `
                         <div class="geological-info">
@@ -636,7 +683,10 @@
                         ${episode.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
                     </div>
                     <div class="episode-actions">
-                        ${episode.spotify_link ? `<a href="${episode.spotify_link}" target="_blank" class="listen-btn">🎧 Listen</a>` : ''}
+                        ${isReleased ? 
+                            `<a href="${episode.spotify_link}" target="_blank" class="listen-btn" onclick="trackEpisodePlay('${episode.title}', '${episode.category}')">🎧 Listen</a>` : 
+                            `<span class="coming-soon-btn">📅 Releases ${releaseDate}</span>`
+                        }
                     </div>
                 </div>
             `;
