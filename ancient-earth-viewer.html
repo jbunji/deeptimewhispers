@@ -547,77 +547,6 @@
             opacity: 0.8;
         }
         
-        /* Speed control */
-        .speed-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(0, 0, 0, 0.7);
-            padding: 10px 20px;
-            border-radius: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .speed-control {
-                padding: 3px 8px;
-                gap: 4px;
-                border-radius: 15px;
-            }
-            
-            .speed-control label {
-                font-size: 0.7rem;
-            }
-        }
-        
-        .speed-slider {
-            width: 100px;
-            height: 4px;
-            -webkit-appearance: none;
-            appearance: none;
-            background: rgba(255, 255, 255, 0.3);
-            border-radius: 2px;
-            outline: none;
-        }
-        
-        .speed-slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 12px;
-            height: 12px;
-            background: white;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-        
-        .speed-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 15px;
-            cursor: pointer;
-            transition: all 0.3s;
-            font-size: 14px;
-        }
-        
-        @media (max-width: 768px) {
-            .speed-btn {
-                padding: 3px 6px;
-                font-size: 10px;
-                border-radius: 10px;
-            }
-        }
-        
-        .speed-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: scale(1.05);
-        }
-        
-        .speed-btn.active {
-            background: #64B5F6;
-            border-color: #64B5F6;
-            color: white;
-        }
         
         /* Info panel */
         .info-panel {
@@ -915,13 +844,7 @@
                 font-size: 12px;
             }
             
-            .speed-control {
-                padding: 8px 15px;
-            }
             
-            .speed-slider {
-                width: 80px;
-            }
             
             /* Hide some timeline labels on mobile */
             .timeline-labels span:nth-child(even) {
@@ -1008,11 +931,6 @@
             <button class="control-btn" onclick="togglePlay()">
                 <span id="playText">▶ Play Animation</span>
             </button>
-            <div class="speed-control">
-                <label>Speed:</label>
-                <button class="speed-btn" onclick="setSpeed(1)">1x</button>
-                <button class="speed-btn active" onclick="setSpeed(3)">3x</button>
-            </div>
         </div>
     </div>
 
@@ -1683,16 +1601,6 @@
             document.querySelector('.control-btn').classList.toggle('active', isPlaying);
         }
         
-        function setSpeed(speed) {
-            animationSpeed = speed;
-            frameInterval = 500 / animationSpeed;
-            
-            // Update button active states
-            document.querySelectorAll('.speed-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            event.target.classList.add('active');
-        }
         
         function jumpToFrame(frame) {
             updateFrame(parseInt(frame));
