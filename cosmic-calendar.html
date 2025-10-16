@@ -962,7 +962,12 @@
                 daysGrid.className = 'days-grid';
                 
                 // Add empty cells for alignment (start with Sunday)
-                const firstDay = new Date(2024, month, 1).getDay();
+                // Calculate cosmic calendar day of week (January 1st = Sunday)
+                let cosmicDayOfYear = 1;
+                for (let m = 0; m < month; m++) {
+                    cosmicDayOfYear += daysInMonth[m];
+                }
+                const firstDay = (cosmicDayOfYear - 1) % 7; // 0 = Sunday
                 for (let i = 0; i < firstDay; i++) {
                     const emptyCell = document.createElement('div');
                     emptyCell.className = 'day-cell';
