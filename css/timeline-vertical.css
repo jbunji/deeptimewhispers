@@ -631,12 +631,12 @@
 
 /* Spacing fix - add top padding to prevent content sitting under navigation */
 .vertical-timeline {
-    padding-top: 140px; /* Add space for navigation on all screen sizes */
+    padding-top: 160px; /* Increased for wrapped navigation on mobile */
 }
 
 /* Mobile spacing adjustment */
 @media (max-width: 768px) {
     .vertical-timeline {
-        padding-top: 120px; /* Slightly more space for mobile navigation */
+        padding-top: 160px; /* Increased for wrapped navigation on mobile */
     }
 }
