@@ -621,13 +621,11 @@
         
         /* Info panel */
         .info-panel {
-            background: rgba(255, 0, 0, 0.3); /* RED background to make it visible */
+            background: rgba(0, 0, 0, 0.3);
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
-            border: 2px solid red; /* RED border to make it obvious */
-            display: block !important;
-            visibility: visible !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         @media (max-width: 768px) {
@@ -665,12 +663,10 @@
         
         /* Location tracking */
         .location-panel {
-            background: rgba(0, 255, 0, 0.3); /* GREEN background to make it visible */
+            background: rgba(0, 0, 0, 0.3);
             padding: 20px;
             border-radius: 10px;
-            border: 2px solid green; /* GREEN border to make it obvious */
-            display: block !important;
-            visibility: visible !important;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         
         .location-panel h3 {
@@ -1042,7 +1038,7 @@
             <div class="info-panel">
                 <h2 id="periodName">Present Day</h2>
                 <div class="period" id="periodTime">0 Million Years Ago</div>
-                <p id="periodDesc">Loading description...</p>
+                <p id="periodDesc">The modern world with seven continents. Ice caps at both poles define our current interglacial period.</p>
                 <div class="frame-info">Frame: <span id="frameInfo">1/90</span></div>
             </div>
             
