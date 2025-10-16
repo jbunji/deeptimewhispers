@@ -621,11 +621,13 @@
         
         /* Info panel */
         .info-panel {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(255, 0, 0, 0.3); /* RED background to make it visible */
             padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid red; /* RED border to make it obvious */
+            display: block !important;
+            visibility: visible !important;
         }
         
         @media (max-width: 768px) {
@@ -663,10 +665,12 @@
         
         /* Location tracking */
         .location-panel {
-            background: rgba(0, 0, 0, 0.3);
+            background: rgba(0, 255, 0, 0.3); /* GREEN background to make it visible */
             padding: 20px;
             border-radius: 10px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            border: 2px solid green; /* GREEN border to make it obvious */
+            display: block !important;
+            visibility: visible !important;
         }
         
         .location-panel h3 {
