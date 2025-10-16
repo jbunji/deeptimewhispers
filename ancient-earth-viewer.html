@@ -632,6 +632,9 @@
             flex-shrink: 0; /* Prevent shrinking */
             position: relative; /* Ensure proper positioning */
             z-index: 2; /* Higher z-index than location panel */
+            width: 100%; /* Ensure full width */
+            box-sizing: border-box; /* Include padding in width */
+            overflow: hidden; /* Prevent content bleeding */
         }
         
         @media (max-width: 768px) {
@@ -677,6 +680,10 @@
             flex-shrink: 0; /* Prevent shrinking */
             position: relative; /* Ensure proper positioning */
             z-index: 1; /* Ensure it doesn't overlap */
+            width: 100%; /* Ensure full width */
+            box-sizing: border-box; /* Include padding in width */
+            clear: both; /* Clear any floating elements */
+            overflow: hidden; /* Prevent content bleeding */
         }
         
         .location-panel h3 {
