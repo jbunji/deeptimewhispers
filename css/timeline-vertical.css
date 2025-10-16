@@ -631,7 +631,7 @@
 
 /* Mobile spacing fix - add top padding to prevent content sitting under navigation */
 @media (max-width: 768px) {
-    .timeline-section {
+    .vertical-timeline {
         padding-top: 100px; /* Add space for mobile navigation */
     }
 }
