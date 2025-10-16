@@ -629,9 +629,14 @@
     transform: translateY(-2px);
 }
 
-/* Mobile spacing fix - add top padding to prevent content sitting under navigation */
+/* Spacing fix - add top padding to prevent content sitting under navigation */
+.vertical-timeline {
+    padding-top: 140px; /* Add space for navigation on all screen sizes */
+}
+
+/* Mobile spacing adjustment */
 @media (max-width: 768px) {
     .vertical-timeline {
-        padding-top: 100px; /* Add space for mobile navigation */
+        padding-top: 120px; /* Slightly more space for mobile navigation */
     }
 }
