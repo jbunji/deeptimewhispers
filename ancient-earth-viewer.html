@@ -147,25 +147,53 @@
         @media (max-width: 768px) {
             .nav-content {
                 padding: 0.8rem 1rem;
-                flex-wrap: nowrap;
+                flex-wrap: wrap;
                 min-height: auto;
-                justify-content: flex-start;
+                justify-content: center;
+                text-align: center;
             }
             
             .logo-text {
                 font-size: 1.2rem;
             }
             
-            .logo-short {
-                display: inline;
+            .logo-text .logo-short {
+                display: inline !important;
             }
             
-            .logo-full {
-                display: none;
+            .logo-text .logo-full {
+                display: none !important;
             }
             
             .nav-links {
-                display: none !important;
+                display: flex;
+                gap: 0.5rem;
+                flex-wrap: wrap;
+                justify-content: center;
+                width: 100%;
+                margin-top: 0.5rem;
+            }
+            
+            .nav-link {
+                font-size: 0.75rem;
+                padding: 0.3rem 0.6rem;
+                color: var(--text-light);
+                text-decoration: none;
+                border-radius: 15px;
+                background: transparent;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                transition: all 0.2s ease;
+            }
+            
+            .nav-link:hover,
+            .nav-link.active {
+                background: rgba(77, 182, 172, 0.2);
+                border-color: var(--cosmic-teal);
+                color: var(--cosmic-teal);
+            }
+            
+            .credits-link {
+                display: none;
             }
         }
         
@@ -283,7 +311,7 @@
         /* Completely different mobile layout - globe takes most of screen */
         @media (max-width: 768px) {
             .main-content {
-                top: 80px; /* Much smaller top */
+                top: 160px; /* Account for navigation with links */
                 bottom: 0; /* No bottom space */
                 left: 0;
                 right: 0;
@@ -304,7 +332,7 @@
             /* Make top-bar much smaller on mobile */
             .top-bar {
                 position: fixed;
-                top: 60px; /* Push below navigation */
+                top: 110px; /* Push below navigation with links */
                 height: 50px;
                 padding: 5px 10px;
                 font-size: 12px;
