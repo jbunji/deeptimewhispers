@@ -626,8 +626,6 @@
             border-radius: 10px;
             margin-bottom: 20px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-            position: relative;
-            top: 0; /* Start at normal position */
         }
         
         @media (max-width: 768px) {
@@ -669,14 +667,6 @@
             padding: 20px;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
-        /* Desktop-only: Fix overlapping panels */
-        @media (min-width: 769px) {
-            .location-panel {
-                position: relative;
-                top: 50px; /* Push down to separate from info panel on desktop only */
-            }
         }
         
         .location-panel h3 {
