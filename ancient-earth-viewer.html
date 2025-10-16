@@ -2061,14 +2061,9 @@
         // Initialize
         init();
         
-        // Detect mobile and show appropriate controls hint
+        // Mobile detection function (for reference)
         function isMobile() {
             return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-        }
-        
-        if (isMobile()) {
-            document.querySelector('.desktop-controls').style.display = 'none';
-            document.querySelector('.mobile-controls').style.display = 'block';
         }
         
         // For testing - load a subset first
