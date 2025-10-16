@@ -635,7 +635,7 @@ body {
     
     .hero {
         min-height: 100vh;
-        padding-top: 140px; /* Increased for wrapped navigation */
+        padding-top: 160px; /* Further increased for wrapped navigation */
         padding-bottom: 120px; /* Extra space for scroll indicator */
     }
     
