@@ -217,6 +217,7 @@
             text-decoration: none;
             transition: color 0.3s ease;
             font-weight: 400;
+            font-family: 'Raleway', sans-serif;
         }
         
         .nav-link:hover {
@@ -230,7 +231,7 @@
         /* Top controls bar */
         .top-bar {
             position: fixed;
-            top: 80px;
+            top: 100px; /* Increased from 80px to account for navigation */
             left: 0;
             right: 0;
             height: 80px;
@@ -280,10 +281,15 @@
             display: none;
         }
         
+        /* Ensure navigation uses consistent fonts */
+        nav, .nav, .nav-content, .nav-links {
+            font-family: 'Raleway', sans-serif !important;
+        }
+        
         /* Main content area */
         .main-content {
             position: fixed;
-            top: 160px;
+            top: 180px; /* Increased from 160px to match new top-bar position */
             left: 0;
             right: 0;
             bottom: 120px;
