@@ -277,9 +277,9 @@
             }
         }
         
-        /* Hide mobile menu toggle on desktop */
+        /* Remove mobile menu toggle completely */
         .mobile-menu-toggle {
-            display: none;
+            display: none !important;
         }
         
         /* Ensure navigation uses consistent fonts */
@@ -312,34 +312,12 @@
                 grid-template-rows: none;
             }
             
-            /* Hide navigation on mobile to save space */
+            /* Keep navigation visible on mobile */
             .nav {
                 position: fixed;
-                top: -100px;
-                transition: top 0.3s ease;
-                z-index: 2000;
-            }
-            
-            .nav.visible {
                 top: 0;
-            }
-            
-            /* Add mobile menu toggle - show on mobile */
-            .mobile-menu-toggle {
-                display: block !important;
-                position: fixed;
-                top: 10px;
-                right: 10px;
-                z-index: 2001;
-                background: rgba(0, 0, 0, 0.8);
-                color: white;
-                border: none;
-                padding: 10px;
-                border-radius: 5px;
-                font-size: 18px;
-                cursor: pointer;
-                backdrop-filter: blur(10px);
-                border: 1px solid rgba(255, 255, 255, 0.2);
+                z-index: 2000;
+                background: rgba(10, 14, 39, 0.95);
             }
             
             /* Make top-bar much smaller on mobile */
@@ -853,12 +831,16 @@
             }
         }
         
-        @media (max-width: 480px) {
+        @media (max-width: 768px) {
             .logo-short {
                 display: inline;
             }
             
             .logo-full {
+                display: none;
+            }
+            
+            .nav-links {
                 display: none;
             }
             
@@ -922,8 +904,6 @@
         </div>
     </nav>
     
-    <!-- Mobile Menu Toggle -->
-    <button class="mobile-menu-toggle" onclick="toggleMobileMenu()">☰</button>
     
     <!-- Top Control Bar -->
     <div class="top-bar">
@@ -996,30 +976,6 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script>
-        // Mobile menu toggle function
-        function toggleMobileMenu() {
-            const nav = document.querySelector('.nav');
-            nav.classList.toggle('visible');
-        }
-        
-        // Show mobile menu button only on mobile
-        function checkMobile() {
-            const mobileToggle = document.querySelector('.mobile-menu-toggle');
-            const nav = document.querySelector('.nav');
-            if (window.innerWidth <= 768) {
-                if (mobileToggle) mobileToggle.style.display = 'block';
-            } else {
-                if (mobileToggle) mobileToggle.style.display = 'none';
-                if (nav) nav.classList.remove('visible');
-            }
-        }
-        
-        window.addEventListener('resize', checkMobile);
-        document.addEventListener('DOMContentLoaded', () => {
-            checkMobile();
-            // Force initial render after DOM loads
-            setTimeout(checkMobile, 100);
-        });
         
         // Scene globals
         let scene, camera, renderer;
