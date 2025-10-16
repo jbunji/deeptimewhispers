@@ -1300,7 +1300,7 @@
             const timeData = getTimeForFrame(frameIndex);
             document.getElementById('periodName').textContent = timeData.name;
             document.getElementById('periodTime').textContent = `${timeData.mya} Million Years Ago`;
-            document.getElementById('frameInfo').textContent = `${frameIndex + 1}/90`;
+            document.getElementById('frameInfo').textContent = `${frameIndex + 1}/${maxTextures}`;
             document.getElementById('timelineSlider').value = timeData.mya;
             
             // Update period description
@@ -1314,7 +1314,9 @@
         }
         
         function getTimeForFrame(frameIndex) {
-            const filename = textureFileNames[frameIndex];
+            // On mobile, we load every 3rd texture, so we need to map back to the original index
+            const actualTextureIndex = isMobileDevice ? frameIndex * 3 : frameIndex;
+            const filename = textureFileNames[actualTextureIndex];
             
             // Time mapping based on PALEOMAP sequence
             // The files are ordered from present (0 MYA) to past (750 MYA)
@@ -1411,7 +1413,7 @@
                 750   // Map93a Middle Cryogenian
             ];
             
-            const mya = timeMapping[frameIndex] || 0;
+            const mya = timeMapping[actualTextureIndex] || 0;
             
             // Extract period name from filename
             let name = filename.replace(/Map\d+[a-z]?\s+/, '') // Remove Map prefix
@@ -1997,12 +1999,12 @@
             requestAnimationFrame(animate);
             
             // Handle animation playback (forward only)
-            if (isPlaying && textures.length === 90) {
+            if (isPlaying && textures.length === maxTextures) {
                 if (currentTime - lastFrameTime > frameInterval) {
                     let nextFrame = currentFrame + 1;
                     
                     // Loop to start at end
-                    if (nextFrame >= 90) {
+                    if (nextFrame >= maxTextures) {
                         nextFrame = 0;
                     }
                     
